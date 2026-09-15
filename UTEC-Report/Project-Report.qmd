@@ -50,3 +50,45 @@ execute:
 ```{=latex}
 \providecommand{\pandocbounded}[1]{#1}
 ```
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(janitor)
+library(glue)
+library(kableExtra)
+library(skimr)
+library(descriptr)
+library(corrplot)
+```
+
+\newpage
+
+# REQUISITOS
+
+Instalar: 
+
+- `LaTex` mediante la distribución $MikTex$ [https://miktex.org](https://miktex.org)
+
+- `Quarto` [https://quarto.org](https://https://quarto.org)
+
+- `R and Rstudio` [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
+
+- Explorar `Positron` (new IDL) [https://positron.posit.co](https://positron.posit.co)
+
+# GRAFICOS, TABLAS, FORMULAS Y CITAS
+
+En el artículo famoso, @BC64 introdujeron una **familia de transformaciones** \dots (recuerda usar el archivo `references.bib ` para editar los artículos, libros y demas citas.)
+
+```{r}
+#| echo: true
+#| label: fig-density
+#| fig-cap: Simulación de datos de una Distribución N(0,1).
+library(tidyverse)
+set.seed(1234)
+df <- tibble(x = rnorm(200))
+df |>
+  ggplot(aes(x=x)) +
+  geom_density(bw = "SJ", color = "magenta") +
+  geom_rug(alpha=0.9, color = "cyan")
+```

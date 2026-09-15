@@ -1,11 +1,28 @@
 ---
 title: "PROYECTO FINAL"
 author:
-- familyname: Quispe Vargas
-  othernames: Walter
-  qualifications: Docente
-email: wquispev@continental.edu.pe
-phone: (+51) 920000757
+  - familyname: "Rubio Peralta"
+    othernames: "Hiter Frank"
+    qualifications: "Alumno"
+    email: "hiter.rubio@utec.edu.pe"
+  - familyname: "Neyra"
+    othernames: "Jossep Jorge Froilan Choroco"
+    qualifications: "Alumno"
+    email: "jossep.neyra@utec.edu.pe"
+  - familyname: "Cardenas"
+    othernames: "Joel David De la Cruz"
+    qualifications: "Alumno"
+    email: "joel.delacruz@.edu.pe"
+  - familyname: "Flores Ruiz"
+    othernames: "Rodrigo Octavio Lucatoni"
+    qualifications: "Alumno"
+    email: "lucatoni.flores@utec.edu.pe"
+  - familyname: "Garcia"
+    othernames: "Victor Andres Diaz"
+    qualifications: "Alumno"
+    email: "victor.diaz@continental.edu.pe"
+phone: (+51) 936603314
+email: pandascore@gmail.com
 department: CIENCIA DE DATOS E \newline  INTELIGENCIA ARTIFICIAL
 organization: Introducción a Ciencia de Datos e Inteligencia Artificial
 number-sections: true
