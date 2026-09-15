@@ -1,0 +1,52 @@
+---
+title: "PROYECTO FINAL"
+author:
+  - familyname: "Rubio Peralta"
+    othernames: "Hiter Frank"
+    qualifications: "Alumno"
+    email: "hiter.rubio@utec.edu.pe"
+  - familyname: "Neyra"
+    othernames: "Jossep"
+    qualifications: "Alumno"
+    email: "maria.garcia@continental.edu.pe"
+  - familyname: "López"
+    othernames: "Carlos"
+    qualifications: "Alumno"
+    email: "carlos.lopez@continental.edu.pe"
+  - familyname: "Rodríguez"
+    othernames: "Ana"
+    qualifications: "Alumno"
+    email: "ana.rodriguez@continental.edu.pe"
+  - familyname: "Torres"
+    othernames: "Luis"
+    qualifications: "Alumno"
+    email: "luis.torres@continental.edu.pe"
+phone: (+51) 920000757
+email: pandascore@utec.edu.pe
+department: CIENCIA DE DATOS E \newline  INTELIGENCIA ARTIFICIAL
+organization: Introducción a Ciencia de Datos e Inteligencia Artificial
+number-sections: true
+fig-height: 5
+fig-width: 8
+cite-method: biblatex
+bibliography: references.bib
+biblio-style: authoryear-comp
+linestretch: 1.5
+format: 
+  report-pdf:
+    toc: true           # Activa la tabla de contenido
+    toc-depth: 2        # Niveles de encabezado que se muestran
+    number-sections: true  # (opcional) Numera los títulos
+    lof: true           # (opcional) Lista de figuras
+    lot: true           # (opcional) Lista de tablas   
+lang: es
+execute:
+  echo: false
+  warning: false
+  message: false
+  tbl-cap-location: bottom
+---
+
+```{=latex}
+\providecommand{\pandocbounded}[1]{#1}
+```
