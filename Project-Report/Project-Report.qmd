@@ -92,3 +92,9 @@ df |>
   geom_density(bw = "SJ", color = "magenta") +
   geom_rug(alpha=0.9, color = "cyan")
 ```
+
+# Título
+## Subtítulo
+Texto
+- Lista
+**Negrita**
