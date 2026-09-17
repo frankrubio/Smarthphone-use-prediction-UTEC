@@ -405,68 +405,25 @@ Artificial}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\BuiltInTok{print}\NormalTok{(}\StringTok{"Hello world"}\NormalTok{)}
+\CommentTok{\# Configuración inicial: librerías utilizadas en todo el proyecto.}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
 \ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
 \ImportTok{import}\NormalTok{ seaborn }\ImportTok{as}\NormalTok{ sns}
 
-\CommentTok{\# Datos de ejemplo}
-\NormalTok{nombres }\OperatorTok{=}\NormalTok{ [}\StringTok{"Luca"}\NormalTok{, }\StringTok{"Jossep"}\NormalTok{, }\StringTok{"David"}\NormalTok{, }\StringTok{"Victor"}\NormalTok{]}
-\NormalTok{cantidades }\OperatorTok{=}\NormalTok{ [}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{]}
-
-\CommentTok{\# Estilo visual de la gráfica}
 \NormalTok{sns.set\_theme(style}\OperatorTok{=}\StringTok{"whitegrid"}\NormalTok{)}
-\NormalTok{plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{4}\NormalTok{))}
-
-\CommentTok{\# Creación del gráfico de barras}
-\NormalTok{sns.barplot(x}\OperatorTok{=}\NormalTok{nombres, y}\OperatorTok{=}\NormalTok{cantidades, palette}\OperatorTok{=}\StringTok{"Blues\_d"}\NormalTok{, hue}\OperatorTok{=}\NormalTok{nombres, legend}\OperatorTok{=}\VariableTok{False}\NormalTok{)}
-
-\CommentTok{\# Personalización de etiquetas y título}
-\NormalTok{plt.title(}\StringTok{"Cantidad de Mascotas por Integrante"}\NormalTok{, fontsize}\OperatorTok{=}\DecValTok{12}\NormalTok{, fontweight}\OperatorTok{=}\StringTok{"bold"}\NormalTok{)}
-\NormalTok{plt.xlabel(}\StringTok{"Integrantes"}\NormalTok{)}
-\NormalTok{plt.ylabel(}\StringTok{"Cantidad de Mascotas"}\NormalTok{)}
-
-\CommentTok{\# Visualización limpia}
-\NormalTok{plt.tight\_layout()}
-\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-Hello world
-\end{verbatim}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-2-output-2.pdf}}
-
-\newpage
-
-\section{Resumen}\label{resumen}
-
-\textbf{Este qmd de códex tiene los chunks de python vacíos} Este
-reporte presenta la primera entrega (P1) del proyecto de Ciencia de
-Datos e Inteligencia Artificial. Se explora el conjunto de datos
-\textbf{Smartphone Usage and Addiction Analysis}, compuesto por 7,500
-registros de uso de smartphones. El objetivo de la fase es comprender la
-estructura de los datos, verificar su calidad, justificar las
-transformaciones necesarias y encontrar patrones que orienten el
-modelamiento de clasificación en P2.
-
-El análisis se centra en la variable \texttt{addicted\_label}, que
-distingue entre registros sin adicción (0) y con adicción (1). Los
-resultados se interpretan como asociaciones observadas en el dataset; no
-prueban causalidad. Esta distinción es importante porque la literatura
-reporta asociaciones entre uso de smartphone y desempeño académico, pero
-advierte limitaciones para atribuir causalidad \textcite{AmezBaert2020}.
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\CommentTok{\# Chunk de verificación: confirma que Python + pandas + Quarto están bien configurados}
+\CommentTok{\# y que un DataFrame se muestra como una tabla con formato correcto (no como texto plano).}
+\CommentTok{\# Se puede borrar una vez que el equipo confirme que el render funciona.}
+\NormalTok{integrantes }\OperatorTok{=}\NormalTok{ [}\StringTok{"Luca"}\NormalTok{, }\StringTok{"Jossep"}\NormalTok{, }\StringTok{"David"}\NormalTok{, }\StringTok{"Victor"}\NormalTok{]}
+\NormalTok{mascotas }\OperatorTok{=}\NormalTok{ [}\StringTok{"perro"}\NormalTok{, }\StringTok{"conejo"}\NormalTok{, }\StringTok{"gato"}\NormalTok{, }\StringTok{"cuy"}\NormalTok{]}
 
-\NormalTok{data }\OperatorTok{=}\NormalTok{ \{}
-    \StringTok{"names"}\NormalTok{: [}\StringTok{"Luca"}\NormalTok{, }\StringTok{"Jossep"}\NormalTok{, }\StringTok{"David"}\NormalTok{, }\StringTok{"Victor"}\NormalTok{],}
-    \StringTok{"pets"}\NormalTok{: [}\StringTok{"perro"}\NormalTok{, }\StringTok{"conejo"}\NormalTok{, }\StringTok{"gato"}\NormalTok{, }\StringTok{"cuy"}\NormalTok{],}
-\NormalTok{\}}
-
-\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.DataFrame(data)}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}\StringTok{"Integrante"}\NormalTok{: integrantes, }\StringTok{"Mascota"}\NormalTok{: mascotas\})}
 \NormalTok{df}
 \end{Highlighting}
 \end{Shaded}
@@ -474,7 +431,7 @@ advierte limitaciones para atribuir causalidad \textcite{AmezBaert2020}.
 {\def\LTcaptype{none} % do not increment counter
 \begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
-& names & pets \\
+& Integrante & Mascota \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -486,6 +443,22 @@ advierte limitaciones para atribuir causalidad \textcite{AmezBaert2020}.
 \end{longtable}
 }
 
+\newpage
+
+\section{Resumen}\label{resumen}
+
+\emph{Instrucciones para esta sección: este resumen se escribe
+\textbf{al final}, cuando ya se tengan los resultados de la exploración
+de datos y las conclusiones de P1. Debe tener entre 150 y 200 palabras e
+incluir, en este orden: (1) qué dataset se usó y cuántos
+registros/columnas tiene, (2) el objetivo del análisis (qué se busca
+entender sobre \texttt{addicted\_label}), (3) las dos o tres decisiones
+de limpieza más importantes que se tomaron y por qué, (4) los dos o tres
+hallazgos más relevantes del EDA, citando cifras reales obtenidas del
+código (no inventadas ni copiadas de un borrador), y (5) una frase que
+conecte con lo que se hará en la P2. No copiar texto de otras secciones;
+debe ser una síntesis propia, escrita por el equipo.}
+
 \section{Planteamiento del problema}\label{planteamiento-del-problema}
 
 El uso intensivo del smartphone puede relacionarse con alteraciones del
@@ -494,7 +467,10 @@ La investigación sobre uso problemático del smartphone requiere
 precisión conceptual: una alta frecuencia de uso no equivale
 necesariamente a una condición clínica. Instrumentos de tamizaje como
 SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen
-una evaluación profesional \textcite{Csibi2018}.
+una evaluación profesional \textcite{Csibi2018}. La literatura también
+reporta asociaciones entre el uso del smartphone y el desempeño
+académico, aunque con limitaciones claras para atribuir causalidad
+\textcite{AmezBaert2020}.
 
 Para este proyecto, se formula la siguiente pregunta de análisis:
 
@@ -562,35 +538,57 @@ explícitamente antes de considerar su uso en P2.
 \section{Carga y exploración
 inicial}\label{carga-y-exploraciuxf3n-inicial}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: cargar el dataset con pd.read\_csv(...) y guardarlo en una variable (por ejemplo, df).}
+\end{Highlighting}
+\end{Shaded}
+
 \subsection{Dimensiones y tipos de
 variables}\label{dimensiones-y-tipos-de-variables}
 
-El dataset tiene 7,500 filas y 16 columnas originales. Las variables
-numéricas se cargan como enteros o decimales; las categóricas como
-texto. La estructura es consistente con un problema de clasificación
-supervisada: \texttt{addicted\_label} será la etiqueta, mientras que el
-resto de variables se evaluará como potencial predictor o como
-identificador a excluir.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar, con base en la salida
+real de \texttt{df.info()} / \texttt{df.dtypes}, cuántas filas y
+columnas tiene el dataset, qué columnas son numéricas y cuáles
+categóricas, y si algún tipo de dato no corresponde con lo esperado (por
+ejemplo, una variable numérica cargada como texto). No repetir de
+memoria las cifras ya mencionadas en ``Contexto del dataset'';
+verificarlas con el código.}
 
 \subsection{Calidad de datos}\label{calidad-de-datos}
 
-Se encontraron 819 valores faltantes, todos en
-\texttt{addiction\_level}, y ninguna fila completamente duplicada. Una
-revisión del CSV muestra que esos faltantes representan el nivel textual
-\texttt{None}, es decir, ausencia de severidad registrada. No se
-imputarán: \texttt{addiction\_level} se excluirá de P2 por fuga de
-información. Las otras 15 columnas no tienen valores faltantes ni
-requieren tratamiento de imputación. Esta decisión no implica que el
-dataset esté libre de otros riesgos: se revisan también los
-identificadores, rangos de las variables y la posible fuga de
-información.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).}
+\end{Highlighting}
+\end{Shaded}
 
-Los rangos son plausibles para la descripción proporcionada: edades
-entre 18 y 35 años; tiempo diario de pantalla entre 3 y 12 horas; y
-sueño entre 4.5 y 9 horas. Los identificadores \texttt{transaction\_id}
-y \texttt{user\_id} son únicos y no representan características del
-comportamiento del usuario. Se conservarán solo como trazabilidad y se
-excluirán del conjunto de predictores en P2.
+\emph{Instrucciones para esta sección: reportar cuántos valores
+faltantes se encontraron y en qué columna(s), y cuántas filas duplicadas
+existen. Explicar la causa probable de los faltantes (por ejemplo, si
+corresponden a una categoría real como ``sin severidad registrada'') y
+justificar la decisión tomada: ¿se imputan, se eliminan o se excluye la
+columna? Si se excluye una variable por fuga de información, explicarlo
+aquí o remitir a la sección de fuga de información.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: revisar rangos (df.describe()) de las variables numéricas y valores únicos de las categóricas, para detectar valores imposibles o atípicos.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar si los rangos observados
+en \texttt{df.describe()} son plausibles para lo que representa cada
+variable (por ejemplo, edades, horas de uso, horas de sueño). Señalar
+explícitamente cualquier valor fuera de rango lógico y qué se hizo con
+los identificadores (\texttt{transaction\_id}, \texttt{user\_id}): ¿se
+conservan solo como referencia o se descartan del análisis?}
 
 \section{Preprocesamiento y decisiones de data
 wrangling}\label{preprocesamiento-y-decisiones-de-data-wrangling}
@@ -598,146 +596,189 @@ wrangling}\label{preprocesamiento-y-decisiones-de-data-wrangling}
 \subsection{Revisión de fuga de
 información}\label{revisiuxf3n-de-fuga-de-informaciuxf3n}
 
-La tabla revela una relación determinista: los niveles \texttt{None}
-(codificados como faltantes en el archivo) y \texttt{Mild} están
-asociados únicamente a la clase 0, mientras que \texttt{Moderate} y
-\texttt{Severe} están asociados únicamente a la clase 1. Incluir
-\texttt{addiction\_level} como predictor permitiría reconstruir la
-respuesta antes de entrenar un modelo; esto se denomina \textbf{fuga de
-información}. En P2 se excluirán \texttt{addiction\_level},
-\texttt{transaction\_id} y \texttt{user\_id} de \texttt{X}.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: construir una tabla cruzada (pd.crosstab) entre addiction\_level y addicted\_label para revisar si addiction\_level "filtra" la respuesta.}
+\end{Highlighting}
+\end{Shaded}
 
-Esta exclusión protege la validez de la evaluación: una métrica muy alta
-basada en una variable que codifica la respuesta no demuestra capacidad
-de generalización. Las variables restantes serán sometidas a
-codificación apropiada: \texttt{gender} con \emph{one-hot encoding},
-\texttt{academic\_work\_impact} como binaria y \texttt{stress\_level}
-como ordinal, siempre ajustando las transformaciones solo con los datos
-de entrenamiento en P2 \textcite{Pedregosa2011}.
+\emph{Instrucciones para esta sección: interpretar la tabla cruzada
+anterior: ¿existe alguna categoría de \texttt{addiction\_level} que se
+asocie de forma perfecta o casi perfecta con una sola clase de
+\texttt{addicted\_label}? Si es así, explicar por qué eso constituye
+\textbf{fuga de información} y qué variables se decide excluir de
+\texttt{X} para la P2 (y por qué).}
+
+\emph{Instrucciones para esta sección: explicar por qué excluir las
+variables identificadas en el punto anterior protege la validez de la
+evaluación del modelo. Indicar además qué método de codificación se
+planea usar en P2 para cada variable categórica (\texttt{gender},
+\texttt{academic\_work\_impact}, \texttt{stress\_level}) y por qué
+(one-hot, binaria, ordinal, etc.), aclarando que cualquier
+transformación debe ajustarse solo con los datos de entrenamiento. Si se
+usa \texttt{scikit-learn} para esto, citar la librería
+(\textcite{Pedregosa2011}).}
 
 \subsection{Variable derivada para la
 comunicación}\label{variable-derivada-para-la-comunicaciuxf3n}
 
-Se creó \texttt{estado\_adiccion} únicamente para etiquetas legibles en
-tablas y gráficos. La variable conserva exactamente la información de
-\texttt{addicted\_label}: 0 se muestra como \emph{No adicción} y 1 como
-\emph{Con adicción}. Para P2 se mantendrá la etiqueta numérica original,
-ya que es el formato esperado por los algoritmos de clasificación.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear una columna nueva (por ejemplo, estado\_adiccion) que traduzca addicted\_label a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: confirmar que la nueva variable
+de etiquetas legibles no introduce ninguna información distinta a
+\texttt{addicted\_label} (es solo una versión ``para humanos'' de la
+misma columna) y aclarar que para el modelamiento en P2 se seguirá
+usando la versión numérica original.}
 
 \section{Análisis exploratorio de
 datos}\label{anuxe1lisis-exploratorio-de-datos}
 
 \subsection{Análisis univariado}\label{anuxe1lisis-univariado}
 
-La clase \emph{Con adicción} representa 5,308 registros (70.8\%), frente
-a 2,192 (29.2\%) en \emph{No adicción}. Existe un desbalance moderado,
-por lo que en P2 la división entrenamiento/prueba deberá ser
-estratificada y la evaluación deberá incluir \emph{precision},
-\emph{recall} y F1, además de \emph{accuracy}.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la distribución de addicted\_label (conteo y/o porcentaje por clase).}
+\end{Highlighting}
+\end{Shaded}
 
-Las horas de pantalla, redes sociales, videojuegos y actividades de
-estudio/trabajo cubren rangos amplios sin valores físicamente
-imposibles. La distribución de edad se concentra en adultos jóvenes. Las
-variables de conteo (\texttt{notifications\_per\_day} y
-\texttt{app\_opens\_per\_day}) muestran mayor escala que las variables
-expresadas en horas; por ello, si se usan algoritmos sensibles a
-distancia o magnitud en P2, se requerirá estandarización.
+\emph{Instrucciones para esta sección: reportar cuántos registros hay en
+cada clase de \texttt{addicted\_label} (conteo y porcentaje) y comentar
+si existe desbalance de clases. Si lo hay, explicar qué implicancia
+tiene para la partición entrenamiento/prueba y las métricas que se
+deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 
-Los boxplots complementan a los histogramas: permiten ubicar mediana,
-rango intercuartílico y posibles observaciones extremas. Las
-observaciones alejadas no se eliminarán automáticamente. En un dataset
-conductual pueden representar usuarios reales de alta intensidad de uso;
-cualquier tratamiento posterior debe justificarse por un criterio
-estadístico y de dominio, no solo por su distancia a la mediana.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica.}
+\end{Highlighting}
+\end{Shaded}
 
-La comparación entre media y mediana ayuda a detectar asimetría. Para
-estas variables, la mediana es una referencia robusta frente a valores
-extremos, mientras que la desviación estándar permite comparar la
-variabilidad dentro de la escala de cada medición. No se comparan
-directamente desviaciones de variables con unidades distintas; se
-interpretan junto con su rango y contexto.
+\emph{Instrucciones para esta sección: para cada histograma, describir
+la forma de la distribución (simétrica, sesgada, con varias modas) y qué
+implica para el análisis (por ejemplo, si conviene una transformación o
+estandarización más adelante). Comentar si alguna variable de conteo
+tiene una escala muy distinta a las variables medidas en horas.}
 
-Las tres categorías de género están representadas de forma similar. Los
-gráficos de \texttt{stress\_level} y \texttt{academic\_work\_impact}
-permiten observar la composición de la muestra antes de relacionarlas
-con la etiqueta objetivo. Estas variables serán categóricas en la fase
-de modelamiento; no se les debe imponer una distancia numérica salvo que
-la codificación ordinal tenga justificación explícita, como en el caso
-de los niveles de estrés.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar, variable por variable,
+la dispersión, la posible presencia de outliers y la simetría observada
+en los boxplots. Discutir si esos valores extremos deberían tratarse
+como errores de captura o si son observaciones reales del comportamiento
+de los usuarios, y justificar la decisión tomada.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comparar media y mediana para
+detectar asimetría en cada variable, e interpretar la desviación
+estándar en el contexto de la escala de cada una (no comparar
+directamente variables con unidades distintas). Señalar qué variables
+muestran mayor dispersión o valores extremos.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (gender, stress\_level, academic\_work\_impact).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: describir qué categorías son
+dominantes o poco frecuentes en cada variable categórica y comentar si
+eso podría afectar el análisis posterior (por ejemplo, categorías con
+muy pocos casos). Indicar si alguna de estas variables se tratará como
+ordinal y por qué.}
 
 \subsection{Análisis multivariado}\label{anuxe1lisis-multivariado}
 
-El mapa de calor identifica relaciones lineales y posibles grupos de
-variables redundantes. En particular, las métricas de tiempo de uso
-pueden relacionarse entre sí; esto debe revisarse en P2 para evitar
-interpretaciones exageradas de variables altamente colineales. La
-correlación resume asociación lineal y no demuestra causalidad ni
-captura por sí sola relaciones no lineales.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un mapa de calor de correlaciones entre las variables numéricas.}
+\end{Highlighting}
+\end{Shaded}
 
-Las correlaciones con la etiqueta ordenan variables numéricas según
-asociación lineal, pero no sustituyen la selección de variables del
-modelo. Una variable con correlación baja puede contribuir en
-combinación con otras, y una correlación alta puede deberse a confusión
-o a un mecanismo de generación de datos que deberá discutirse con
-cautela.
+\emph{Instrucciones para esta sección: identificar en el mapa de calor
+los pares de variables con correlación fuerte (positiva o negativa) y
+comentar si sugieren colinealidad. Aclarar que la correlación no implica
+causalidad.}
 
-Estos boxplots comparativos muestran cómo cambian la tendencia central y
-la dispersión de las horas de pantalla, uso de redes sociales y sueño
-entre clases. Son adecuados porque preservan la distribución de cada
-grupo y facilitan detectar solapamientos: un solapamiento amplio
-anticipa que ningún clasificador separará perfectamente los grupos sin
-información adicional.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular y ordenar las correlaciones de cada variable numérica con addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
 
-Los gráficos apilados comparan proporciones, no solo recuentos; por ello
-evitan confundir el tamaño de una categoría con su composición. Se deben
-interpretar como patrones descriptivos. En una eventual aplicación real,
-variables como estrés e impacto académico requieren especial cuidado:
-pueden ser consecuencias, causas o indicadores asociados al uso
-problemático, y no deben utilizarse para etiquetar o estigmatizar
-personas.
+\emph{Instrucciones para esta sección: comentar qué variables tienen
+mayor asociación lineal con la etiqueta objetivo y cuáles tienen
+asociación muy baja. Aclarar que esto es solo un indicio y no una
+selección final de variables para el modelo.}
 
-Los diagramas de dispersión permiten examinar simultáneamente
-asociación, agrupamientos y separación visual entre clases. Se incluyen
-cinco pares para cumplir una exploración más amplia que un único
-gráfico. El solapamiento de colores indica que las variables no explican
-por sí solas toda la etiqueta; en P2 será razonable contrastar modelos
-lineales y no lineales.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas de pantalla, redes sociales, sueño) separadas por addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
 
-La covarianza indica si dos variables tienden a crecer o decrecer
-conjuntamente, pero su magnitud depende de las unidades de medida. Por
-esa razón se presenta junto con las correlaciones: la covarianza ayuda a
-identificar dirección conjunta, mientras que la correlación permite
-comparar fuerza relativa entre pares de variables con escalas distintas.
+\emph{Instrucciones para esta sección: comentar cómo cambian la
+tendencia central y la dispersión de cada variable entre las dos clases,
+y si hay solapamiento amplio entre grupos (lo que anticiparía dificultad
+para separar las clases con un solo predictor).}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, stress\_level o academic\_work\_impact vs. addicted\_label).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: interpretar las proporciones (no
+solo los conteos) entre subgrupos, evitando conclusiones que
+estigmaticen a los usuarios. Comentar si estas variables parecen ser
+causa, consecuencia o simplemente indicadores asociados al uso
+problemático.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas, coloreando por addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: para cada par de variables,
+comentar si se observa un patrón (lineal o no lineal), agrupamientos, o
+separación visible entre clases. Si los colores se solapan mucho,
+señalar que esas dos variables por sí solas no bastan para separar las
+clases.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular la covarianza entre pares de variables numéricas relevantes.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: interpretar el signo de la
+covarianza (si dos variables crecen o decrecen juntas) y explicar por
+qué se complementa con la correlación (que sí permite comparar la fuerza
+de la relación entre variables con escalas distintas).}
 
 \section{Conclusiones de P1}\label{conclusiones-de-p1}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  El dataset contiene 7,500 registros y no presenta filas duplicadas
-  completas. Los 819 faltantes aparecen exclusivamente en
-  \texttt{addiction\_level} y representan \texttt{None}; no se imputan
-  porque esa columna se elimina por fuga de información.
-\item
-  La etiqueta está desbalanceada: 70.8\% corresponde a \emph{Con
-  adicción}. P2 deberá usar partición estratificada y métricas sensibles
-  a ambas clases, especialmente F1 y \emph{recall}.
-\item
-  Los identificadores \texttt{transaction\_id} y \texttt{user\_id} no se
-  usarán para predecir. \texttt{addiction\_level} se excluirá debido a
-  fuga de información: reproduce determinísticamente
-  \texttt{addicted\_label}.
-\item
-  El EDA muestra que las variables de intensidad de uso, descanso,
-  estrés e impacto académico/laboral son candidatas razonables para el
-  análisis predictivo, sin afirmar causalidad.
-\item
-  La modelación posterior debe combinar codificación de categorías,
-  escalamiento cuando el algoritmo lo requiera y una auditoría crítica
-  de errores. La decisión debe priorizar validez y explicabilidad antes
-  que una métrica artificialmente elevada.
-\end{enumerate}
+\emph{Instrucciones para esta sección: redactar entre 4 y 6 conclusiones
+numeradas, basadas únicamente en los resultados obtenidos arriba (no
+inventar cifras). Deben cubrir, como mínimo: (1) calidad de datos
+(nulos, duplicados) y qué se hizo al respecto, (2) si la clase objetivo
+está balanceada o no y qué implica para P2, (3) qué variables se
+excluyen como predictoras y por qué, (4) qué variables lucen más
+prometedoras para el modelamiento, y (5) qué se debe tener en cuenta al
+pasar a la P2 (codificación, escalamiento, evaluación).}
 
 \section{Limitaciones y consideraciones
 éticas}\label{limitaciones-y-consideraciones-uxe9ticas}
