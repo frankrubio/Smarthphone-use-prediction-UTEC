@@ -1,0 +1,803 @@
+\documentclass[11pt,spanish,a4paper,]{article}
+\usepackage{lmodern}
+%\usepackage[spanish]{babel} %walter
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{
+            pdftitle={P1 - Uso de Smartphones y Riesgo de Adiccion},
+            colorlinks=true,
+            linkcolor=blue,
+            citecolor=Blue,
+            urlcolor=Blue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{geometry}
+\geometry{a4paper, centering, text={16cm,25cm}}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[shorthands=off,main=spanish]{babel}
+\else
+  \usepackage{polyglossia}
+  \setmainlanguage[]{}
+\fi
+\usepackage[style=authoryear-comp,]{biblatex}
+\addbibresource{references.bib}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{long table}}{}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{P1 - Uso de Smartphones y Riesgo de Adiccion}
+
+%% MONASH STUFF
+
+%% CAPTIONS
+\RequirePackage{caption}
+\DeclareCaptionStyle{italic}[justification=centering]
+ {labelfont={bf},textfont={it},labelsep=colon}
+\captionsetup[figure]{style=italic,format=hang,singlelinecheck=true}
+\captionsetup[table]{style=italic,format=hang,singlelinecheck=true}
+%% FONT
+\usepackage{bera}
+\usepackage[charter,expert]{mathdesign}
+\usepackage[lf,t]{FiraSans}
+\usepackage[scale=0.9]{sourcecodepro}
+\RequirePackage{fontawesome}
+
+%% HEADERS AND FOOTERS
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\rfoot{\Large\sffamily\raisebox{-0.1cm}{\textbf{\thepage}}}
+\makeatletter
+\lhead{\textsf{\expandafter{\@title}}}
+\makeatother
+\rhead{}
+\cfoot{}
+\setlength{\headheight}{15pt}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\fancyfoot[C]{\sffamily\thepage} % except the center
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%% MATHS
+\RequirePackage{bm,amsmath}
+\allowdisplaybreaks
+
+%% GRAPHICS
+\RequirePackage{graphicx}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.8}
+
+%% SECTION TITLES
+\RequirePackage[compact,sf,bf]{titlesec}
+\titleformat*{\section}{\Large\sf\bfseries\color[rgb]{0.0, 0.7451, 0.8745}}
+\titleformat*{\subsection}{\large\sf\bfseries\color[rgb]{0.0, 0, 0}}
+\titleformat*{\subsubsection}{\sf\bfseries\color[rgb]{0,0,0}}
+\titlespacing{\section}{0pt}{2ex}{.5ex}
+\titlespacing{\subsection}{0pt}{1.5ex}{0ex}
+\titlespacing{\subsubsection}{0pt}{.5ex}{0ex}
+
+
+%% TITLE PAGE
+\def\Date{\number\day}
+\def\Month{\ifcase\month\or
+ de Enero del\or de Febrero del\or de Marzo del\or de Abril del\or de Mayo del\or de Junio del\or
+de Julio del\or de Agosto del\or de Septiembre del\or de Octubre del\or de Noviembre del\or de Diciembre del\fi}
+\def\Year{\number\year}
+
+%% LINE AND PAGE BREAKING
+\sloppy
+\clubpenalty = 10000
+\widowpenalty = 10000
+\brokenpenalty = 10000
+\RequirePackage{microtype}
+
+%% PARAGRAPH BREAKS
+\setlength{\parskip}{1.4ex}
+\setlength{\parindent}{0em}
+
+%% HYPERLINKS
+\RequirePackage{xcolor} % Needed for links
+\definecolor{darkblue}{rgb}{0,0,.6}
+\RequirePackage{url}
+
+\makeatletter
+\@ifpackageloaded{hyperref}{}{\RequirePackage{hyperref}}
+\makeatother
+\hypersetup{
+     citecolor=0 0 0,
+     breaklinks=true,
+     bookmarksopen=true,
+     bookmarksnumbered=true,
+     linkcolor=darkblue,
+     urlcolor=blue,
+     citecolor=darkblue,
+     colorlinks=true}
+
+\usepackage[showonlyrefs]{mathtools}
+\usepackage[no-weekday]{eukdate}
+
+%% BIBLIOGRAPHY
+
+\makeatletter
+\@ifpackageloaded{biblatex}{}{\usepackage[style=authoryear-comp, backend=biber, natbib=true]{biblatex}}
+\makeatother
+\ExecuteBibliographyOptions{bibencoding=utf8,minnames=1,maxnames=3, maxbibnames=99,dashed=false,terseinits=true,giveninits=true,uniquename=false,uniquelist=false,doi=false, isbn=false,url=true,sortcites=false}
+
+\DeclareFieldFormat{url}{\texttt{\url{#1}}}
+\DeclareFieldFormat[article]{pages}{#1}
+\DeclareFieldFormat[inproceedings]{pages}{\lowercase{pp.}#1}
+\DeclareFieldFormat[incollection]{pages}{\lowercase{pp.}#1}
+\DeclareFieldFormat[article]{volume}{\mkbibbold{#1}}
+\DeclareFieldFormat[article]{number}{\mkbibparens{#1}}
+\DeclareFieldFormat[article]{title}{\MakeCapital{#1}}
+\DeclareFieldFormat[article]{url}{}
+%\DeclareFieldFormat[book]{url}{}
+%\DeclareFieldFormat[inbook]{url}{}
+%\DeclareFieldFormat[incollection]{url}{}
+%\DeclareFieldFormat[inproceedings]{url}{}
+\DeclareFieldFormat[inproceedings]{title}{#1}
+\DeclareFieldFormat{shorthandwidth}{#1}
+%\DeclareFieldFormat{extrayear}{}
+% No dot before number of articles
+\usepackage{xpatch}
+\xpatchbibmacro{volume+number+eid}{\setunit*{\adddot}}{}{}{}
+% Remove In: for an article.
+\renewbibmacro{in:}{%
+  \ifentrytype{article}{}{%
+  \printtext{\bibstring{in}\intitlepunct}}}
+
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryCitekey{\clearfield{month}}
+
+\makeatletter
+\DeclareDelimFormat[cbx@textcite]{nameyeardelim}{\addspace}
+\makeatother
+
+\author{\sf{\Large\textbf{Hiter Frank Rubio
+Peralta}\\\large Alumno\\[0.5cm]}{\Large\textbf{Jossep Jorge Froilan
+Choroco Neyra}\\\large Alumno\\[0.5cm]}{\Large\textbf{Joel David De la
+Cruz Cardenas}\\\large Alumno\\[0.5cm]}{\Large\textbf{Rodrigo Octavio
+Lucatoni Flores Ruiz}\\\large Alumno\\[0.5cm]}{\Large\textbf{Victor
+Andres Diaz Garcia}\\\large Alumno\\[0.5cm]}}
+
+\date{Invalid Date}
+\makeatletter
+%\lfoot{\sf Rubio Peralta, Neyra, Cardenas, Ruiz, Garcia: \@date}
+\makeatother
+
+
+%%%% PAGE STYLE FOR FRONT PAGE OF REPORTS
+
+\makeatletter
+\def\organization#1{\gdef\@organization{#1}}
+\def\telephone#1{\gdef\@telephone{#1}}
+\def\email#1{\gdef\@email{#1}}
+\makeatother
+  \organization{Introduccion a Ciencia de Datos e Inteligencia
+Artificial}
+
+  \def\name{CIENCIA DE DATOS E \newline INTELIGENCIA ARTIFICIAL}
+
+  \telephone{+51 936 603 314}
+
+  \email{pandascore@gmail.com}
+
+%\def\webaddress{\url{http://buseco.monash.edu/ebs/consulting/}}
+%\def\abn{12 377 614 012}
+\def\extraspace{\vspace*{1.1cm}}
+\makeatletter
+\def\contactdetails{\faicon{phone} & \@telephone \\
+                    \faicon{envelope} & \@email}
+\makeatother
+
+\usepackage[absolute,overlay]{textpos}
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+%%%% FRONT PAGE OF REPORTS
+
+\def\reporttype{Curso:} %walter
+
+\long\def\front#1#2#3{
+\newpage
+\begin{textblock}{7}(12.7,28.2)\hfill
+%\includegraphics[height=0.6cm]{_extensions/numbats/report/AACSB}~~~
+%\includegraphics[height=0.6cm]{_extensions/numbats/report/EQUIS}~~~
+%\includegraphics[height=0.6cm]{_extensions/numbats/report/AMBA}
+\end{textblock}
+\begin{singlespacing}
+\thispagestyle{empty}
+\vspace*{-1.4cm}
+\hspace*{-1.4cm}
+\hbox to 16cm{
+  \hbox to 6.5cm{\vbox to 14cm{\vbox to 25cm{
+    \includegraphics[width=5.4cm]{_extensions/numbats/report/logo}
+    \vfill
+%    \includegraphics[width=2cm]{_extensions/numbats/report/MBSportrait}
+    \vspace{0.4cm}
+    \par
+    \parbox{6.3cm}{\raggedright
+      \sf\color[rgb]{0.0, 0.7451, 0.8745}
+      {\large\textbf{\name}}\par
+      \vspace{.7cm}
+      \tabcolsep=0.12cm\sf\small
+      \begin{tabular}{@{}ll@{}}\contactdetails
+      \end{tabular}
+      \vspace*{0.3cm}\par
+%      ABN: \abn\par
+    }
+  }\vss}\hss}
+  \hspace*{0.2cm}
+  \hbox to 1cm{\vbox to 14cm{\rule{1pt}{26.8cm}\vss}\hss\hfill}
+  \hbox to 10cm{\vbox to 14cm{\vbox to 25cm{
+      \vspace*{3cm}\sf\raggedright
+      \parbox{10cm}{\sf\raggedright\baselineskip=1.2cm
+         \fontsize{24.88}{30}\color[rgb]{0.0, 0.7451, 0.8745}\sf\textbf{#1}}
+      \par
+      \vfill
+      \large
+      \vbox{\parskip=0.8cm #2}\par
+      \vspace*{2cm}\par
+      \reporttype\\[0.3cm]
+      \hbox{#3}%\\[2cm]\
+      \vspace*{1cm}
+      {\large\sf\textbf{\Date~\Month~\Year}}
+   }\vss}
+  }}
+\end{singlespacing}
+\newpage
+}
+
+\makeatletter
+\def\titlepage{\front{\expandafter{\@title}}{\@author}{\@organization}}
+\makeatother
+
+\usepackage{setspace}
+\setstretch{1.25}
+
+\newcounter{none}
+\usepackage{array}
+\usepackage{calc}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Tabla de contenidos}
+\else
+  \newcommand\contentsname{Tabla de contenidos}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{Listado de Figuras}
+\else
+  \newcommand\listfigurename{Listado de Figuras}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{Listado de Tablas}
+\else
+  \newcommand\listtablename{Listado de Tablas}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figura}
+\else
+  \newcommand\figurename{Figura}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Tabla}
+\else
+  \newcommand\tablename{Tabla}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listado}
+\newcommand*\listoflistings{\listof{codelisting}{Listado de Listados}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+
+\begin{document}
+\titlepage
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\listoftables
+\listoffigures
+\providecommand{\pandocbounded}[1]{#1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Configuración inicial: librerías utilizadas en todo el proyecto.}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\ImportTok{import}\NormalTok{ seaborn }\ImportTok{as}\NormalTok{ sns}
+
+\NormalTok{sns.set\_theme(style}\OperatorTok{=}\StringTok{"whitegrid"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Chunk de verificación: confirma que Python + pandas + Quarto están bien configurados}
+\CommentTok{\# y que un DataFrame se muestra como una tabla con formato correcto (no como texto plano).}
+\CommentTok{\# Se puede borrar una vez que el equipo confirme que el render funciona.}
+\NormalTok{integrantes }\OperatorTok{=}\NormalTok{ [}\StringTok{"Luca"}\NormalTok{, }\StringTok{"Jossep"}\NormalTok{, }\StringTok{"David"}\NormalTok{, }\StringTok{"Victor"}\NormalTok{]}
+\NormalTok{mascotas }\OperatorTok{=}\NormalTok{ [}\StringTok{"perro"}\NormalTok{, }\StringTok{"conejo"}\NormalTok{, }\StringTok{"gato"}\NormalTok{, }\StringTok{"cuy"}\NormalTok{]}
+
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}\StringTok{"Integrante"}\NormalTok{: integrantes, }\StringTok{"Mascota"}\NormalTok{: mascotas\})}
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& Integrante & Mascota \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & Luca & perro \\
+1 & Jossep & conejo \\
+2 & David & gato \\
+3 & Victor & cuy \\
+\end{longtable}
+}
+
+\newpage
+
+\section{Resumen}\label{resumen}
+
+\emph{Instrucciones para esta sección: este resumen se escribe
+\textbf{al final}, cuando ya se tengan los resultados de la exploración
+de datos y las conclusiones de P1. Debe tener entre 150 y 200 palabras e
+incluir, en este orden: (1) qué dataset se usó y cuántos
+registros/columnas tiene, (2) el objetivo del análisis (qué se busca
+entender sobre \texttt{addicted\_label}), (3) las dos o tres decisiones
+de limpieza más importantes que se tomaron y por qué, (4) los dos o tres
+hallazgos más relevantes del EDA, citando cifras reales obtenidas del
+código (no inventadas ni copiadas de un borrador), y (5) una frase que
+conecte con lo que se hará en la P2. No copiar texto de otras secciones;
+debe ser una síntesis propia, escrita por el equipo.}
+
+\section{Planteamiento del problema}\label{planteamiento-del-problema}
+
+El uso intensivo del smartphone puede relacionarse con alteraciones del
+sueño, estrés y dificultades en las actividades académicas o laborales.
+La investigación sobre uso problemático del smartphone requiere
+precisión conceptual: una alta frecuencia de uso no equivale
+necesariamente a una condición clínica. Instrumentos de tamizaje como
+SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen
+una evaluación profesional \textcite{Csibi2018}. La literatura también
+reporta asociaciones entre el uso del smartphone y el desempeño
+académico, aunque con limitaciones claras para atribuir causalidad
+\textcite{AmezBaert2020}.
+
+Para este proyecto, se formula la siguiente pregunta de análisis:
+
+\begin{quote}
+¿Qué patrones de uso, descanso y contexto personal están asociados con
+la etiqueta de adicción en el conjunto de datos?
+\end{quote}
+
+La P1 no entrena modelos predictivos. Su finalidad es asegurar que la P2
+use variables pertinentes, datos de calidad y decisiones justificadas.
+
+\section{Contexto del dataset}\label{contexto-del-dataset}
+
+\subsection{Fuente y unidad de
+análisis}\label{fuente-y-unidad-de-anuxe1lisis}
+
+El archivo
+\texttt{Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv} fue
+proporcionado para el proyecto y corresponde al dataset publicado como
+\emph{Smartphone Usage and Addiction Analysis} en Kaggle
+\textcite{KaggleDataset}. Cada fila representa a un usuario y contiene
+indicadores demográficos, de comportamiento digital, descanso, estrés e
+impacto percibido en actividades académicas o laborales.
+
+La unidad de análisis es el usuario. El dataset incluye 7,500 registros
+y 16 columnas originales: dos identificadores, nueve variables
+numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
+
+\subsection{Diccionario de variables}\label{diccionario-de-variables}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Identificadores:} \texttt{transaction\_id} y \texttt{user\_id}
+  son variables de texto. Se usan para verificar unicidad, pero no
+  aportan significado analítico y se excluirán como predictores.
+\item
+  \textbf{Demografía:} \texttt{age} (numérica) y \texttt{gender}
+  (categórica) caracterizan la muestra.
+\item
+  \textbf{Uso del smartphone:} \texttt{daily\_screen\_time\_hours},
+  \texttt{social\_media\_hours}, \texttt{gaming\_hours},
+  \texttt{work\_study\_hours}, \texttt{notifications\_per\_day},
+  \texttt{app\_opens\_per\_day} y \texttt{weekend\_screen\_time} son
+  variables numéricas que miden intensidad y tipo de uso.
+\item
+  \textbf{Bienestar y contexto:} \texttt{sleep\_hours} es numérica;
+  \texttt{stress\_level} y \texttt{academic\_work\_impact} son
+  categóricas. Se emplean para explorar descanso e impacto funcional.
+\item
+  \textbf{Severidad:} \texttt{addiction\_level} es categórica ordinal.
+  Se describe en P1, pero se excluye como predictor en P2 por fuga de
+  información.
+\item
+  \textbf{Objetivo:} \texttt{addicted\_label} es binaria: 0 significa
+  \emph{No adicción} y 1 significa \emph{Con adicción}.
+\end{itemize}
+
+La variable \texttt{addiction\_level} contiene una categorización de
+severidad (\texttt{None}, \texttt{Mild}, \texttt{Moderate},
+\texttt{Severe}). Por su definición operativa, puede estar construida
+directamente a partir de la etiqueta final; por ello se audita
+explícitamente antes de considerar su uso en P2.
+
+\section{Carga y exploración
+inicial}\label{carga-y-exploraciuxf3n-inicial}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: cargar el dataset con pd.read\_csv(...) y guardarlo en una variable (por ejemplo, df).}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Dimensiones y tipos de
+variables}\label{dimensiones-y-tipos-de-variables}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar, con base en la salida
+real de \texttt{df.info()} / \texttt{df.dtypes}, cuántas filas y
+columnas tiene el dataset, qué columnas son numéricas y cuáles
+categóricas, y si algún tipo de dato no corresponde con lo esperado (por
+ejemplo, una variable numérica cargada como texto). No repetir de
+memoria las cifras ya mencionadas en ``Contexto del dataset'';
+verificarlas con el código.}
+
+\subsection{Calidad de datos}\label{calidad-de-datos}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: reportar cuántos valores
+faltantes se encontraron y en qué columna(s), y cuántas filas duplicadas
+existen. Explicar la causa probable de los faltantes (por ejemplo, si
+corresponden a una categoría real como ``sin severidad registrada'') y
+justificar la decisión tomada: ¿se imputan, se eliminan o se excluye la
+columna? Si se excluye una variable por fuga de información, explicarlo
+aquí o remitir a la sección de fuga de información.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: revisar rangos (df.describe()) de las variables numéricas y valores únicos de las categóricas, para detectar valores imposibles o atípicos.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar si los rangos observados
+en \texttt{df.describe()} son plausibles para lo que representa cada
+variable (por ejemplo, edades, horas de uso, horas de sueño). Señalar
+explícitamente cualquier valor fuera de rango lógico y qué se hizo con
+los identificadores (\texttt{transaction\_id}, \texttt{user\_id}): ¿se
+conservan solo como referencia o se descartan del análisis?}
+
+\section{Preprocesamiento y decisiones de data
+wrangling}\label{preprocesamiento-y-decisiones-de-data-wrangling}
+
+\subsection{Revisión de fuga de
+información}\label{revisiuxf3n-de-fuga-de-informaciuxf3n}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: construir una tabla cruzada (pd.crosstab) entre addiction\_level y addicted\_label para revisar si addiction\_level "filtra" la respuesta.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: interpretar la tabla cruzada
+anterior: ¿existe alguna categoría de \texttt{addiction\_level} que se
+asocie de forma perfecta o casi perfecta con una sola clase de
+\texttt{addicted\_label}? Si es así, explicar por qué eso constituye
+\textbf{fuga de información} y qué variables se decide excluir de
+\texttt{X} para la P2 (y por qué).}
+
+\emph{Instrucciones para esta sección: explicar por qué excluir las
+variables identificadas en el punto anterior protege la validez de la
+evaluación del modelo. Indicar además qué método de codificación se
+planea usar en P2 para cada variable categórica (\texttt{gender},
+\texttt{academic\_work\_impact}, \texttt{stress\_level}) y por qué
+(one-hot, binaria, ordinal, etc.), aclarando que cualquier
+transformación debe ajustarse solo con los datos de entrenamiento. Si se
+usa \texttt{scikit-learn} para esto, citar la librería
+(\textcite{Pedregosa2011}).}
+
+\subsection{Variable derivada para la
+comunicación}\label{variable-derivada-para-la-comunicaciuxf3n}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear una columna nueva (por ejemplo, estado\_adiccion) que traduzca addicted\_label a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: confirmar que la nueva variable
+de etiquetas legibles no introduce ninguna información distinta a
+\texttt{addicted\_label} (es solo una versión ``para humanos'' de la
+misma columna) y aclarar que para el modelamiento en P2 se seguirá
+usando la versión numérica original.}
+
+\section{Análisis exploratorio de
+datos}\label{anuxe1lisis-exploratorio-de-datos}
+
+\subsection{Análisis univariado}\label{anuxe1lisis-univariado}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la distribución de addicted\_label (conteo y/o porcentaje por clase).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: reportar cuántos registros hay en
+cada clase de \texttt{addicted\_label} (conteo y porcentaje) y comentar
+si existe desbalance de clases. Si lo hay, explicar qué implicancia
+tiene para la partición entrenamiento/prueba y las métricas que se
+deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: para cada histograma, describir
+la forma de la distribución (simétrica, sesgada, con varias modas) y qué
+implica para el análisis (por ejemplo, si conviene una transformación o
+estandarización más adelante). Comentar si alguna variable de conteo
+tiene una escala muy distinta a las variables medidas en horas.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar, variable por variable,
+la dispersión, la posible presencia de outliers y la simetría observada
+en los boxplots. Discutir si esos valores extremos deberían tratarse
+como errores de captura o si son observaciones reales del comportamiento
+de los usuarios, y justificar la decisión tomada.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comparar media y mediana para
+detectar asimetría en cada variable, e interpretar la desviación
+estándar en el contexto de la escala de cada una (no comparar
+directamente variables con unidades distintas). Señalar qué variables
+muestran mayor dispersión o valores extremos.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (gender, stress\_level, academic\_work\_impact).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: describir qué categorías son
+dominantes o poco frecuentes en cada variable categórica y comentar si
+eso podría afectar el análisis posterior (por ejemplo, categorías con
+muy pocos casos). Indicar si alguna de estas variables se tratará como
+ordinal y por qué.}
+
+\subsection{Análisis multivariado}\label{anuxe1lisis-multivariado}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un mapa de calor de correlaciones entre las variables numéricas.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: identificar en el mapa de calor
+los pares de variables con correlación fuerte (positiva o negativa) y
+comentar si sugieren colinealidad. Aclarar que la correlación no implica
+causalidad.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular y ordenar las correlaciones de cada variable numérica con addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar qué variables tienen
+mayor asociación lineal con la etiqueta objetivo y cuáles tienen
+asociación muy baja. Aclarar que esto es solo un indicio y no una
+selección final de variables para el modelo.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas de pantalla, redes sociales, sueño) separadas por addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: comentar cómo cambian la
+tendencia central y la dispersión de cada variable entre las dos clases,
+y si hay solapamiento amplio entre grupos (lo que anticiparía dificultad
+para separar las clases con un solo predictor).}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, stress\_level o academic\_work\_impact vs. addicted\_label).}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: interpretar las proporciones (no
+solo los conteos) entre subgrupos, evitando conclusiones que
+estigmaticen a los usuarios. Comentar si estas variables parecen ser
+causa, consecuencia o simplemente indicadores asociados al uso
+problemático.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas, coloreando por addicted\_label.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: para cada par de variables,
+comentar si se observa un patrón (lineal o no lineal), agrupamientos, o
+separación visible entre clases. Si los colores se solapan mucho,
+señalar que esas dos variables por sí solas no bastan para separar las
+clases.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular la covarianza entre pares de variables numéricas relevantes.}
+\end{Highlighting}
+\end{Shaded}
+
+\emph{Instrucciones para esta sección: interpretar el signo de la
+covarianza (si dos variables crecen o decrecen juntas) y explicar por
+qué se complementa con la correlación (que sí permite comparar la fuerza
+de la relación entre variables con escalas distintas).}
+
+\section{Conclusiones de P1}\label{conclusiones-de-p1}
+
+\emph{Instrucciones para esta sección: redactar entre 4 y 6 conclusiones
+numeradas, basadas únicamente en los resultados obtenidos arriba (no
+inventar cifras). Deben cubrir, como mínimo: (1) calidad de datos
+(nulos, duplicados) y qué se hizo al respecto, (2) si la clase objetivo
+está balanceada o no y qué implica para P2, (3) qué variables se
+excluyen como predictoras y por qué, (4) qué variables lucen más
+prometedoras para el modelamiento, y (5) qué se debe tener en cuenta al
+pasar a la P2 (codificación, escalamiento, evaluación).}
+
+\section{Limitaciones y consideraciones
+éticas}\label{limitaciones-y-consideraciones-uxe9ticas}
+
+El archivo no incluye documentación sobre el muestreo, instrumento de
+medición, país, periodo de recolección ni procedimiento de etiquetado.
+En consecuencia, la muestra no debe asumirse representativa de la
+población universitaria peruana ni de un grupo demográfico específico.
+Además, el término ``adicción'' debe tratarse como una etiqueta del
+dataset y no como un diagnóstico clínico. La evidencia académica
+recomienda emplear instrumentos validados y distinguir entre uso
+frecuente y uso problemático \textcite{Kwon2013}; \textcite{Csibi2018}.
+
+Si este análisis se trasladara a un contexto real, la privacidad, el
+consentimiento informado y el riesgo de estigmatización serían
+centrales. Una predicción debe apoyar la prevención o la derivación
+voluntaria, nunca justificar sanciones automáticas o decisiones de alto
+impacto.
+
+\printbibliography[title=Referencias]
+
+\end{document}
