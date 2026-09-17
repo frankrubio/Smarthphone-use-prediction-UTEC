@@ -1,18 +1,18 @@
 ---
-title: "PROYECTO FINAL"
+title: "P1 - Uso de Smartphones y Riesgo de Adiccion"
 author:
   - familyname: "Rubio Peralta"
     othernames: "Hiter Frank"
     qualifications: "Alumno"
     email: "hiter.rubio@utec.edu.pe"
-  - familyname: "Choroco"
-    othernames: "Jossep Jorge Froilan Neyra"
+  - familyname: "Neyra"
+    othernames: "Jossep Jorge Froilan Choroco"
     qualifications: "Alumno"
     email: "jossep.neyra@utec.edu.pe"
   - familyname: "Cardenas"
     othernames: "Joel David De la Cruz"
     qualifications: "Alumno"
-    email: "joel.delacruz@.edu.pe"
+    email: "joel.delacruz@utec.edu.pe"
   - familyname: "Ruiz"
     othernames: "Rodrigo Octavio Lucatoni Flores"
     qualifications: "Alumno"
@@ -21,45 +21,92 @@ author:
     othernames: "Victor Andres Diaz"
     qualifications: "Alumno"
     email: "victor.diaz@continental.edu.pe"
-phone: (+51) 936603314
-email: pandascore@gmail.com
-department: CIENCIA DE DATOS E \newline  INTELIGENCIA ARTIFICIAL
-organization: Introducción a Ciencia de Datos e Inteligencia Artificial
-number-sections: true
-fig-height: 5
-fig-width: 8
-cite-method: biblatex
-bibliography: references.bib
-biblio-style: authoryear-comp
-linestretch: 1.5
-format: 
-  report-pdf:
-    toc: true           # Activa la tabla de contenido
-    toc-depth: 2        # Niveles de encabezado que se muestran
-    number-sections: true  # (opcional) Numera los títulos
-    lof: true           # (opcional) Lista de figuras
-    lot: true           # (opcional) Lista de tablas   
+department: "CIENCIA DE DATOS E \\newline INTELIGENCIA ARTIFICIAL"
+organization: "Introduccion a Ciencia de Datos e Inteligencia Artificial"
+phone: "+51 936 603 314"
+email: "pandascore@gmail.com"
+date: "16 de septiembre de 2026"
 lang: es
+number-sections: true
+toc: true
+toc-depth: 2
+lof: true
+lot: true
+fig-width: 9
+fig-height: 5.5
+linestretch: 1.25
+bibliography: references.bib
+cite-method: biblatex
+biblio-style: authoryear-comp
+header-includes:
+  - \newcounter{none}
+  - \usepackage{array}
+  - \usepackage{calc}
+format:
+  report-pdf:
+    keep-tex: true
 execute:
   echo: false
   warning: false
   message: false
-  tbl-cap-location: bottom
+  freeze: false
 ---
 
 ```{=latex}
 \providecommand{\pandocbounded}[1]{#1}
 ```
 
+```{python}
+#| echo : True
+print("Hello world")
+# Esto es un ejemplo de una gráfica
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Datos de ejemplo
+nombres = ["Luca", "Jossep", "David", "Victor"]
+cantidades = [3, 1, 4, 2]
+
+# Estilo visual de la gráfica
+sns.set_theme(style="whitegrid")
+plt.figure(figsize=(7, 4))
+
+# Creación del gráfico de barras
+sns.barplot(x=nombres, y=cantidades, palette="Blues_d", hue=nombres, legend=False)
+
+# Personalización de etiquetas y título
+plt.title("Cantidad de Mascotas por Integrante", fontsize=12, fontweight="bold")
+plt.xlabel("Integrantes")
+plt.ylabel("Cantidad de Mascotas")
+
+# Visualización limpia
+plt.tight_layout()
+plt.show()
+```
+
 \newpage
 
 # Resumen
 
-**Este qmd de códex tiene los chunks de python vacíos**
+**Este qmd tiene los chunks de python listos para emepzar a crear, además nos faltan fuentes, las fuentes que están aquí de ejemplo**
 
 Este reporte presenta la primera entrega (P1) del proyecto de Ciencia de Datos e Inteligencia Artificial. Se explora el conjunto de datos **Smartphone Usage and Addiction Analysis**, compuesto por 7,500 registros de uso de smartphones. El objetivo de la fase es comprender la estructura de los datos, verificar su calidad, justificar las transformaciones necesarias y encontrar patrones que orienten el modelamiento de clasificación en P2.
 
 El análisis se centra en la variable `addicted_label`, que distingue entre registros sin adicción (0) y con adicción (1). Los resultados se interpretan como asociaciones observadas en el dataset; no prueban causalidad. Esta distinción es importante porque la literatura reporta asociaciones entre uso de smartphone y desempeño académico, pero advierte limitaciones para atribuir causalidad @AmezBaert2020.
+
+```{python}
+#| echo : True
+# Código de ejemplo
+import pandas as pd
+
+data = {
+    "names": ["Luca", "Jossep", "David", "Victor"],
+    "pets": ["perro", "conejo", "gato", "cuy"],
+}
+
+df = pd.DataFrame(data)
+
+```
 
 # Planteamiento del problema
 
@@ -123,7 +170,7 @@ Los rangos son plausibles para la descripción proporcionada: edades entre 18 y 
 ## Revisión de fuga de información
 
 ```{python}
-print("hello")
+
 ```
 
 La tabla revela una relación determinista: los niveles `None` (codificados como faltantes en el archivo) y `Mild` están asociados únicamente a la clase 0, mientras que `Moderate` y `Severe` están asociados únicamente a la clase 1. Incluir `addiction_level` como predictor permitiría reconstruir la respuesta antes de entrenar un modelo; esto se denomina **fuga de información**. En P2 se excluirán `addiction_level`, `transaction_id` y `user_id` de `X`.
