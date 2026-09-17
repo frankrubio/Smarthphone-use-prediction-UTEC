@@ -51,50 +51,177 @@ execute:
 \providecommand{\pandocbounded}[1]{#1}
 ```
 
-
-```{r setup, include=FALSE}
-library(tidyverse)
-library(janitor)
-library(glue)
-library(kableExtra)
-library(skimr)
-library(descriptr)
-library(corrplot)
-```
-
 \newpage
 
-# REQUISITOS
+# Resumen
 
-Instalar: 
+**Este qmd de códex tiene los chunks de python vacíos**
 
-- `LaTex` mediante la distribución $MikTex$ [https://miktex.org](https://miktex.org)
+Este reporte presenta la primera entrega (P1) del proyecto de Ciencia de Datos e Inteligencia Artificial. Se explora el conjunto de datos **Smartphone Usage and Addiction Analysis**, compuesto por 7,500 registros de uso de smartphones. El objetivo de la fase es comprender la estructura de los datos, verificar su calidad, justificar las transformaciones necesarias y encontrar patrones que orienten el modelamiento de clasificación en P2.
 
-- `Quarto` [https://quarto.org](https://https://quarto.org)
+El análisis se centra en la variable `addicted_label`, que distingue entre registros sin adicción (0) y con adicción (1). Los resultados se interpretan como asociaciones observadas en el dataset; no prueban causalidad. Esta distinción es importante porque la literatura reporta asociaciones entre uso de smartphone y desempeño académico, pero advierte limitaciones para atribuir causalidad @AmezBaert2020.
 
-- `R and Rstudio` [https://posit.co/download/rstudio-desktop/](https://posit.co/download/rstudio-desktop/)
+# Planteamiento del problema
 
-- Explorar `Positron` (new IDL) [https://positron.posit.co](https://positron.posit.co)
+El uso intensivo del smartphone puede relacionarse con alteraciones del sueño, estrés y dificultades en las actividades académicas o laborales. La investigación sobre uso problemático del smartphone requiere precisión conceptual: una alta frecuencia de uso no equivale necesariamente a una condición clínica. Instrumentos de tamizaje como SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen una evaluación profesional @Csibi2018.
 
-# GRAFICOS, TABLAS, FORMULAS Y CITAS
+Para este proyecto, se formula la siguiente pregunta de análisis:
 
-En el artículo famoso, @BC64 introdujeron una **familia de transformaciones** \dots (recuerda usar el archivo `references.bib ` para editar los artículos, libros y demas citas.)
+> ¿Qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos?
 
-```{r}
-#| echo: true
-#| label: fig-density
-#| fig-cap: Simulación de datos de una Distribución N(0,1).
-library(tidyverse)
-set.seed(1234)
-df <- tibble(x = rnorm(200))
-df |>
-  ggplot(aes(x=x)) +
-  geom_density(bw = "SJ", color = "magenta") +
-  geom_rug(alpha=0.9, color = "cyan")
+La P1 no entrena modelos predictivos. Su finalidad es asegurar que la P2 use variables pertinentes, datos de calidad y decisiones justificadas.
+
+# Contexto del dataset
+
+## Fuente y unidad de análisis
+
+El archivo `Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv` fue proporcionado para el proyecto y corresponde al dataset publicado como *Smartphone Usage and Addiction Analysis* en Kaggle @KaggleDataset. Cada fila representa a un usuario y contiene indicadores demográficos, de comportamiento digital, descanso, estrés e impacto percibido en actividades académicas o laborales.
+
+La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 columnas originales: dos identificadores, nueve variables numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
+
+## Diccionario de variables
+
+- **Identificadores:** `transaction_id` y `user_id` son variables de texto. Se usan para verificar unicidad, pero no aportan significado analítico y se excluirán como predictores.
+- **Demografía:** `age` (numérica) y `gender` (categórica) caracterizan la muestra.
+- **Uso del smartphone:** `daily_screen_time_hours`, `social_media_hours`, `gaming_hours`, `work_study_hours`, `notifications_per_day`, `app_opens_per_day` y `weekend_screen_time` son variables numéricas que miden intensidad y tipo de uso.
+- **Bienestar y contexto:** `sleep_hours` es numérica; `stress_level` y `academic_work_impact` son categóricas. Se emplean para explorar descanso e impacto funcional.
+- **Severidad:** `addiction_level` es categórica ordinal. Se describe en P1, pero se excluye como predictor en P2 por fuga de información.
+- **Objetivo:** `addicted_label` es binaria: 0 significa *No adicción* y 1 significa *Con adicción*.
+
+La variable `addiction_level` contiene una categorización de severidad (`None`, `Mild`, `Moderate`, `Severe`). Por su definición operativa, puede estar construida directamente a partir de la etiqueta final; por ello se audita explícitamente antes de considerar su uso en P2.
+
+# Carga y exploración inicial
+
+```{python}
+
 ```
 
-# Título
-## Subtítulo
-Texto
-- Lista
-**Negrita**
+## Dimensiones y tipos de variables
+
+```{python}
+
+```
+
+El dataset tiene 7,500 filas y 16 columnas originales. Las variables numéricas se cargan como enteros o decimales; las categóricas como texto. La estructura es consistente con un problema de clasificación supervisada: `addicted_label` será la etiqueta, mientras que el resto de variables se evaluará como potencial predictor o como identificador a excluir.
+
+## Calidad de datos
+
+```{python}
+
+```
+
+Se encontraron 819 valores faltantes, todos en `addiction_level`, y ninguna fila completamente duplicada. Una revisión del CSV muestra que esos faltantes representan el nivel textual `None`, es decir, ausencia de severidad registrada. No se imputarán: `addiction_level` se excluirá de P2 por fuga de información. Las otras 15 columnas no tienen valores faltantes ni requieren tratamiento de imputación. Esta decisión no implica que el dataset esté libre de otros riesgos: se revisan también los identificadores, rangos de las variables y la posible fuga de información.
+
+```{python}
+
+```
+
+Los rangos son plausibles para la descripción proporcionada: edades entre 18 y 35 años; tiempo diario de pantalla entre 3 y 12 horas; y sueño entre 4.5 y 9 horas. Los identificadores `transaction_id` y `user_id` son únicos y no representan características del comportamiento del usuario. Se conservarán solo como trazabilidad y se excluirán del conjunto de predictores en P2.
+
+# Preprocesamiento y decisiones de data wrangling
+
+## Revisión de fuga de información
+
+```{python}
+print("hello")
+```
+
+La tabla revela una relación determinista: los niveles `None` (codificados como faltantes en el archivo) y `Mild` están asociados únicamente a la clase 0, mientras que `Moderate` y `Severe` están asociados únicamente a la clase 1. Incluir `addiction_level` como predictor permitiría reconstruir la respuesta antes de entrenar un modelo; esto se denomina **fuga de información**. En P2 se excluirán `addiction_level`, `transaction_id` y `user_id` de `X`.
+
+Esta exclusión protege la validez de la evaluación: una métrica muy alta basada en una variable que codifica la respuesta no demuestra capacidad de generalización. Las variables restantes serán sometidas a codificación apropiada: `gender` con *one-hot encoding*, `academic_work_impact` como binaria y `stress_level` como ordinal, siempre ajustando las transformaciones solo con los datos de entrenamiento en P2 @Pedregosa2011.
+
+## Variable derivada para la comunicación
+
+```{python}
+
+```
+
+Se creó `estado_adiccion` únicamente para etiquetas legibles en tablas y gráficos. La variable conserva exactamente la información de `addicted_label`: 0 se muestra como *No adicción* y 1 como *Con adicción*. Para P2 se mantendrá la etiqueta numérica original, ya que es el formato esperado por los algoritmos de clasificación.
+
+# Análisis exploratorio de datos
+
+## Análisis univariado
+
+```{python}
+
+```
+
+La clase *Con adicción* representa 5,308 registros (70.8%), frente a 2,192 (29.2%) en *No adicción*. Existe un desbalance moderado, por lo que en P2 la división entrenamiento/prueba deberá ser estratificada y la evaluación deberá incluir *precision*, *recall* y F1, además de *accuracy*.
+
+```{python}
+
+```
+
+Las horas de pantalla, redes sociales, videojuegos y actividades de estudio/trabajo cubren rangos amplios sin valores físicamente imposibles. La distribución de edad se concentra en adultos jóvenes. Las variables de conteo (`notifications_per_day` y `app_opens_per_day`) muestran mayor escala que las variables expresadas en horas; por ello, si se usan algoritmos sensibles a distancia o magnitud en P2, se requerirá estandarización.
+
+```{python}
+
+```
+
+Los boxplots complementan a los histogramas: permiten ubicar mediana, rango intercuartílico y posibles observaciones extremas. Las observaciones alejadas no se eliminarán automáticamente. En un dataset conductual pueden representar usuarios reales de alta intensidad de uso; cualquier tratamiento posterior debe justificarse por un criterio estadístico y de dominio, no solo por su distancia a la mediana.
+
+```{python}
+
+```
+
+La comparación entre media y mediana ayuda a detectar asimetría. Para estas variables, la mediana es una referencia robusta frente a valores extremos, mientras que la desviación estándar permite comparar la variabilidad dentro de la escala de cada medición. No se comparan directamente desviaciones de variables con unidades distintas; se interpretan junto con su rango y contexto.
+
+```{python}
+
+
+```
+
+Las tres categorías de género están representadas de forma similar. Los gráficos de `stress_level` y `academic_work_impact` permiten observar la composición de la muestra antes de relacionarlas con la etiqueta objetivo. Estas variables serán categóricas en la fase de modelamiento; no se les debe imponer una distancia numérica salvo que la codificación ordinal tenga justificación explícita, como en el caso de los niveles de estrés.
+
+## Análisis multivariado
+
+```{python}
+
+```
+
+El mapa de calor identifica relaciones lineales y posibles grupos de variables redundantes. En particular, las métricas de tiempo de uso pueden relacionarse entre sí; esto debe revisarse en P2 para evitar interpretaciones exageradas de variables altamente colineales. La correlación resume asociación lineal y no demuestra causalidad ni captura por sí sola relaciones no lineales.
+
+```{python}
+```
+
+Las correlaciones con la etiqueta ordenan variables numéricas según asociación lineal, pero no sustituyen la selección de variables del modelo. Una variable con correlación baja puede contribuir en combinación con otras, y una correlación alta puede deberse a confusión o a un mecanismo de generación de datos que deberá discutirse con cautela.
+
+```{python}
+
+```
+
+Estos boxplots comparativos muestran cómo cambian la tendencia central y la dispersión de las horas de pantalla, uso de redes sociales y sueño entre clases. Son adecuados porque preservan la distribución de cada grupo y facilitan detectar solapamientos: un solapamiento amplio anticipa que ningún clasificador separará perfectamente los grupos sin información adicional.
+
+```{python}
+
+```
+
+Los gráficos apilados comparan proporciones, no solo recuentos; por ello evitan confundir el tamaño de una categoría con su composición. Se deben interpretar como patrones descriptivos. En una eventual aplicación real, variables como estrés e impacto académico requieren especial cuidado: pueden ser consecuencias, causas o indicadores asociados al uso problemático, y no deben utilizarse para etiquetar o estigmatizar personas.
+
+```{python}
+
+```
+
+Los diagramas de dispersión permiten examinar simultáneamente asociación, agrupamientos y separación visual entre clases. Se incluyen cinco pares para cumplir una exploración más amplia que un único gráfico. El solapamiento de colores indica que las variables no explican por sí solas toda la etiqueta; en P2 será razonable contrastar modelos lineales y no lineales.
+
+```{python}
+
+```
+
+La covarianza indica si dos variables tienden a crecer o decrecer conjuntamente, pero su magnitud depende de las unidades de medida. Por esa razón se presenta junto con las correlaciones: la covarianza ayuda a identificar dirección conjunta, mientras que la correlación permite comparar fuerza relativa entre pares de variables con escalas distintas.
+
+# Conclusiones de P1
+
+1. El dataset contiene 7,500 registros y no presenta filas duplicadas completas. Los 819 faltantes aparecen exclusivamente en `addiction_level` y representan `None`; no se imputan porque esa columna se elimina por fuga de información.
+2. La etiqueta está desbalanceada: 70.8% corresponde a *Con adicción*. P2 deberá usar partición estratificada y métricas sensibles a ambas clases, especialmente F1 y *recall*.
+3. Los identificadores `transaction_id` y `user_id` no se usarán para predecir. `addiction_level` se excluirá debido a fuga de información: reproduce determinísticamente `addicted_label`.
+4. El EDA muestra que las variables de intensidad de uso, descanso, estrés e impacto académico/laboral son candidatas razonables para el análisis predictivo, sin afirmar causalidad.
+5. La modelación posterior debe combinar codificación de categorías, escalamiento cuando el algoritmo lo requiera y una auditoría crítica de errores. La decisión debe priorizar validez y explicabilidad antes que una métrica artificialmente elevada.
+
+# Limitaciones y consideraciones éticas
+
+El archivo no incluye documentación sobre el muestreo, instrumento de medición, país, periodo de recolección ni procedimiento de etiquetado. En consecuencia, la muestra no debe asumirse representativa de la población universitaria peruana ni de un grupo demográfico específico. Además, el término “adicción” debe tratarse como una etiqueta del dataset y no como un diagnóstico clínico. La evidencia académica recomienda emplear instrumentos validados y distinguir entre uso frecuente y uso problemático @Kwon2013; @Csibi2018.
+
+Si este análisis se trasladara a un contexto real, la privacidad, el consentimiento informado y el riesgo de estigmatización serían centrales. Una predicción debe apoyar la prevención o la derivación voluntaria, nunca justificar sanciones automáticas o decisiones de alto impacto.
+
+# Referencias
