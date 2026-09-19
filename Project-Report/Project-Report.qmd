@@ -66,7 +66,6 @@ implementación real de cada integrante. No se debe reportar ningún número o g
 no salga de correr el código de este archivo. -->
 
 ```{python}
-#| echo: true
 # Configuración inicial: librerías utilizadas en todo el proyecto.
 import pandas as pd
 import numpy as np
@@ -96,7 +95,7 @@ df
 
 # Planteamiento del problema
 
-El uso intensivo del smartphone puede relacionarse con alteraciones del sueño, estrés y dificultades en las actividades académicas o laborales. La investigación sobre uso problemático del smartphone requiere precisión conceptual: una alta frecuencia de uso no equivale necesariamente a una condición clínica. Instrumentos de tamizaje como SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen una evaluación profesional @Csibi2018. La literatura también reporta asociaciones entre el uso del smartphone y el desempeño académico, aunque con limitaciones claras para atribuir causalidad @AmezBaert2020.
+El uso intensivo de celulares puede influir en la salud integral de las personas al relacionarse con irregularidades en el sueño, estrés, dificultades en el ámbito académico y laboral. Además, la investigación requiere de una conceptualización alta: una alta frecuencia de uso no significa necesariamente a una condición clínica. Articulos como SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen una evaluación profesional @Csibi2018. La literatura también ayuda con asociaciones entre el uso del smartphone y el desempeño académico, aunque con limitaciones claras para atribuir causalidad @AmezBaert2020.
 
 Para este proyecto, se formula la siguiente pregunta de análisis:
 
