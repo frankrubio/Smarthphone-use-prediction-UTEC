@@ -75,18 +75,6 @@ import seaborn as sns
 sns.set_theme(style="whitegrid")
 ```
 
-```{python}
-#| echo: true
-# Chunk de verificación: confirma que Python + pandas + Quarto están bien configurados
-# y que un DataFrame se muestra como una tabla con formato correcto (no como texto plano).
-# Se puede borrar una vez que el equipo confirme que el render funciona.
-integrantes = ["Luca", "Jossep", "David", "Victor"]
-mascotas = ["perro", "conejo", "gato", "cuy"]
-
-df = pd.DataFrame({"Integrante": integrantes, "Mascota": mascotas})
-df
-```
-
 \newpage
 
 # Resumen
@@ -111,23 +99,42 @@ El archivo `Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv` fue proporcio
 
 La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 columnas originales: dos identificadores, nueve variables numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
 
+```{python}
+#|echo : true
+# Cargamos el archivo csv
+import kagglehub
+path = kagglehub.dataset_download("jayjoshi37/smartphone-usage-and-addiction-prediction")
+import os
+# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo
+ruta_csv = os.path.join(path, "Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv")
+df = pd.read_csv(ruta_csv)
+
+# Analizamos las primeras filas
+df.head(10)
+
+# Analizamos los tipos de variables contenidos en la csv
+df.info() # Observamos valores nulos en la columna "addiction_level"
+
+# Obtenemos la lista de columnas
+df.columns
+
+# Renombramos todas las columnas para un uso natural
+df = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
+```
+
 ## Diccionario de variables
 
-- **Identificadores:** `transaction_id` y `user_id` son variables de texto. Se usan para verificar unicidad, pero no aportan significado analítico y se excluirán como predictores.
-- **Demografía:** `age` (numérica) y `gender` (categórica) caracterizan la muestra.
-- **Uso del smartphone:** `daily_screen_time_hours`, `social_media_hours`, `gaming_hours`, `work_study_hours`, `notifications_per_day`, `app_opens_per_day` y `weekend_screen_time` son variables numéricas que miden intensidad y tipo de uso.
-- **Bienestar y contexto:** `sleep_hours` es numérica; `stress_level` y `academic_work_impact` son categóricas. Se emplean para explorar descanso e impacto funcional.
-- **Severidad:** `addiction_level` es categórica ordinal. Se describe en P1, pero se excluye como predictor en P2 por fuga de información.
-- **Objetivo:** `addicted_label` es binaria: 0 significa *No adicción* y 1 significa *Con adicción*.
+- **Identificadores:** `ID_transaccion` y `ID_usuario` son variables de texto. Se usan para verificar unicidad, pero no aportan significado analítico y se excluirán como predictores.
+- **Demografía:** `edad` (numérica) y `genero` (categórica) caracterizan la muestra.
+- **Uso del smartphone:** `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio`, `notificaciones_por_dia`, `aperturas_apps_por_dia` y `tiempo_en_pantalla_fin_de_semana` son variables numéricas que miden intensidad y tipo de uso.
+- **Bienestar y contexto:** `horas_sueño` es numérica; `nivel_estres` y `impacto_academico/laboral` son categóricas. Se emplean para explorar descanso e impacto funcional.
+- **Severidad:** `nivel_adiccion` es categórica ordinal. Se describe en P1, pero se excluye como predictor en P2 por fuga de información.
+- **Objetivo:** `etiqueta_de_adiccion` es binaria: 0 significa *No adicción* y 1 significa *Con adicción*.
 
-La variable `addiction_level` contiene una categorización de severidad (`None`, `Mild`, `Moderate`, `Severe`). Por su definición operativa, puede estar construida directamente a partir de la etiqueta final; por ello se audita explícitamente antes de considerar su uso en P2.
+La variable `nivel_adiccion` contiene una categorización de severidad (`None`, `Mild`, `Moderate`, `Severe`). Por su definición operativa, puede estar construida directamente a partir de la etiqueta final; por ello se audita explícitamente antes de considerar su uso en P2.
 
 # Carga y exploración inicial
 
-```{python}
-#| echo: true
-# TODO: cargar el dataset con pd.read_csv(...) y guardarlo en una variable (por ejemplo, df).
-```
 
 ## Dimensiones y tipos de variables
 

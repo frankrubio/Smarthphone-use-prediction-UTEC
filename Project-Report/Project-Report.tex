@@ -403,46 +403,6 @@ Artificial}
 \listoffigures
 \providecommand{\pandocbounded}[1]{#1}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Configuración inicial: librerías utilizadas en todo el proyecto.}
-\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
-\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
-\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
-\ImportTok{import}\NormalTok{ seaborn }\ImportTok{as}\NormalTok{ sns}
-
-\NormalTok{sns.set\_theme(style}\OperatorTok{=}\StringTok{"whitegrid"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Chunk de verificación: confirma que Python + pandas + Quarto están bien configurados}
-\CommentTok{\# y que un DataFrame se muestra como una tabla con formato correcto (no como texto plano).}
-\CommentTok{\# Se puede borrar una vez que el equipo confirme que el render funciona.}
-\NormalTok{integrantes }\OperatorTok{=}\NormalTok{ [}\StringTok{"Luca"}\NormalTok{, }\StringTok{"Jossep"}\NormalTok{, }\StringTok{"David"}\NormalTok{, }\StringTok{"Victor"}\NormalTok{]}
-\NormalTok{mascotas }\OperatorTok{=}\NormalTok{ [}\StringTok{"perro"}\NormalTok{, }\StringTok{"conejo"}\NormalTok{, }\StringTok{"gato"}\NormalTok{, }\StringTok{"cuy"}\NormalTok{]}
-
-\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}\StringTok{"Integrante"}\NormalTok{: integrantes, }\StringTok{"Mascota"}\NormalTok{: mascotas\})}
-\NormalTok{df}
-\end{Highlighting}
-\end{Shaded}
-
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-& Integrante & Mascota \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & Luca & perro \\
-1 & Jossep & conejo \\
-2 & David & gato \\
-3 & Victor & cuy \\
-\end{longtable}
-}
-
 \newpage
 
 \section{Resumen}\label{resumen}
@@ -461,15 +421,15 @@ debe ser una síntesis propia, escrita por el equipo.}
 
 \section{Planteamiento del problema}\label{planteamiento-del-problema}
 
-El uso intensivo del smartphone puede relacionarse con alteraciones del
-sueño, estrés y dificultades en las actividades académicas o laborales.
-La investigación sobre uso problemático del smartphone requiere
-precisión conceptual: una alta frecuencia de uso no equivale
-necesariamente a una condición clínica. Instrumentos de tamizaje como
-SABAS permiten estudiar síntomas de uso problemático, pero no sustituyen
-una evaluación profesional \textcite{Csibi2018}. La literatura también
-reporta asociaciones entre el uso del smartphone y el desempeño
-académico, aunque con limitaciones claras para atribuir causalidad
+El uso intensivo de celulares puede influir en la salud integral de las
+personas al relacionarse con irregularidades en el sueño, estrés,
+dificultades en el ámbito académico y laboral. Además, la investigación
+requiere de una conceptualización alta: una alta frecuencia de uso no
+significa necesariamente a una condición clínica. Articulos como SABAS
+permiten estudiar síntomas de uso problemático, pero no sustituyen una
+evaluación profesional \textcite{Csibi2018}. La literatura también ayuda
+con asociaciones entre el uso del smartphone y el desempeño académico,
+aunque con limitaciones claras para atribuir causalidad
 \textcite{AmezBaert2020}.
 
 Para este proyecto, se formula la siguiente pregunta de análisis:
@@ -499,37 +459,89 @@ La unidad de análisis es el usuario. El dataset incluye 7,500 registros
 y 16 columnas originales: dos identificadores, nueve variables
 numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Cargamos el archivo csv}
+\ImportTok{import}\NormalTok{ kagglehub}
+\NormalTok{path }\OperatorTok{=}\NormalTok{ kagglehub.dataset\_download(}\StringTok{"jayjoshi37/smartphone{-}usage{-}and{-}addiction{-}prediction"}\NormalTok{)}
+\ImportTok{import}\NormalTok{ os}
+\CommentTok{\# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo}
+\NormalTok{ruta\_csv }\OperatorTok{=}\NormalTok{ os.path.join(path, }\StringTok{"Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv"}\NormalTok{)}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(ruta\_csv)}
+
+\CommentTok{\# Analizamos las primeras filas}
+\NormalTok{df.head(}\DecValTok{10}\NormalTok{)}
+
+\CommentTok{\# Analizamos los tipos de variables contenidos en la csv}
+\NormalTok{df.info() }\CommentTok{\# Observamos valores nulos en la columna "addiction\_level"}
+
+\CommentTok{\# Obtenemos la lista de columnas}
+\NormalTok{df.columns}
+
+\CommentTok{\# Renombramos todas las columnas para un uso natural}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ df.rename(\{}\StringTok{\textquotesingle{}transaction\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_transaccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}user\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_usuario\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}age\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}edad\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gender\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}genero\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}daily\_screen\_time\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_diarias\_pantalla\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}social\_media\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_redes\_sociales\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gaming\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_videojuegos\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}work\_study\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_trabajo/estudio\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}sleep\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_sueño\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}notifications\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}notificaciones\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}app\_opens\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}aperturas\_apps\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}weekend\_screen\_time\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}tiempo\_en\_pantalla\_fin\_de\_semana\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}stress\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_estres\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}academic\_work\_impact\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}impacto\_academico/laboral\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addiction\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_adiccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addicted\_label\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{\} , axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+<class 'pandas.DataFrame'>
+RangeIndex: 7500 entries, 0 to 7499
+Data columns (total 16 columns):
+ #   Column                   Non-Null Count  Dtype  
+---  ------                   --------------  -----  
+ 0   transaction_id           7500 non-null   str    
+ 1   user_id                  7500 non-null   str    
+ 2   age                      7500 non-null   int64  
+ 3   gender                   7500 non-null   str    
+ 4   daily_screen_time_hours  7500 non-null   float64
+ 5   social_media_hours       7500 non-null   float64
+ 6   gaming_hours             7500 non-null   float64
+ 7   work_study_hours         7500 non-null   float64
+ 8   sleep_hours              7500 non-null   float64
+ 9   notifications_per_day    7500 non-null   int64  
+ 10  app_opens_per_day        7500 non-null   int64  
+ 11  weekend_screen_time      7500 non-null   float64
+ 12  stress_level             7500 non-null   str    
+ 13  academic_work_impact     7500 non-null   str    
+ 14  addiction_level          6681 non-null   str    
+ 15  addicted_label           7500 non-null   int64  
+dtypes: float64(6), int64(4), str(6)
+memory usage: 937.6 KB
+\end{verbatim}
+
 \subsection{Diccionario de variables}\label{diccionario-de-variables}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Identificadores:} \texttt{transaction\_id} y \texttt{user\_id}
-  son variables de texto. Se usan para verificar unicidad, pero no
-  aportan significado analítico y se excluirán como predictores.
+  \textbf{Identificadores:} \texttt{ID\_transaccion} y
+  \texttt{ID\_usuario} son variables de texto. Se usan para verificar
+  unicidad, pero no aportan significado analítico y se excluirán como
+  predictores.
 \item
-  \textbf{Demografía:} \texttt{age} (numérica) y \texttt{gender}
+  \textbf{Demografía:} \texttt{edad} (numérica) y \texttt{genero}
   (categórica) caracterizan la muestra.
 \item
-  \textbf{Uso del smartphone:} \texttt{daily\_screen\_time\_hours},
-  \texttt{social\_media\_hours}, \texttt{gaming\_hours},
-  \texttt{work\_study\_hours}, \texttt{notifications\_per\_day},
-  \texttt{app\_opens\_per\_day} y \texttt{weekend\_screen\_time} son
-  variables numéricas que miden intensidad y tipo de uso.
+  \textbf{Uso del smartphone:} \texttt{horas\_diarias\_pantalla},
+  \texttt{horas\_redes\_sociales}, \texttt{horas\_videojuegos},
+  \texttt{horas\_trabajo/estudio}, \texttt{notificaciones\_por\_dia},
+  \texttt{aperturas\_apps\_por\_dia} y
+  \texttt{tiempo\_en\_pantalla\_fin\_de\_semana} son variables numéricas
+  que miden intensidad y tipo de uso.
 \item
-  \textbf{Bienestar y contexto:} \texttt{sleep\_hours} es numérica;
-  \texttt{stress\_level} y \texttt{academic\_work\_impact} son
+  \textbf{Bienestar y contexto:} \texttt{horas\_sueño} es numérica;
+  \texttt{nivel\_estres} y \texttt{impacto\_academico/laboral} son
   categóricas. Se emplean para explorar descanso e impacto funcional.
 \item
-  \textbf{Severidad:} \texttt{addiction\_level} es categórica ordinal.
-  Se describe en P1, pero se excluye como predictor en P2 por fuga de
+  \textbf{Severidad:} \texttt{nivel\_adiccion} es categórica ordinal. Se
+  describe en P1, pero se excluye como predictor en P2 por fuga de
   información.
 \item
-  \textbf{Objetivo:} \texttt{addicted\_label} es binaria: 0 significa
-  \emph{No adicción} y 1 significa \emph{Con adicción}.
+  \textbf{Objetivo:} \texttt{etiqueta\_de\_adiccion} es binaria: 0
+  significa \emph{No adicción} y 1 significa \emph{Con adicción}.
 \end{itemize}
 
-La variable \texttt{addiction\_level} contiene una categorización de
+La variable \texttt{nivel\_adiccion} contiene una categorización de
 severidad (\texttt{None}, \texttt{Mild}, \texttt{Moderate},
 \texttt{Severe}). Por su definición operativa, puede estar construida
 directamente a partir de la etiqueta final; por ello se audita
@@ -537,12 +549,6 @@ explícitamente antes de considerar su uso en P2.
 
 \section{Carga y exploración
 inicial}\label{carga-y-exploraciuxf3n-inicial}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: cargar el dataset con pd.read\_csv(...) y guardarlo en una variable (por ejemplo, df).}
-\end{Highlighting}
-\end{Shaded}
 
 \subsection{Dimensiones y tipos de
 variables}\label{dimensiones-y-tipos-de-variables}
