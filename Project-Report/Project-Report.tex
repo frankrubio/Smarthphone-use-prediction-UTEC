@@ -944,7 +944,7 @@ datos}\label{anuxe1lisis-exploratorio-de-datos}
 \CommentTok{\#sns.barplot(data=df\_clean, x= "estado\_adiccion", y = )}
 \NormalTok{counts }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
 
-\NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{, color}\OperatorTok{=}\StringTok{"purple"}\NormalTok{, edgecolor}\OperatorTok{=}\StringTok{"none"}\NormalTok{)}
+\NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{, color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{], edgecolor}\OperatorTok{=}\StringTok{"none"}\NormalTok{)}
 
 \NormalTok{plt.xlabel(}\StringTok{"Estado de adicción"}\NormalTok{)}
 \NormalTok{plt.ylabel(}\VariableTok{None}\NormalTok{)}
@@ -966,6 +966,9 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \CommentTok{\# usa las columnas que ya tienes cargadas en la sesión}
 
 \CommentTok{\#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas}
+\NormalTok{colores }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}steelblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}forestgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}crimson\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}gold\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightcoral\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}yellowgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,}
+\StringTok{\textquotesingle{}powderblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgray\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}plum\textquotesingle{}}\NormalTok{]}
+\NormalTok{contador }\OperatorTok{=} \DecValTok{0}
 \ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ num\_cols:}
 \NormalTok{    plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
 \NormalTok{    sns.histplot(}
@@ -973,13 +976,14 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \NormalTok{        x}\OperatorTok{=}\NormalTok{col,}
 \NormalTok{        bins}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
 \NormalTok{        kde}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
-\NormalTok{        color}\OperatorTok{=}\StringTok{"steelblue"}
+\NormalTok{        color}\OperatorTok{=}\NormalTok{ colores[contador]}
 \NormalTok{    )}
 \NormalTok{    plt.title(}\SpecialStringTok{f"Histograma de }\SpecialCharTok{\{}\NormalTok{col}\SpecialCharTok{\}}\SpecialStringTok{"}\NormalTok{)}
 \NormalTok{    plt.xlabel(}\VariableTok{None}\NormalTok{)}
 \NormalTok{    plt.ylabel(}\VariableTok{None}\NormalTok{)}
 \NormalTok{    plt.tight\_layout() }\CommentTok{\#es una función de matplotlib que ajusta automáticamente los márgenes}
 \NormalTok{    plt.show()}
+\NormalTok{    contador }\OperatorTok{+=}\DecValTok{1}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1010,7 +1014,8 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
-\NormalTok{df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts().plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{) }\CommentTok{\#usamos la variable comunicativa de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}
+\NormalTok{df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts().plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{,color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{])}
+\NormalTok{plt.show() }\CommentTok{\#usamos la variable comunicativa de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1027,7 +1032,8 @@ tiene una escala muy distinta a las variables medidas en horas.}
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica (usar num\_cols).}
 \CommentTok{\# asegúrate de que num\_cols existe y tiene nombres reales}
 
-
+\NormalTok{colores }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}steelblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}forestgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightcoral\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}yellowgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,}
+\StringTok{\textquotesingle{}powderblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgray\textquotesingle{}}\NormalTok{]}
 \NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}
     \StringTok{"edad"}\NormalTok{,}
     \StringTok{"horas\_diarias\_pantalla"}\NormalTok{,}
@@ -1040,17 +1046,17 @@ tiene una escala muy distinta a las variables medidas en horas.}
     \StringTok{"tiempo\_en\_pantalla\_fin\_de\_semana"}\NormalTok{,}
 \NormalTok{]}\CommentTok{\#aqui descartamos "etiqueta\_de\_adiccion"}
 
+\NormalTok{contador }\OperatorTok{=} \DecValTok{0}
 \ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ num\_cols:}
 \NormalTok{    plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
-\NormalTok{    sns.histplot(}
+\NormalTok{    sns.boxplot(}
 \NormalTok{        data}\OperatorTok{=}\NormalTok{df\_clean,}
-\NormalTok{        x}\OperatorTok{=}\NormalTok{col,}
-\NormalTok{        bins}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
-\NormalTok{        kde}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
-\NormalTok{        color}\OperatorTok{=}\StringTok{"steelblue"}\NormalTok{,}
+\NormalTok{        y}\OperatorTok{=}\NormalTok{col,}
+\NormalTok{        color}\OperatorTok{=}\NormalTok{colores[contador],}
 \NormalTok{    )}
-\NormalTok{    plt.xlabel(col)}
-\NormalTok{    plt.ylabel(}\StringTok{""}\NormalTok{)}
+\NormalTok{    contador }\OperatorTok{+=} \DecValTok{1}
+\NormalTok{    plt.xlabel(}\StringTok{""}\NormalTok{)}
+\NormalTok{    plt.ylabel(col)}
 \NormalTok{    plt.tight\_layout()}
 \NormalTok{    plt.show()}
 \end{Highlighting}
@@ -1084,9 +1090,117 @@ de los usuarios, y justificar la decisión tomada.}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num\_cols).}
 \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ num\_cols:}
-\NormalTok{  df\_clean[i].describe()}
+\NormalTok{  display(df\_clean[i].describe())}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+count    7500.000000
+mean       26.568800
+std         5.197108
+min        18.000000
+25%        22.000000
+50%        27.000000
+75%        31.000000
+max        35.000000
+Name: edad, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        7.499912
+std         2.609188
+min         3.000000
+25%         5.220000
+50%         7.525000
+75%         9.810000
+max        12.000000
+Name: horas_diarias_pantalla, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        3.273484
+std         1.585342
+min         0.500000
+25%         1.910000
+50%         3.270000
+75%         4.630000
+max         6.000000
+Name: horas_redes_sociales, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        2.014183
+std         1.146039
+min         0.000000
+25%         1.020000
+50%         2.040000
+75%         2.990000
+max         4.000000
+Name: horas_videojuegos, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        3.242420
+std         1.600765
+min         0.500000
+25%         1.850000
+50%         3.230000
+75%         4.640000
+max         6.000000
+Name: horas_trabajo/estudio, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        6.737561
+std         1.283605
+min         4.500000
+25%         5.630000
+50%         6.720000
+75%         7.840000
+max         9.000000
+Name: horas_sueño, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean      134.257333
+std        66.586883
+min        20.000000
+25%        76.000000
+50%       134.000000
+75%       191.000000
+max       250.000000
+Name: notificaciones_por_dia, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean       97.832400
+std        48.423349
+min        15.000000
+25%        55.000000
+50%        98.000000
+75%       140.000000
+max       180.000000
+Name: aperturas_apps_por_dia, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+count    7500.000000
+mean        9.243827
+std         2.718281
+min         3.580000
+25%         6.960000
+50%         9.260000
+75%        11.540000
+max        14.880000
+Name: tiempo_en_pantalla_fin_de_semana, dtype: float64
+\end{verbatim}
 
 \emph{Instrucciones para esta sección: comparar media y mediana para
 detectar asimetría en cada variable, e interpretar la desviación
@@ -1097,6 +1211,8 @@ muestran mayor dispersión o valores extremos.}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (cat\_cols: genero, nivel\_estres, impacto\_academico/laboral). \#están debajo}
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ cat\_cols:}
+\NormalTok{  df\_clean[i].value\_counts(normalize}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
