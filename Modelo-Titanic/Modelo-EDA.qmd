@@ -1,0 +1,678 @@
+---
+title: "Modelo de Reporte EDA - Supervivencia en el Titanic"
+author:
+  - familyname: "Rubio Peralta"
+    othernames: "Hiter Frank"
+    qualifications: "Alumno"
+    email: "hiter.rubio@utec.edu.pe"
+department: "CIENCIA DE DATOS E \\newline INTELIGENCIA ARTIFICIAL"
+organization: "Introduccion a Ciencia de Datos e Inteligencia Artificial"
+phone: "+51 936 603 314"
+email: "hiter.rubio@utec.edu.pe"
+date: "19 de septiembre de 2026"
+lang: es
+number-sections: true
+toc: true
+toc-depth: 2
+lof: true
+lot: true
+fig-width: 7
+fig-height: 4.2
+linestretch: 1.25
+bibliography: references.bib
+cite-method: biblatex
+biblio-style: authoryear-comp
+header-includes:
+  - \newcounter{none}
+  - \usepackage{array}
+  - \usepackage{booktabs}
+format:
+  report-pdf:
+    keep-tex: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: false
+---
+
+```{=latex}
+\providecommand{\pandocbounded}[1]{#1}
+```
+
+<!--
+==============================================================================
+MODELO DE REFERENCIA - COMO USAR ESTE ARCHIVO
+
+Este documento es una plantilla de trabajo: muestra la estructura completa de
+un reporte de EDA, con codigo real que se ejecuta y con la redaccion que
+acompania a cada resultado. El dataset es Titanic (seaborn), NO el del curso.
+
+Tres reglas que este modelo respeta y conviene imitar:
+
+  1. Ningun numero del texto esta escrito a mano. Todos salen de correr el
+     codigo de este mismo archivo.
+  2. Cada grafico y cada tabla tienen etiqueta (#| label:) y titulo
+     (#| fig-cap: / #| tbl-cap:), para poder referenciarlos en el texto con
+     @fig-xxx y @tbl-xxx. Asi se numeran solos y aparecen en el indice.
+  3. Despues de cada bloque de codigo va un parrafo que INTERPRETA el
+     resultado. Un grafico sin lectura no vale nota.
+==============================================================================
+-->
+
+```{python}
+#| label: setup
+# ---------------------------------------------------------------------------
+# Configuracion unica para todo el documento.
+# Todo lo que se repite (colores, estilo, funciones de apoyo) se define aqui
+# una sola vez, para no ensuciar los chunks de analisis.
+# ---------------------------------------------------------------------------
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import Markdown
+
+# Paleta fija del reporte: dos colores para la variable objetivo y un gris
+# neutro para las series unicas. El orden nunca cambia entre graficos, de modo
+# que "azul" significa lo mismo en todo el documento.
+AZUL, AMBAR, GRIS = "#1F5FA9", "#C2701A", "#4B5563"
+COLORES_OBJETIVO = {"No sobrevivio": AZUL, "Sobrevivio": AMBAR}
+
+sns.set_theme(style="whitegrid")
+plt.rcParams.update({
+    "figure.dpi": 150,
+    "axes.spines.top": False,     # menos tinta: se quitan los bordes
+    "axes.spines.right": False,   # superior y derecho de cada grafico
+    "axes.titlesize": 11,
+    "axes.titleweight": "bold",
+    "axes.labelsize": 9,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "legend.fontsize": 8,
+    "grid.alpha": 0.25,           # rejilla discreta, de fondo
+})
+
+def tabla(df, decimales=2):
+    """Muestra un DataFrame como tabla con formato correcto en el PDF."""
+    return Markdown(df.round(decimales).to_markdown())
+```
+
+\newpage
+
+# Resumen {.unnumbered}
+
+Este reporte aplica un analisis exploratorio de datos sobre el conjunto
+*Titanic* distribuido con la libreria seaborn [@SeabornData], compuesto por 891
+pasajeros y 15 variables, con el objetivo de identificar que caracteristicas del
+pasajero se asocian con la supervivencia. El trabajo de preparacion tomo tres
+decisiones centrales: se descarto la variable `deck` por tener 688 valores
+faltantes de 891 registros; se conservaron los 107 registros duplicados al
+verificar que corresponden a pasajeros distintos sin identificador unico y no a
+errores de captura; y se excluyeron cinco variables redundantes
+(`alive`, `class`, `who`, `adult_male`, `embark_town`) por reproducir informacion
+ya contenida en otras columnas, siendo `alive` un caso de fuga de informacion
+directa sobre la variable objetivo. El analisis muestra un conjunto desbalanceado
+(38.4 % de sobrevivientes), una diferencia marcada de supervivencia por sexo
+(74.2 % en mujeres frente a 18.9 % en hombres) y un gradiente claro por clase de
+pasaje (63.0 %, 47.3 % y 24.2 % de primera a tercera). Ninguna variable numerica
+supera por si sola una correlacion de 0.34 con el objetivo, lo que anticipa que
+un modelo predictivo necesitara combinar varios predictores en lugar de apoyarse
+en uno solo.
+
+# Planteamiento del problema
+
+El hundimiento del RMS Titanic en 1912 dejo un registro de pasajeros que se ha
+convertido en un caso de estudio clasico para el analisis exploratorio, porque
+combina variables demograficas, economicas y de contexto familiar sobre un
+desenlace binario y bien documentado. La pregunta no es historica sino
+metodologica: cuando un resultado depende de multiples factores que ademas estan
+relacionados entre si, el analisis exploratorio es el paso que permite
+distinguir que variables aportan informacion y cuales solo repiten lo que otras
+ya dicen [@Tukey1977].
+
+Para este reporte se formula la siguiente pregunta de analisis:
+
+> Que caracteristicas del pasajero (demograficas, economicas y de contexto
+> familiar) se asocian con la supervivencia en el conjunto de datos?
+
+Este documento no entrena modelos predictivos. Su finalidad es explorar los
+datos, documentar su calidad y justificar que variables quedan disponibles para
+una etapa posterior de modelamiento.
+
+# Contexto del dataset
+
+## Fuente y unidad de analisis
+
+El archivo corresponde al conjunto *Titanic* incluido en la libreria seaborn
+[@SeabornData], derivado a su vez del registro historico de pasajeros del
+naufragio. Cada fila representa a un pasajero y contiene informacion
+demografica, economica y de contexto familiar, junto con el desenlace del viaje.
+
+La unidad de analisis es el pasajero.
+
+## Diccionario de variables
+
+- **Objetivo:** `survived` es binaria: 0 significa *no sobrevivio* y 1 significa
+  *sobrevivio*.
+- **Demografia:** `age` (numerica) y `sex` (categorica).
+- **Economia:** `pclass` (categorica ordinal: 1, 2 o 3) y `fare` (numerica, el
+  precio del pasaje).
+- **Contexto familiar:** `sibsp` (numero de hermanos o conyuge a bordo) y
+  `parch` (numero de padres o hijos a bordo), ambas numericas de conteo.
+- **Embarque:** `embarked` (categorica: S, C o Q).
+- **Variables redundantes:** `alive`, `class`, `who`, `adult_male`,
+  `embark_town` y `alone` reproducen informacion ya contenida en las columnas
+  anteriores. Se auditan en la seccion @sec-fuga antes de descartarlas.
+- **Variable con alta ausencia:** `deck` registra la cubierta del camarote y
+  esta mayormente vacia.
+
+# Carga y exploracion inicial
+
+## Dimensiones y tipos de variables
+
+```{python}
+#| label: carga
+df = pd.read_csv("datos/titanic.csv")
+
+print(f"Filas: {df.shape[0]}   Columnas: {df.shape[1]}")
+```
+
+```{python}
+#| label: tbl-tipos
+#| tbl-cap: "Tipo de dato y cantidad de valores no nulos por variable."
+resumen_tipos = pd.DataFrame({
+    "tipo": df.dtypes.astype(str),
+    "no_nulos": df.notna().sum(),
+    "nulos": df.isna().sum(),
+})
+tabla(resumen_tipos)
+```
+
+El conjunto tiene 891 filas y 15 columnas. La @tbl-tipos confirma que los tipos
+de dato son coherentes con lo que representa cada variable: las numericas
+(`age`, `fare`, `sibsp`, `parch`) estan cargadas como numeros y no como texto,
+que es el error silencioso mas comun al leer un CSV. Se observa ademas que tres
+variables tienen valores faltantes, lo que se examina a continuacion.
+
+## Calidad de datos
+
+```{python}
+#| label: tbl-nulos
+#| tbl-cap: "Variables con valores faltantes, en cantidad y porcentaje."
+nulos = df.isna().sum()
+nulos = nulos[nulos > 0].sort_values(ascending=False)
+
+tabla(pd.DataFrame({
+    "faltantes": nulos,
+    "porcentaje": (nulos / len(df) * 100),
+}))
+```
+
+```{python}
+#| label: duplicados
+print(f"Filas duplicadas: {df.duplicated().sum()}")
+```
+
+La @tbl-nulos muestra tres situaciones distintas, y cada una exige una decision
+distinta:
+
+1. `deck` tiene 688 faltantes sobre 891 registros (77.2 %). Imputar el 77 % de
+   una columna seria inventar la mayor parte de su contenido, asi que se
+   descarta del analisis.
+2. `age` tiene 177 faltantes (19.9 %). Es una proporcion recuperable, pero
+   imputarla exige un criterio explicito; se documenta mas adelante.
+3. `embarked` y `embark_town` tienen 2 faltantes cada una (0.2 %), un volumen
+   despreciable.
+
+Respecto a los 107 duplicados: el conjunto no tiene columna de identificador,
+de modo que dos pasajeros de tercera clase, varones, sin familiares a bordo y
+con el mismo pasaje economico producen filas identicas sin ser la misma persona.
+Se conservan, porque eliminarlos borraria pasajeros reales y distorsionaria la
+distribucion justamente del grupo mas numeroso.
+
+## Rangos y valores atipicos
+
+```{python}
+#| label: tbl-describe
+#| tbl-cap: "Estadisticos descriptivos de las variables numericas."
+numericas = ["age", "fare", "sibsp", "parch"]
+tabla(df[numericas].describe())
+```
+
+Los rangos de la @tbl-describe son plausibles: la edad va de 0.42 a 80 anios
+(0.42 corresponde a un bebe de cinco meses, no a un error) y el precio del
+pasaje parte de 0, valor compatible con tripulacion o pasajes de cortesia. El
+maximo de `fare` es 512.33, muy por encima de la mediana de 14.45, lo que
+anticipa una distribucion fuertemente sesgada. Ningun valor cae fuera de un
+rango logico, de modo que no se corrige ni elimina ninguna observacion por
+implausibilidad.
+
+# Preprocesamiento y decisiones de data wrangling
+
+## Revision de fuga de informacion {#sec-fuga}
+
+La fuga de informacion ocurre cuando una variable predictora contiene, de forma
+directa o disfrazada, la respuesta que se quiere predecir. Un modelo entrenado
+con ella alcanza una exactitud casi perfecta en evaluacion y falla por completo
+en uso real, porque en la practica esa informacion no existe antes de conocer el
+desenlace. Por eso se audita antes de cualquier modelamiento.
+
+```{python}
+#| label: tbl-fuga
+#| tbl-cap: "Tabulacion cruzada entre `alive` y la variable objetivo `survived`."
+tabla(pd.crosstab(df["alive"], df["survived"]))
+```
+
+La @tbl-fuga es concluyente: las 549 filas con `alive = "no"` corresponden
+exactamente a `survived = 0`, y las 342 con `alive = "yes"` a `survived = 1`.
+La correspondencia es perfecta porque `alive` es la misma variable objetivo
+escrita como texto. Usarla como predictora equivaldria a darle la respuesta al
+modelo, por lo que se excluye.
+
+```{python}
+#| label: tbl-redundantes
+#| tbl-cap: "Tabulacion cruzada entre `class` y `pclass`: la misma informacion en dos formatos."
+tabla(pd.crosstab(df["class"], df["pclass"]))
+```
+
+La @tbl-redundantes ilustra un caso distinto pero igualmente relevante: `class`
+no filtra la respuesta, simplemente repite `pclass` en formato de texto. Mantener
+ambas no aporta informacion nueva y si introduce colinealidad perfecta. El mismo
+razonamiento aplica a `who` y `adult_male` (derivadas de `sex` y `age`),
+`embark_town` (equivalente a `embarked`) y `alone` (derivada de `sibsp` y
+`parch`).
+
+```{python}
+#| label: seleccion
+# Se excluyen: la fuga (alive), las redundantes y la columna mayormente vacia.
+a_excluir = ["alive", "class", "who", "adult_male",
+             "embark_town", "alone", "deck"]
+datos = df.drop(columns=a_excluir)
+
+print(f"Variables antes: {df.shape[1]}   |   despues: {datos.shape[1]}")
+print("Variables conservadas:", ", ".join(datos.columns))
+```
+
+## Tratamiento de valores faltantes
+
+```{python}
+#| label: imputacion
+# age: se imputa con la mediana, que no se desplaza por los valores extremos.
+mediana_edad = datos["age"].median()
+datos["age"] = datos["age"].fillna(mediana_edad)
+
+# embarked: solo 2 casos; se usa la categoria mas frecuente.
+moda_embarque = datos["embarked"].mode()[0]
+datos["embarked"] = datos["embarked"].fillna(moda_embarque)
+
+print(f"age imputada con la mediana: {mediana_edad}")
+print(f"embarked imputada con la moda: {moda_embarque}")
+print(f"Faltantes restantes: {datos.isna().sum().sum()}")
+```
+
+Se eligio la mediana y no la media para `age` porque la mediana no se desplaza
+ante valores extremos. Conviene dejar constancia de que imputar 177 valores con
+una misma cifra reduce artificialmente la varianza de la variable, de modo que
+las conclusiones sobre la dispersion de la edad deben leerse con esa advertencia
+presente.
+
+## Variable derivada para la comunicacion
+
+```{python}
+#| label: etiqueta-legible
+# Version legible del objetivo, solo para tablas y graficos.
+etiquetas = {0: "No sobrevivio", 1: "Sobrevivio"}
+datos["estado"] = datos["survived"].map(etiquetas)
+
+print(datos["estado"].value_counts().to_string())
+```
+
+`estado` no agrega informacion: es `survived` escrito en palabras, y existe
+unicamente para que las leyendas de los graficos se lean sin consultar el
+diccionario. Para cualquier calculo o modelamiento se usa la version numerica
+original.
+
+# Analisis exploratorio de datos
+
+## Analisis univariado
+
+```{python}
+#| label: fig-objetivo
+#| fig-cap: "Distribucion de la variable objetivo. El conjunto esta desbalanceado."
+#| fig-height: 3.2
+conteo = datos["estado"].value_counts()
+porcentaje = datos["estado"].value_counts(normalize=True) * 100
+
+fig, ax = plt.subplots()
+barras = ax.bar(conteo.index, conteo.values,
+                color=[COLORES_OBJETIVO[c] for c in conteo.index], width=0.55)
+
+# Etiqueta directa sobre cada barra: evita que el lector tenga que medir
+# contra el eje.
+for barra, n, pct in zip(barras, conteo.values, porcentaje.values):
+    ax.text(barra.get_x() + barra.get_width() / 2, n + 8,
+            f"{n}  ({pct:.1f} %)", ha="center", fontsize=9, color="#1F2937")
+
+ax.set_ylabel("Pasajeros")
+ax.set_ylim(0, conteo.max() * 1.18)
+ax.set_title("Supervivencia en el Titanic")
+plt.show()
+```
+
+La @fig-objetivo muestra 549 pasajeros que no sobrevivieron (61.6 %) frente a
+342 que si (38.4 %). El desbalance es moderado, pero tiene dos consecuencias
+concretas para una etapa de modelamiento: la particion entre entrenamiento y
+prueba debe ser estratificada para preservar esa proporcion en ambos conjuntos,
+y la exactitud (*accuracy*) deja de ser una metrica informativa, porque un
+modelo que prediga siempre "no sobrevivio" acertaria el 61.6 % de las veces sin
+haber aprendido nada.
+
+```{python}
+#| label: fig-histogramas
+#| fig-cap: "Distribucion de las variables numericas."
+#| fig-height: 5.5
+fig, axes = plt.subplots(2, 2, figsize=(7, 5.5))
+
+for ax, columna in zip(axes.flat, numericas):
+    sns.histplot(data=datos, x=columna, bins=30, color=AZUL, ax=ax,
+                 edgecolor="white", linewidth=0.5)
+    ax.set_title(columna)
+    ax.set_xlabel("")
+    ax.set_ylabel("Frecuencia")
+
+plt.tight_layout()
+plt.show()
+```
+
+Las cuatro distribuciones de la @fig-histogramas tienen formas distintas y cada
+una implica algo diferente:
+
+- `age` es aproximadamente simetrica y centrada cerca de los 28 anios, con una
+  barra alta en ese punto producida por la imputacion.
+- `fare` esta fuertemente sesgada a la derecha: la mayoria de pasajes cuesta
+  menos de 50 y unos pocos superan los 500. Una transformacion logaritmica
+  ayudaria a un modelo lineal.
+- `sibsp` y `parch` son variables de conteo concentradas en cero: la mayoria
+  viajaba sin familiares a bordo.
+
+La diferencia de escala tambien importa: `fare` llega a 512 mientras `parch` no
+pasa de 6. Cualquier algoritmo basado en distancias exigiria estandarizar antes
+de entrenar.
+
+```{python}
+#| label: fig-boxplots
+#| fig-cap: "Dispersion y valores extremos de las variables numericas."
+#| fig-height: 3.4
+fig, axes = plt.subplots(1, 4, figsize=(7, 3.4))
+
+for ax, columna in zip(axes, numericas):
+    sns.boxplot(data=datos, y=columna, ax=ax, color=AZUL, width=0.45,
+                fliersize=2.5, linewidth=1)
+    ax.set_title(columna)
+    ax.set_ylabel("")
+
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| label: tbl-resumen
+#| tbl-cap: "Medidas de centralidad y dispersion de las variables numericas."
+resumen = pd.DataFrame({
+    "media": datos[numericas].mean(),
+    "mediana": datos[numericas].median(),
+    "desv_est": datos[numericas].std(),
+    "rango": datos[numericas].max() - datos[numericas].min(),
+    "Q1": datos[numericas].quantile(0.25),
+    "Q3": datos[numericas].quantile(0.75),
+})
+tabla(resumen)
+```
+
+La @fig-boxplots y la @tbl-resumen deben leerse juntos. En `fare`, la media
+(32.20) duplica largamente a la mediana (14.45): esa distancia entre ambas es la
+firma numerica del sesgo que el histograma mostro de forma visual. Los 116
+puntos por encima del limite superior del bigote (65.63) corresponden a
+camarotes de lujo, no a errores de captura, de modo que se conservan;
+eliminarlos borraria justamente el grupo de primera clase. En `age`, media
+(29.36) y mediana (28.00) casi coinciden, lo que confirma una distribucion
+simetrica.
+
+```{python}
+#| label: fig-categoricas
+#| fig-cap: "Frecuencia de las variables categoricas."
+#| fig-height: 2.8
+categoricas = ["sex", "pclass", "embarked"]
+fig, axes = plt.subplots(1, 3, figsize=(7, 2.8))
+
+for ax, columna in zip(axes, categoricas):
+    conteos = datos[columna].value_counts()
+    ax.bar(conteos.index.astype(str), conteos.values,
+           color=GRIS, width=0.55)
+    ax.set_title(columna)
+    ax.set_ylabel("Pasajeros" if columna == "sex" else "")
+
+plt.tight_layout()
+plt.show()
+```
+
+La @fig-categoricas muestra que ninguna categoria es tan rara como para volverse
+problematica: la menos frecuente es el puerto Q con 77 pasajeros, suficiente
+para estimar proporciones. `pclass` se trata como ordinal, porque el orden 1 <
+2 < 3 tiene significado economico, mientras que `sex` y `embarked` son
+nominales y requeririan codificacion *one-hot*.
+
+## Analisis multivariado
+
+```{python}
+#| label: fig-heatmap
+#| fig-cap: "Matriz de correlacion entre las variables numericas y el objetivo."
+#| fig-height: 4.2
+correlaciones = datos[numericas + ["pclass", "survived"]].corr()
+
+# Se recorta la primera fila y la ultima columna (quedarian vacias) y se
+# enmascara la mitad superior, que solo repite la inferior.
+recortada = correlaciones.iloc[1:, :-1]
+mascara = np.triu(np.ones_like(recortada, dtype=bool), k=1)
+
+fig, ax = plt.subplots(figsize=(5.6, 4.2))
+sns.heatmap(recortada, mask=mascara, annot=True, fmt=".2f",
+            cmap="RdBu_r", center=0, vmin=-1, vmax=1,
+            linewidths=0.5, linecolor="white",
+            cbar_kws={"label": "Correlacion"}, ax=ax,
+            annot_kws={"size": 8})
+ax.set_title("Correlaciones (mitad inferior)")
+plt.tight_layout()
+plt.show()
+```
+
+Se enmascara la mitad superior porque la matriz es simetrica y mostrarla
+completa duplica la misma informacion. La escala es divergente y centrada en
+cero: el color indica el signo y la intensidad indica la fuerza. En la
+@fig-heatmap destacan dos pares: `pclass` con `fare` (-0.55), esperable porque
+la primera clase paga mas y esta codificada con el numero menor, y `sibsp` con
+`parch` (0.41), ambas midiendo la presencia de familiares a bordo. Ninguna
+pareja alcanza niveles de colinealidad severa. Conviene recordar que la
+correlacion mide asociacion lineal y no implica causalidad.
+
+```{python}
+#| label: tbl-corr-objetivo
+#| tbl-cap: "Correlacion de cada variable numerica con `survived`, ordenada por magnitud."
+corr_objetivo = (
+    datos[numericas + ["pclass", "survived"]]
+    .corr()["survived"]
+    .drop("survived")
+    .sort_values(key=abs, ascending=False)
+    .to_frame("correlacion_con_survived")
+)
+tabla(corr_objetivo, decimales=3)
+```
+
+La @tbl-corr-objetivo ordena las variables por fuerza de asociacion: `pclass`
+(-0.338) y `fare` (0.257) encabezan la lista, mientras `age` (-0.065) y `sibsp`
+(-0.035) son practicamente planas. Dos advertencias sobre como leer esta tabla.
+Primero, ninguna variable pasa de 0.34, de modo que ningun predictor aislado
+separa las clases y un modelo debera combinarlos. Segundo, esta tabla no incluye
+`sex`, que es categorica; como se vera enseguida, es justamente la variable con
+mayor poder de discriminacion. Una seleccion de variables basada solo en
+correlaciones numericas habria descartado la mejor senal del conjunto.
+
+```{python}
+#| label: fig-boxplots-clase
+#| fig-cap: "Distribucion de edad y precio del pasaje segun el desenlace."
+#| fig-height: 3.2
+fig, axes = plt.subplots(1, 2, figsize=(7, 3.2))
+orden = ["No sobrevivio", "Sobrevivio"]
+
+for ax, columna in zip(axes, ["age", "fare"]):
+    sns.boxplot(data=datos, x="estado", y=columna, order=orden,
+                hue="estado", hue_order=orden, palette=COLORES_OBJETIVO,
+                legend=False, ax=ax, width=0.5, fliersize=2.5, linewidth=1)
+    ax.set_title(columna)
+    ax.set_xlabel("")
+
+# Se recorta la cola extrema de fare para poder ver las cajas.
+axes[1].set_ylim(0, 300)
+plt.tight_layout()
+plt.show()
+```
+
+La @fig-boxplots-clase contrasta dos comportamientos opuestos. En `age` las dos
+cajas se solapan casi por completo y ambas medianas coinciden en 28 anios: la
+edad, por si sola, no distingue a los sobrevivientes. En `fare` la separacion si
+es visible, con una mediana de 10.50 entre quienes no sobrevivieron frente a
+26.00 entre quienes si, aunque el solapamiento sigue siendo amplio. El eje de
+`fare` se recorto en 300 para que las cajas resulten legibles; el recorte oculta
+puntos extremos, no los elimina del calculo.
+
+```{python}
+#| label: fig-tasas
+#| fig-cap: "Porcentaje de supervivencia por sexo y por clase de pasaje."
+#| fig-height: 3.0
+fig, axes = plt.subplots(1, 2, figsize=(7, 3.0))
+
+for ax, columna, titulo in zip(axes, ["sex", "pclass"],
+                               ["Por sexo", "Por clase de pasaje"]):
+    tasa = datos.groupby(columna)["survived"].mean() * 100
+    barras = ax.bar(tasa.index.astype(str), tasa.values,
+                    color=AMBAR, width=0.55)
+    for barra, valor in zip(barras, tasa.values):
+        ax.text(barra.get_x() + barra.get_width() / 2, valor + 2,
+                f"{valor:.1f} %", ha="center", fontsize=9, color="#1F2937")
+    ax.axhline(datos["survived"].mean() * 100, color=GRIS,
+               linestyle="--", linewidth=1)
+    ax.set_title(titulo)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel("Supervivencia (%)" if columna == "sex" else "")
+
+plt.tight_layout()
+plt.show()
+```
+
+La @fig-tasas usa proporciones y no conteos, porque los grupos tienen tamanios
+muy distintos y comparar frecuencias absolutas seria enganioso. La linea punteada
+marca la tasa general del conjunto (38.4 %), lo que permite ver de un vistazo
+que grupos quedan por encima y cuales por debajo. El contraste por sexo es el
+hallazgo mas fuerte del reporte: 74.2 % de las mujeres sobrevivio frente a
+18.9 % de los hombres, una diferencia de 55 puntos porcentuales. Por clase se
+observa un gradiente ordenado: 63.0 %, 47.3 % y 24.2 % de primera a tercera.
+
+```{python}
+#| label: fig-dispersion
+#| fig-cap: "Relacion entre edad y precio del pasaje, diferenciada por desenlace."
+#| fig-height: 3.8
+fig, ax = plt.subplots(figsize=(7, 3.8))
+
+sns.scatterplot(data=datos, x="age", y="fare", hue="estado",
+                hue_order=orden, palette=COLORES_OBJETIVO,
+                alpha=0.65, s=28, edgecolor="white",
+                linewidth=0.4, ax=ax)
+
+ax.set_ylim(0, 300)
+ax.set_xlabel("Edad (anios)")
+ax.set_ylabel("Precio del pasaje")
+ax.legend(title="", frameon=False, loc="upper right")
+ax.set_title("Edad frente a precio del pasaje")
+plt.tight_layout()
+plt.show()
+```
+
+En la @fig-dispersion no se observa una relacion lineal entre edad y precio: los
+puntos se reparten sin tendencia definida. Los dos colores se superponen en casi
+todo el plano, con una leve concentracion de sobrevivientes en la franja de
+pasajes mas caros. La lectura es la misma que sugirio la tabla de correlaciones:
+estas dos variables por si solas no separan las clases.
+
+```{python}
+#| label: tbl-covarianza
+#| tbl-cap: "Matriz de covarianza entre las variables numericas."
+tabla(datos[numericas].cov())
+```
+
+La @tbl-covarianza confirma el signo de las relaciones: la covarianza entre
+`age` y `fare` es positiva (62.56), es decir, tienden a crecer juntas. Su
+magnitud, sin embargo, no es interpretable ni comparable entre pares, porque
+depende de las unidades de cada variable: una covarianza de 62.56 entre anios y
+libras esterlinas no es "mas fuerte" que la de 0.37 entre `sibsp` y `parch`, que
+son dos conteos. Esa es
+exactamente la razon por la que se reporta junto con la correlacion, que al
+estar normalizada entre -1 y 1 si permite comparar.
+
+# Conclusiones
+
+1. **Calidad de datos.** El conjunto presenta faltantes en tres variables, con
+   tratamientos distintos segun su magnitud: `deck` se descarto (77.2 % vacia),
+   `age` se imputo con la mediana (19.9 %) y `embarked` con la moda (0.2 %). Los
+   107 duplicados se conservaron por corresponder a pasajeros distintos sin
+   identificador unico.
+
+2. **Desbalance del objetivo.** La clase positiva representa el 38.4 % de los
+   registros. Un modelo posterior exige particion estratificada y metricas
+   distintas de la exactitud, como *recall* o F1.
+
+3. **Variables excluidas.** Se descartaron siete columnas: `alive` por fuga de
+   informacion directa, `class`, `who`, `adult_male`, `embark_town` y `alone`
+   por redundancia con variables ya presentes, y `deck` por ausencia masiva de
+   datos.
+
+4. **Variables mas prometedoras.** `sex` es el predictor con mayor poder de
+   discriminacion (55 puntos porcentuales de diferencia), seguido de `pclass` y
+   `fare`. `age`, `sibsp` y `parch` muestran asociaciones debiles de forma
+   aislada, aunque podrian aportar en combinacion con las anteriores.
+
+5. **Advertencia metodologica.** Las correlaciones numericas por si solas
+   habrian pasado por alto a `sex`, que es categorica y resulto ser la variable
+   mas informativa. La seleccion de predictores no puede apoyarse unicamente en
+   una matriz de correlacion.
+
+6. **Hacia el modelamiento.** Un modelo posterior deberia codificar `sex` y
+   `embarked` (*one-hot*), tratar `pclass` como ordinal, estandarizar las
+   numericas si el algoritmo lo requiere y ajustar toda transformacion
+   unicamente sobre los datos de entrenamiento, para no trasladar informacion
+   del conjunto de prueba al de ajuste.
+
+# Limitaciones y consideraciones eticas
+
+El conjunto no documenta su procedimiento de recoleccion ni el criterio con que
+se completaron los registros historicos, de modo que no puede asumirse libre de
+errores de transcripcion. Tampoco es una muestra aleatoria: corresponde a la
+totalidad de un evento unico, por lo que sus patrones no son extrapolables a
+otros contextos.
+
+El uso de este conjunto como ejercicio academico no debe hacer perder de vista
+que cada fila representa a una persona real fallecida o sobreviviente de una
+catastrofe. Al reportar diferencias por sexo o por clase social, el analisis
+describe las condiciones de acceso a los botes salvavidas en 1912 y no una
+propiedad de las personas involucradas. Esta distincion entre describir un
+patron y explicarlo es la misma que aplica a cualquier analisis sobre datos de
+personas.
+
+# Herramientas utilizadas {.unnumbered}
+
+El analisis se realizo en Python con pandas para la manipulacion de datos
+[@McKinney2010], matplotlib para la generacion de graficos [@Hunter2007] y
+seaborn para los graficos estadisticos [@Waskom2021]. Los criterios de
+organizacion de los datos siguen los principios de *tidy data* [@Wickham2014].
+
+# Referencias {.unnumbered}

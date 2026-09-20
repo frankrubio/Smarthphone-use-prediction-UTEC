@@ -412,12 +412,12 @@ Artificial}
 de datos y las conclusiones de P1. Debe tener entre 150 y 200 palabras e
 incluir, en este orden: (1) qué dataset se usó y cuántos
 registros/columnas tiene, (2) el objetivo del análisis (qué se busca
-entender sobre \texttt{addicted\_label}), (3) las dos o tres decisiones
-de limpieza más importantes que se tomaron y por qué, (4) los dos o tres
-hallazgos más relevantes del EDA, citando cifras reales obtenidas del
-código (no inventadas ni copiadas de un borrador), y (5) una frase que
-conecte con lo que se hará en la P2. No copiar texto de otras secciones;
-debe ser una síntesis propia, escrita por el equipo.}
+entender sobre \texttt{etiqueta\_de\_adiccion}), (3) las dos o tres
+decisiones de limpieza más importantes que se tomaron y por qué, (4) los
+dos o tres hallazgos más relevantes del EDA, citando cifras reales
+obtenidas del código (no inventadas ni copiadas de un borrador), y (5)
+una frase que conecte con lo que se hará en la P2. No copiar texto de
+otras secciones; debe ser una síntesis propia, escrita por el equipo.}
 
 \section{Planteamiento del problema}\label{planteamiento-del-problema}
 
@@ -436,11 +436,9 @@ Para este proyecto, se formula la siguiente pregunta de análisis:
 
 \begin{quote}
 ¿Qué patrones de uso, descanso y contexto personal están asociados con
-la etiqueta de adicción en el conjunto de datos?
+la etiqueta de adicción en el conjunto de datos
+smartphone-use-prediction?
 \end{quote}
-
-La P1 no entrena modelos predictivos. Su finalidad es asegurar que la P2
-use variables pertinentes, datos de calidad y decisiones justificadas.
 
 \section{Contexto del dataset}\label{contexto-del-dataset}
 
@@ -458,56 +456,6 @@ impacto percibido en actividades académicas o laborales.
 La unidad de análisis es el usuario. El dataset incluye 7,500 registros
 y 16 columnas originales: dos identificadores, nueve variables
 numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Cargamos el archivo csv}
-\ImportTok{import}\NormalTok{ kagglehub}
-\NormalTok{path }\OperatorTok{=}\NormalTok{ kagglehub.dataset\_download(}\StringTok{"jayjoshi37/smartphone{-}usage{-}and{-}addiction{-}prediction"}\NormalTok{)}
-\ImportTok{import}\NormalTok{ os}
-\CommentTok{\# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo}
-\NormalTok{ruta\_csv }\OperatorTok{=}\NormalTok{ os.path.join(path, }\StringTok{"Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv"}\NormalTok{)}
-\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(ruta\_csv)}
-
-\CommentTok{\# Analizamos las primeras filas}
-\NormalTok{df.head(}\DecValTok{10}\NormalTok{)}
-
-\CommentTok{\# Analizamos los tipos de variables contenidos en la csv}
-\NormalTok{df.info() }\CommentTok{\# Observamos valores nulos en la columna "addiction\_level"}
-
-\CommentTok{\# Obtenemos la lista de columnas}
-\NormalTok{df.columns}
-
-\CommentTok{\# Renombramos todas las columnas para un uso natural}
-\NormalTok{df }\OperatorTok{=}\NormalTok{ df.rename(\{}\StringTok{\textquotesingle{}transaction\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_transaccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}user\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_usuario\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}age\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}edad\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gender\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}genero\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}daily\_screen\_time\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_diarias\_pantalla\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}social\_media\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_redes\_sociales\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gaming\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_videojuegos\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}work\_study\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_trabajo/estudio\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}sleep\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_sueño\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}notifications\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}notificaciones\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}app\_opens\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}aperturas\_apps\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}weekend\_screen\_time\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}tiempo\_en\_pantalla\_fin\_de\_semana\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}stress\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_estres\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}academic\_work\_impact\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}impacto\_academico/laboral\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addiction\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_adiccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addicted\_label\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{\} , axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-<class 'pandas.DataFrame'>
-RangeIndex: 7500 entries, 0 to 7499
-Data columns (total 16 columns):
- #   Column                   Non-Null Count  Dtype  
----  ------                   --------------  -----  
- 0   transaction_id           7500 non-null   str    
- 1   user_id                  7500 non-null   str    
- 2   age                      7500 non-null   int64  
- 3   gender                   7500 non-null   str    
- 4   daily_screen_time_hours  7500 non-null   float64
- 5   social_media_hours       7500 non-null   float64
- 6   gaming_hours             7500 non-null   float64
- 7   work_study_hours         7500 non-null   float64
- 8   sleep_hours              7500 non-null   float64
- 9   notifications_per_day    7500 non-null   int64  
- 10  app_opens_per_day        7500 non-null   int64  
- 11  weekend_screen_time      7500 non-null   float64
- 12  stress_level             7500 non-null   str    
- 13  academic_work_impact     7500 non-null   str    
- 14  addiction_level          6681 non-null   str    
- 15  addicted_label           7500 non-null   int64  
-dtypes: float64(6), int64(4), str(6)
-memory usage: 937.6 KB
-\end{verbatim}
 
 \subsection{Diccionario de variables}\label{diccionario-de-variables}
 
@@ -550,14 +498,146 @@ explícitamente antes de considerar su uso en P2.
 \section{Carga y exploración
 inicial}\label{carga-y-exploraciuxf3n-inicial}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Cargamos el archivo csv}
+\ImportTok{import}\NormalTok{ kagglehub}
+\NormalTok{path }\OperatorTok{=}\NormalTok{ kagglehub.dataset\_download(}\StringTok{"jayjoshi37/smartphone{-}usage{-}and{-}addiction{-}prediction"}\NormalTok{)}
+\ImportTok{import}\NormalTok{ os}
+\CommentTok{\# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo}
+\NormalTok{ruta\_csv }\OperatorTok{=}\NormalTok{ os.path.join(path, }\StringTok{"Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv"}\NormalTok{)}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(ruta\_csv)}
+
+
+
+\CommentTok{\# Obtenemos la lista de columnas}
+\NormalTok{df.columns}
+
+\CommentTok{\# Renombramos todas las columnas para un uso natural}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ df.rename(\{}\StringTok{\textquotesingle{}transaction\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_transaccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}user\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_usuario\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}age\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}edad\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gender\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}genero\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}daily\_screen\_time\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_diarias\_pantalla\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}social\_media\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_redes\_sociales\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gaming\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_videojuegos\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}work\_study\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_trabajo/estudio\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}sleep\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_sueño\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}notifications\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}notificaciones\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}app\_opens\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}aperturas\_apps\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}weekend\_screen\_time\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}tiempo\_en\_pantalla\_fin\_de\_semana\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}stress\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_estres\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}academic\_work\_impact\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}impacto\_academico/laboral\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addiction\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_adiccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addicted\_label\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{\} , axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, con label + tbl{-}cap.}
+\NormalTok{df.head(}\DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+{
+
+\begin{longtable}[]{@{}lllllllllllllllll@{}}
+
+\caption{\label{tbl-head}Primeras 10 filas del dataset (ya con nombres
+de columna en español)}
+
+\tabularnewline
+
+\toprule\noalign{}
+& ID\_transaccion & ID\_usuario & edad & genero &
+horas\_diarias\_pantalla & horas\_redes\_sociales & horas\_videojuegos &
+horas\_trabajo/estudio & horas\_sueño & notificaciones\_por\_dia &
+aperturas\_apps\_por\_dia & tiempo\_en\_pantalla\_fin\_de\_semana &
+nivel\_estres & impacto\_academico/laboral & nivel\_adiccion &
+etiqueta\_de\_adiccion \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & TXN00001 & U00001 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 &
+248 & 154 & 3.95 & Medium & Yes & NaN & 0 \\
+1 & TXN00002 & U00002 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 &
+127 & 71 & 6.71 & Medium & Yes & NaN & 0 \\
+2 & TXN00003 & U00003 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 &
+44 & 106 & 8.68 & High & No & Mild & 0 \\
+3 & TXN00004 & U00004 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 &
+178 & 107 & 9.77 & High & Yes & Moderate & 1 \\
+4 & TXN00005 & U00005 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 &
+136 & 177 & 12.55 & Low & No & Severe & 1 \\
+5 & TXN00006 & U00006 & 26 & Male & 9.32 & 4.26 & 0.29 & 3.99 & 6.90 &
+82 & 56 & 10.98 & Medium & Yes & Severe & 1 \\
+
+\end{longtable}
+
+}
+
+\begin{verbatim}
+<class 'pandas.DataFrame'>
+RangeIndex: 7500 entries, 0 to 7499
+Data columns (total 16 columns):
+ #   Column                            Non-Null Count  Dtype  
+---  ------                            --------------  -----  
+ 0   ID_transaccion                    7500 non-null   str    
+ 1   ID_usuario                        7500 non-null   str    
+ 2   edad                              7500 non-null   int64  
+ 3   genero                            7500 non-null   str    
+ 4   horas_diarias_pantalla            7500 non-null   float64
+ 5   horas_redes_sociales              7500 non-null   float64
+ 6   horas_videojuegos                 7500 non-null   float64
+ 7   horas_trabajo/estudio             7500 non-null   float64
+ 8   horas_sueño                       7500 non-null   float64
+ 9   notificaciones_por_dia            7500 non-null   int64  
+ 10  aperturas_apps_por_dia            7500 non-null   int64  
+ 11  tiempo_en_pantalla_fin_de_semana  7500 non-null   float64
+ 12  nivel_estres                      7500 non-null   str    
+ 13  impacto_academico/laboral         7500 non-null   str    
+ 14  nivel_adiccion                    6681 non-null   str    
+ 15  etiqueta_de_adiccion              7500 non-null   int64  
+dtypes: float64(6), int64(4), str(6)
+memory usage: 937.6 KB
+\end{verbatim}
+
+\begin{verbatim}
+Index(['ID_transaccion', 'ID_usuario', 'edad', 'genero',
+       'horas_diarias_pantalla', 'horas_redes_sociales', 'horas_videojuegos',
+       'horas_trabajo/estudio', 'horas_sueño', 'notificaciones_por_dia',
+       'aperturas_apps_por_dia', 'tiempo_en_pantalla_fin_de_semana',
+       'nivel_estres', 'impacto_academico/laboral', 'nivel_adiccion',
+       'etiqueta_de_adiccion'],
+      dtype='str')
+\end{verbatim}
+
 \subsection{Dimensiones y tipos de
 variables}\label{dimensiones-y-tipos-de-variables}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.}
+\NormalTok{df.shape}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+(7500, 16)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.}
+\NormalTok{df.dtypes}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+ID_transaccion                          str
+ID_usuario                              str
+edad                                  int64
+genero                                  str
+horas_diarias_pantalla              float64
+horas_redes_sociales                float64
+horas_videojuegos                   float64
+horas_trabajo/estudio               float64
+horas_sueño                         float64
+notificaciones_por_dia                int64
+aperturas_apps_por_dia                int64
+tiempo_en_pantalla_fin_de_semana    float64
+nivel_estres                            str
+impacto_academico/laboral               str
+nivel_adiccion                          str
+etiqueta_de_adiccion                  int64
+dtype: object
+\end{verbatim}
 
 \emph{Instrucciones para esta sección: comentar, con base en la salida
 real de \texttt{df.info()} / \texttt{df.dtypes}, cuántas filas y
@@ -575,6 +655,18 @@ verificarlas con el código.}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).}
+\NormalTok{df[}\StringTok{"nivel\_adiccion"}\NormalTok{].isnull().}\BuiltInTok{sum}\NormalTok{()}
+\CommentTok{\#Notamos que hay 819 valores nulos en la columna \textquotesingle{}nivel\_adiccion\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+np.int64(819)
+\end{verbatim}
+
 \emph{Instrucciones para esta sección: reportar cuántos valores
 faltantes se encontraron y en qué columna(s), y cuántas filas duplicadas
 existen. Explicar la causa probable de los faltantes (por ejemplo, si
@@ -586,58 +678,259 @@ aquí o remitir a la sección de fuga de información.}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: revisar rangos (df.describe()) de las variables numéricas y valores únicos de las categóricas, para detectar valores imposibles o atípicos.}
+\NormalTok{df.describe()}
 \end{Highlighting}
 \end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lllllllllll@{}}
+\toprule\noalign{}
+& edad & horas\_diarias\_pantalla & horas\_redes\_sociales &
+horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
+notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
+tiempo\_en\_pantalla\_fin\_de\_semana & etiqueta\_de\_adiccion \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+count & 7500.000000 & 7500.000000 & 7500.000000 & 7500.000000 &
+7500.000000 & 7500.000000 & 7500.000000 & 7500.000000 & 7500.000000 &
+7500.000000 \\
+mean & 26.568800 & 7.499912 & 3.273484 & 2.014183 & 3.242420 & 6.737561
+& 134.257333 & 97.832400 & 9.243827 & 0.707733 \\
+std & 5.197108 & 2.609188 & 1.585342 & 1.146039 & 1.600765 & 1.283605 &
+66.586883 & 48.423349 & 2.718281 & 0.454835 \\
+min & 18.000000 & 3.000000 & 0.500000 & 0.000000 & 0.500000 & 4.500000 &
+20.000000 & 15.000000 & 3.580000 & 0.000000 \\
+25\% & 22.000000 & 5.220000 & 1.910000 & 1.020000 & 1.850000 & 5.630000
+& 76.000000 & 55.000000 & 6.960000 & 0.000000 \\
+50\% & 27.000000 & 7.525000 & 3.270000 & 2.040000 & 3.230000 & 6.720000
+& 134.000000 & 98.000000 & 9.260000 & 1.000000 \\
+75\% & 31.000000 & 9.810000 & 4.630000 & 2.990000 & 4.640000 & 7.840000
+& 191.000000 & 140.000000 & 11.540000 & 1.000000 \\
+max & 35.000000 & 12.000000 & 6.000000 & 4.000000 & 6.000000 & 9.000000
+& 250.000000 & 180.000000 & 14.880000 & 1.000000 \\
+\end{longtable}
+}
 
 \emph{Instrucciones para esta sección: comentar si los rangos observados
 en \texttt{df.describe()} son plausibles para lo que representa cada
 variable (por ejemplo, edades, horas de uso, horas de sueño). Señalar
 explícitamente cualquier valor fuera de rango lógico y qué se hizo con
-los identificadores (\texttt{transaction\_id}, \texttt{user\_id}): ¿se
-conservan solo como referencia o se descartan del análisis?}
+los identificadores (\texttt{ID\_transaccion}, \texttt{ID\_usuario}):
+¿se conservan solo como referencia o se descartan del análisis?}
 
 \section{Preprocesamiento y decisiones de data
 wrangling}\label{preprocesamiento-y-decisiones-de-data-wrangling}
+
+Notamos que hay 819 valores nulos en la clumna ``nivel\_adiccion'', por
+lo que procederemos a analizar las filas que contengan valores nulos en
+esta columna
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lllllllllllllllll@{}}
+\toprule\noalign{}
+& ID\_transaccion & ID\_usuario & edad & genero &
+horas\_diarias\_pantalla & horas\_redes\_sociales & horas\_videojuegos &
+horas\_trabajo/estudio & horas\_sueño & notificaciones\_por\_dia &
+aperturas\_apps\_por\_dia & tiempo\_en\_pantalla\_fin\_de\_semana &
+nivel\_estres & impacto\_academico/laboral & nivel\_adiccion &
+etiqueta\_de\_adiccion \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & TXN00001 & U00001 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 &
+248 & 154 & 3.95 & Medium & Yes & NaN & 0 \\
+1 & TXN00002 & U00002 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 &
+127 & 71 & 6.71 & Medium & Yes & NaN & 0 \\
+8 & TXN00009 & U00009 & 21 & Other & 4.38 & 1.38 & 2.72 & 3.78 & 6.23 &
+172 & 134 & 6.20 & High & Yes & NaN & 0 \\
+11 & TXN00012 & U00012 & 27 & Other & 5.16 & 1.82 & 2.27 & 0.93 & 7.79 &
+228 & 32 & 8.10 & High & Yes & NaN & 0 \\
+13 & TXN00014 & U00014 & 32 & Male & 4.09 & 1.74 & 1.35 & 3.74 & 5.54 &
+76 & 16 & 4.77 & High & Yes & NaN & 0 \\
+\end{longtable}
+}
 
 \subsection{Revisión de fuga de
 información}\label{revisiuxf3n-de-fuga-de-informaciuxf3n}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: construir una tabla cruzada (pd.crosstab) entre addiction\_level y addicted\_label para revisar si addiction\_level "filtra" la respuesta.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: construir una tabla cruzada (pd.crosstab) entre nivel\_adiccion y etiqueta\_de\_adiccion para revisar si nivel\_adiccion "filtra" la respuesta.}
+
+\NormalTok{pd.crosstab(df[}\StringTok{"nivel\_adiccion"}\NormalTok{], df[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{])}
+
+\CommentTok{\# Notamos que la columna \textquotesingle{}nivel\_adiccion\textquotesingle{} o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción}
+\CommentTok{\# para alguien de adicción media p alta, la información de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{} es la necesaria y objetivo para este análisis}
+\CommentTok{\# puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.}
 \end{Highlighting}
 \end{Shaded}
 
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+etiqueta\_de\_adiccion & 0 & 1 \\
+nivel\_adiccion & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Mild & 1373 & 0 \\
+Moderate & 0 & 2874 \\
+Severe & 0 & 2434 \\
+\end{longtable}
+}
+
 \emph{Instrucciones para esta sección: interpretar la tabla cruzada
-anterior: ¿existe alguna categoría de \texttt{addiction\_level} que se
+anterior: ¿existe alguna categoría de \texttt{nivel\_adiccion} que se
 asocie de forma perfecta o casi perfecta con una sola clase de
-\texttt{addicted\_label}? Si es así, explicar por qué eso constituye
-\textbf{fuga de información} y qué variables se decide excluir de
-\texttt{X} para la P2 (y por qué).}
+\texttt{etiqueta\_de\_adiccion}? Si es así, explicar por qué eso
+constituye \textbf{fuga de información} y qué variables se decide
+excluir de \texttt{X} para la P2 (y por qué).}
+
+Notamos que la columna `nivel\_adiccion' \emph{o cae en 0 cuando es
+baja} o \emph{cae en 1 cuando es media o alta}, no hay ninguna excepción
+para alguien de adicción media p alta, la información de
+`etiqueta\_de\_adiccion' es la necesaria y objetivo para este análisis
+puesto que queremos encontrar qué patrones de uso, descanso y contexto
+personal están asociados con la etiqueta de adicción en el conjunto de
+datos que estamos abordando.
+
+Esto permitirá no repetir información en el proceso de modelamiento, ya
+que `nivel\_adiccion' ya revelaría que `etiqeuta\_de\_adiccion' es 1 o
+0.
 
 \emph{Instrucciones para esta sección: explicar por qué excluir las
 variables identificadas en el punto anterior protege la validez de la
 evaluación del modelo. Indicar además qué método de codificación se
-planea usar en P2 para cada variable categórica (\texttt{gender},
-\texttt{academic\_work\_impact}, \texttt{stress\_level}) y por qué
+planea usar en P2 para cada variable categórica (\texttt{genero},
+\texttt{impacto\_academico/laboral}, \texttt{nivel\_estres}) y por qué
 (one-hot, binaria, ordinal, etc.), aclarando que cualquier
 transformación debe ajustarse solo con los datos de entrenamiento. Si se
 usa \texttt{scikit-learn} para esto, citar la librería
 (\textcite{Pedregosa2011}).}
+
+\textbf{Contrato de nombres para el resto del proyecto} (acordado por el
+equipo, para que el código de todos encaje sin romperse al juntarlo): a
+partir de aquí se crean y se reutilizan siempre las mismas variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear df\_clean = df sin ID\_transaccion, ID\_usuario ni nivel\_adiccion (por fuga de información).}
+\CommentTok{\# num\_cols = lista de las 9 columnas numéricas (edad, horas\_diarias\_pantalla, horas\_redes\_sociales,}
+\CommentTok{\#            horas\_videojuegos, horas\_trabajo/estudio, horas\_sueño, notificaciones\_por\_dia,}
+\CommentTok{\#            aperturas\_apps\_por\_dia, tiempo\_en\_pantalla\_fin\_de\_semana,) }
+\CommentTok{\# cat\_cols = ["genero", "nivel\_estres", "impacto\_academico/laboral"]}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Enriquecimiento de
+datos:}\label{enriquecimiento-de-datos}
+
+\emph{Instrucciones para esta sección: quien complete esta parte debe
+dejar creadas exactamente las variables \texttt{df\_clean},
+\texttt{num\_cols} y \texttt{cat\_cols} con esos nombres. Las secciones
+de EDA (más abajo) las dan por hechas y no deben volver a definirlas.}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear df\_clean = df sin ID\_transaccion, ID\_usuario ni nivel\_adiccion (por fuga de información).}
+\NormalTok{df\_clean }\OperatorTok{=}\NormalTok{ df.drop(columns}\OperatorTok{=}\NormalTok{[}\StringTok{"ID\_transaccion"}\NormalTok{, }\StringTok{"ID\_usuario"}\NormalTok{, }\StringTok{"nivel\_adiccion"}\NormalTok{])}
+\NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"edad"}\NormalTok{, }\StringTok{"horas\_diarias\_pantalla"}\NormalTok{, }\StringTok{"horas\_redes\_sociales"}\NormalTok{,}
+\StringTok{"horas\_videojuegos"}\NormalTok{, }\StringTok{"horas\_trabajo/estudio"}\NormalTok{, }\StringTok{"horas\_sueño"}\NormalTok{, }\StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
+\StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_en\_pantalla\_fin\_de\_semana"}\NormalTok{]}
+\NormalTok{cat\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"genero"}\NormalTok{, }\StringTok{"nivel\_estres"}\NormalTok{, }\StringTok{"impacto\_academico/laboral"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llllllllllllll@{}}
+\toprule\noalign{}
+& edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
+horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
+notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
+tiempo\_en\_pantalla\_fin\_de\_semana & nivel\_estres &
+impacto\_academico/laboral & etiqueta\_de\_adiccion \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 &
+Medium & Yes & 0 \\
+1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 &
+Medium & Yes & 0 \\
+2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 &
+High & No & 0 \\
+3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 &
+High & Yes & 1 \\
+4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 &
+Low & No & 1 \\
+\end{longtable}
+}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llllllllllllllll@{}}
+\toprule\noalign{}
+& edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
+horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
+notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
+tiempo\_en\_pantalla\_fin\_de\_semana & nivel\_estres &
+impacto\_academico/laboral & etiqueta\_de\_adiccion & horas\_ocio &
+ratio\_finde\_diario \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 &
+Medium & Yes & 0 & 2.90 & 1.222910 \\
+1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 &
+Medium & Yes & 0 & 6.05 & 1.318271 \\
+2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 &
+High & No & 0 & 5.19 & 1.432343 \\
+3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 &
+High & Yes & 1 & 7.36 & 1.247765 \\
+4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 &
+Low & No & 1 & 9.34 & 1.260040 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... & ... & ... & ... \\
+7495 & 26 & Other & 9.85 & 1.75 & 3.13 & 3.49 & 5.81 & 249 & 122 & 11.99
+& Low & Yes & 1 & 4.88 & 1.217259 \\
+7496 & 35 & Male & 5.67 & 2.33 & 2.76 & 5.90 & 8.47 & 197 & 56 & 7.08 &
+Low & No & 0 & 5.09 & 1.248677 \\
+7497 & 22 & Female & 9.99 & 3.61 & 1.09 & 1.16 & 8.17 & 207 & 24 & 12.84
+& Medium & Yes & 1 & 4.70 & 1.285285 \\
+7498 & 23 & Male & 8.74 & 1.59 & 0.07 & 4.64 & 6.19 & 134 & 62 & 10.52 &
+High & Yes & 1 & 1.66 & 1.203661 \\
+7499 & 27 & Female & 10.04 & 5.40 & 0.73 & 5.45 & 5.58 & 215 & 38 &
+12.17 & Low & Yes & 1 & 6.13 & 1.212151 \\
+\end{longtable}
+}
 
 \subsection{Variable derivada para la
 comunicación}\label{variable-derivada-para-la-comunicaciuxf3n}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear una columna nueva (por ejemplo, estado\_adiccion) que traduzca addicted\_label a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: agregar a df\_clean una columna nueva (por ejemplo, estado\_adiccion) que traduzca etiqueta\_de\_adiccion a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.}
+
+\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{]. replace(\{}\DecValTok{1}\NormalTok{:}\StringTok{"Adicto"}\NormalTok{, }\DecValTok{0}\NormalTok{ : }\StringTok{"No adicto"}\NormalTok{\})}
+\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{verbatim}
+estado_adiccion
+Adicto       5308
+No adicto    2192
+Name: count, dtype: int64
+\end{verbatim}
+
 \emph{Instrucciones para esta sección: confirmar que la nueva variable
 de etiquetas legibles no introduce ninguna información distinta a
-\texttt{addicted\_label} (es solo una versión ``para humanos'' de la
-misma columna) y aclarar que para el modelamiento en P2 se seguirá
+\texttt{etiqueta\_de\_adiccion} (es solo una versión ``para humanos'' de
+la misma columna) y aclarar que para el modelamiento en P2 se seguirá
 usando la versión numérica original.}
 
 \section{Análisis exploratorio de
@@ -647,21 +940,81 @@ datos}\label{anuxe1lisis-exploratorio-de-datos}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la distribución de addicted\_label (conteo y/o porcentaje por clase).}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la distribución de etiqueta\_de\_adiccion (conteo y/o porcentaje por clase), usando df\_clean  \#Aquín no se puede distribución porque etiqueta\_de\_adiccion es una variable categórica}
+\CommentTok{\#sns.barplot(data=df\_clean, x= "estado\_adiccion", y = )}
+\NormalTok{counts }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
+
+\NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{, color}\OperatorTok{=}\StringTok{"purple"}\NormalTok{, edgecolor}\OperatorTok{=}\StringTok{"none"}\NormalTok{)}
+
+\NormalTok{plt.xlabel(}\StringTok{"Estado de adicción"}\NormalTok{)}
+\NormalTok{plt.ylabel(}\VariableTok{None}\NormalTok{)}
+\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-1.pdf}}
+
 \emph{Instrucciones para esta sección: reportar cuántos registros hay en
-cada clase de \texttt{addicted\_label} (conteo y porcentaje) y comentar
-si existe desbalance de clases. Si lo hay, explicar qué implicancia
-tiene para la partición entrenamiento/prueba y las métricas que se
-deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
+cada clase de \texttt{etiqueta\_de\_adiccion} (conteo y porcentaje) y
+comentar si existe desbalance de clases. Si lo hay, explicar qué
+implicancia tiene para la partición entrenamiento/prueba y las métricas
+que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
+\CommentTok{\# usa las columnas que ya tienes cargadas en la sesión}
+
+\CommentTok{\#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas}
+\ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ num\_cols:}
+\NormalTok{    plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\NormalTok{    sns.histplot(}
+\NormalTok{        data}\OperatorTok{=}\NormalTok{df\_clean,}
+\NormalTok{        x}\OperatorTok{=}\NormalTok{col,}
+\NormalTok{        bins}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
+\NormalTok{        kde}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
+\NormalTok{        color}\OperatorTok{=}\StringTok{"steelblue"}
+\NormalTok{    )}
+\NormalTok{    plt.title(}\SpecialStringTok{f"Histograma de }\SpecialCharTok{\{}\NormalTok{col}\SpecialCharTok{\}}\SpecialStringTok{"}\NormalTok{)}
+\NormalTok{    plt.xlabel(}\VariableTok{None}\NormalTok{)}
+\NormalTok{    plt.ylabel(}\VariableTok{None}\NormalTok{)}
+\NormalTok{    plt.tight\_layout() }\CommentTok{\#es una función de matplotlib que ajusta automáticamente los márgenes}
+\NormalTok{    plt.show()}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-2.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-3.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-4.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-5.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-6.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-7.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-8.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-9.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-10.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-11.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-12.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
+\NormalTok{df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts().plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{) }\CommentTok{\#usamos la variable comunicativa de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: para cada histograma, describir
 la forma de la distribución (simétrica, sesgada, con varias modas) y qué
@@ -671,9 +1024,55 @@ tiene una escala muy distinta a las variables medidas en horas.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica (usar num\_cols).}
+\CommentTok{\# asegúrate de que num\_cols existe y tiene nombres reales}
+
+
+\NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}
+    \StringTok{"edad"}\NormalTok{,}
+    \StringTok{"horas\_diarias\_pantalla"}\NormalTok{,}
+    \StringTok{"horas\_redes\_sociales"}\NormalTok{,}
+    \StringTok{"horas\_videojuegos"}\NormalTok{,}
+    \StringTok{"horas\_trabajo/estudio"}\NormalTok{,}
+    \StringTok{"horas\_sueño"}\NormalTok{,}
+    \StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
+    \StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{,}
+    \StringTok{"tiempo\_en\_pantalla\_fin\_de\_semana"}\NormalTok{,}
+\NormalTok{]}\CommentTok{\#aqui descartamos "etiqueta\_de\_adiccion"}
+
+\ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ num\_cols:}
+\NormalTok{    plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\NormalTok{    sns.histplot(}
+\NormalTok{        data}\OperatorTok{=}\NormalTok{df\_clean,}
+\NormalTok{        x}\OperatorTok{=}\NormalTok{col,}
+\NormalTok{        bins}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
+\NormalTok{        kde}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
+\NormalTok{        color}\OperatorTok{=}\StringTok{"steelblue"}\NormalTok{,}
+\NormalTok{    )}
+\NormalTok{    plt.xlabel(col)}
+\NormalTok{    plt.ylabel(}\StringTok{""}\NormalTok{)}
+\NormalTok{    plt.tight\_layout()}
+\NormalTok{    plt.show()}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-2.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-3.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-4.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-5.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-6.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-7.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-8.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-9.pdf}}
 
 \emph{Instrucciones para esta sección: comentar, variable por variable,
 la dispersión, la posible presencia de outliers y la simetría observada
@@ -683,7 +1082,9 @@ de los usuarios, y justificar la decisión tomada.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num\_cols).}
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ num\_cols:}
+\NormalTok{  df\_clean[i].describe()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -695,9 +1096,39 @@ muestran mayor dispersión o valores extremos.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (gender, stress\_level, academic\_work\_impact).}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (cat\_cols: genero, nivel\_estres, impacto\_academico/laboral). \#están debajo}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+genero
+Male      0.340400
+Other     0.331467
+Female    0.328133
+Name: proportion, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+nivel_estres
+High      0.341333
+Low       0.333733
+Medium    0.324933
+Name: proportion, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+impacto_academico/laboral
+No     0.5004
+Yes    0.4996
+Name: proportion, dtype: float64
+\end{verbatim}
+
+\begin{verbatim}
+estado_adiccion
+Adicto       0.707733
+No adicto    0.292267
+Name: proportion, dtype: float64
+\end{verbatim}
 
 \emph{Instrucciones para esta sección: describir qué categorías son
 dominantes o poco frecuentes en cada variable categórica y comentar si
@@ -709,9 +1140,31 @@ ordinal y por qué.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un mapa de calor de correlaciones entre las variables numéricas.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un mapa de calor de correlaciones entre las variables numéricas (num\_cols).}
+\NormalTok{df\_num }\OperatorTok{=}\NormalTok{ df\_clean[num\_cols}\OperatorTok{+}\NormalTok{ [}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{]].copy()}
+\CommentTok{\# 1. Primero va el tamaño y la resolución (el lienzo)}
+\NormalTok{plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{30}\NormalTok{, }\DecValTok{10}\NormalTok{), dpi}\OperatorTok{=}\DecValTok{300}\NormalTok{)}
+
+\CommentTok{\# 2. Luego armamos el mapa de calor con tus mismos parámetros}
+\NormalTok{sns.heatmap(}
+\NormalTok{    df\_num.corr(),}
+\NormalTok{    annot}\OperatorTok{=}\VariableTok{True}\NormalTok{,}
+\NormalTok{    fmt}\OperatorTok{=}\StringTok{".1f"}\NormalTok{,}
+\NormalTok{    vmax}\OperatorTok{=}\DecValTok{1}\NormalTok{,}
+\NormalTok{    center}\OperatorTok{=}\DecValTok{0}\NormalTok{,}
+\NormalTok{    linewidths}\OperatorTok{=}\FloatTok{0.5}\NormalTok{,  }\CommentTok{\# Líneas divisorias sutiles}
+\NormalTok{    cbar\_kws}\OperatorTok{=}\NormalTok{\{}\StringTok{"shrink"}\NormalTok{: }\DecValTok{1}\NormalTok{\},  }\CommentTok{\# Barra de color un poco más chica}
+\NormalTok{    annot\_kws}\OperatorTok{=}\NormalTok{\{}\StringTok{"size"}\NormalTok{: }\DecValTok{23}\NormalTok{\},  }\CommentTok{\# Números chiquitos para que no se amontonen}
+\NormalTok{)}
+\NormalTok{plt.xticks(fontsize}\OperatorTok{=}\DecValTok{29}\NormalTok{)   }\CommentTok{\# etiquetas del eje X más grandes}
+\NormalTok{plt.yticks(fontsize}\OperatorTok{=}\DecValTok{29}\NormalTok{)   }\CommentTok{\# etiquetas del eje Y más grandes}
+\CommentTok{\# 3. Ponemos el título y mostramos}
+\NormalTok{plt.title(}\StringTok{"Matriz de Correlación de Variables Numéricas"}\NormalTok{)}
+\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-30-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: identificar en el mapa de calor
 los pares de variables con correlación fuerte (positiva o negativa) y
@@ -720,7 +1173,8 @@ causalidad.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular y ordenar las correlaciones de cada variable numérica con addicted\_label.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular y ordenar las correlaciones de cada variable numérica (num\_cols) con etiqueta\_de\_adiccion.}
+\CommentTok{\#Chamba Jossep}
 \end{Highlighting}
 \end{Shaded}
 
@@ -731,9 +1185,42 @@ selección final de variables para el modelo.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas de pantalla, redes sociales, sueño) separadas por addicted\_label.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas\_diarias\_pantalla, horas\_redes\_sociales, horas\_sueño) separadas por etiqueta\_de\_adiccion.}
+\KeywordTok{del}\NormalTok{ plt}
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\NormalTok{sns.boxplot(data}\OperatorTok{=}\NormalTok{df\_clean, x}\OperatorTok{=}\StringTok{"estado\_adiccion"}\NormalTok{, y }\OperatorTok{=}\StringTok{"horas\_ocio"}\NormalTok{, palette }\OperatorTok{=} \StringTok{"husl"}\NormalTok{, legend}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-32-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-33-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-34-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-35-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-36-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-37-output-1.pdf}}
+
+\begin{verbatim}
+['edad',
+ 'horas_diarias_pantalla',
+ 'horas_redes_sociales',
+ 'horas_videojuegos',
+ 'horas_trabajo/estudio',
+ 'horas_sueño',
+ 'notificaciones_por_dia',
+ 'aperturas_apps_por_dia',
+ 'tiempo_en_pantalla_fin_de_semana']
+\end{verbatim}
+
+\begin{verbatim}
+['genero', 'nivel_estres', 'impacto_academico/laboral', 'estado_adiccion']
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-40-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: comentar cómo cambian la
 tendencia central y la dispersión de cada variable entre las dos clases,
@@ -742,7 +1229,22 @@ para separar las clases con un solo predictor).}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, stress\_level o academic\_work\_impact vs. addicted\_label).}
+\NormalTok{plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{,}\DecValTok{5}\NormalTok{))}
+\NormalTok{sns.countplot(data}\OperatorTok{=}\NormalTok{df\_clean, x}\OperatorTok{=}\StringTok{"nivel\_estres"}\NormalTok{, hue}\OperatorTok{=}\StringTok{"estado\_adiccion"}\NormalTok{,}
+\NormalTok{              order}\OperatorTok{=}\NormalTok{[}\StringTok{"Low"}\NormalTok{,}\StringTok{"Medium"}\NormalTok{,}\StringTok{"High"}\NormalTok{], palette}\OperatorTok{=}\StringTok{"colorblind"}\NormalTok{)}
+\NormalTok{plt.title(}\StringTok{"Nivel de estrés, agrupado por estado de adicción"}\NormalTok{)}
+\NormalTok{plt.xlabel(}\StringTok{"Nivel de estrés"}\NormalTok{)}
+\NormalTok{plt.ylabel(}\StringTok{"Conteo"}\NormalTok{)}
+\NormalTok{plt.tight\_layout()}
+\NormalTok{plt.show()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-41-output-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel\_estres o impacto\_academico/laboral vs. etiqueta\_de\_adiccion).}
 \end{Highlighting}
 \end{Shaded}
 
@@ -754,7 +1256,13 @@ problemático.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas, coloreando por addicted\_label.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num\_cols), coloreando por etiqueta\_de\_adiccion.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num\_cols), coloreando por etiqueta\_de\_adiccion.}
 \end{Highlighting}
 \end{Shaded}
 
@@ -766,7 +1274,7 @@ clases.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular la covarianza entre pares de variables numéricas relevantes.}
+\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular la covarianza entre pares de variables numéricas relevantes (num\_cols).}
 \end{Highlighting}
 \end{Shaded}
 
