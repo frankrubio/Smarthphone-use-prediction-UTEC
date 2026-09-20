@@ -75,6 +75,7 @@ from matplotlib.pyplot import boxplot
 from matplotlib.pyplot import hist
 import matplotlib.pyplot as plt
 import seaborn as sns
+from IPython.display import display
 
 sns.set_theme(style="whitegrid")
 
@@ -323,7 +324,7 @@ cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adicc
 #sns.barplot(data=df_clean, x= "estado_adiccion", y = )
 counts = df_clean["estado_adiccion"].value_counts()
 
-counts.plot(kind="bar", color="purple", edgecolor="none")
+counts.plot(kind="bar", color=['darkred','darkgreen'], edgecolor="none")
 
 plt.xlabel("Estado de adicción")
 plt.ylabel(None)
@@ -338,6 +339,9 @@ plt.show()
 # usa las columnas que ya tienes cargadas en la sesión
 
 #crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas
+colores = ['steelblue','darkorange','forestgreen','crimson','gold','lightcoral','yellowgreen','cadetblue',
+'powderblue','lightgreen','lightgray','plum']
+contador = 0
 for col in num_cols:
     plt.figure(figsize=(4, 3))
     sns.histplot(
@@ -345,19 +349,21 @@ for col in num_cols:
         x=col,
         bins=20,
         kde=False,
-        color="steelblue"
+        color= colores[contador]
     )
     plt.title(f"Histograma de {col}")
     plt.xlabel(None)
     plt.ylabel(None)
     plt.tight_layout() #es una función de matplotlib que ajusta automáticamente los márgenes
     plt.show()
+    contador +=1
 ```
 
 ```{python}
 #| echo: true
 # TODO: graficar un histograma por cada variable numérica (usar num_cols).
-df_clean['estado_adiccion'].value_counts().plot(kind='bar') #usamos la variable comunicativa de 'etiqueta_de_adiccion'
+df_clean['estado_adiccion'].value_counts().plot(kind='bar',color=['darkred','darkgreen'])
+plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
 ```
 
 *Instrucciones para esta sección: para cada histograma, describir la forma de la distribución (simétrica, sesgada, con varias modas) y qué implica para el análisis (por ejemplo, si conviene una transformación o estandarización más adelante). Comentar si alguna variable de conteo tiene una escala muy distinta a las variables medidas en horas.*
@@ -367,7 +373,8 @@ df_clean['estado_adiccion'].value_counts().plot(kind='bar') #usamos la variable 
 # TODO: graficar un boxplot por cada variable numérica (usar num_cols).
 # asegúrate de que num_cols existe y tiene nombres reales
 
-
+colores = ['steelblue','darkorange','forestgreen','lightcoral','yellowgreen','cadetblue',
+'powderblue','lightgreen','lightgray']
 num_cols = [
     "edad",
     "horas_diarias_pantalla",
@@ -380,17 +387,17 @@ num_cols = [
     "tiempo_en_pantalla_fin_de_semana",
 ]#aqui descartamos "etiqueta_de_adiccion"
 
+contador = 0
 for col in num_cols:
     plt.figure(figsize=(4, 3))
-    sns.histplot(
+    sns.boxplot(
         data=df_clean,
-        x=col,
-        bins=20,
-        kde=False,
-        color="steelblue",
+        y=col,
+        color=colores[contador],
     )
-    plt.xlabel(col)
-    plt.ylabel("")
+    contador += 1
+    plt.xlabel("")
+    plt.ylabel(col)
     plt.tight_layout()
     plt.show()
 ```
@@ -401,7 +408,7 @@ for col in num_cols:
 #| echo: true
 # TODO: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num_cols).
 for i in num_cols:
-  df_clean[i].describe()
+  display(df_clean[i].describe())
 ```
 
 *Instrucciones para esta sección: comparar media y mediana para detectar asimetría en cada variable, e interpretar la desviación estándar en el contexto de la escala de cada una (no comparar directamente variables con unidades distintas). Señalar qué variables muestran mayor dispersión o valores extremos.*
@@ -409,6 +416,8 @@ for i in num_cols:
 ```{python}
 #| echo: true
 # TODO: graficar la frecuencia de las variables categóricas (cat_cols: genero, nivel_estres, impacto_academico/laboral). #están debajo
+for i in cat_cols:
+  df_clean[i].value_counts(normalize=True)
 ```
 
 ```{python}
