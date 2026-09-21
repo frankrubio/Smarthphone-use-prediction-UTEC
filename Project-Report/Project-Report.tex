@@ -348,6 +348,15 @@ Artificial}
 \newcounter{none}
 \usepackage{array}
 \usepackage{calc}
+\usepackage{float}
+\floatplacement{table}{H}
+\floatplacement{figure}{H}
+\usepackage{colortbl}
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+\usepackage{etoolbox}
+\AtBeginEnvironment{Shaded}{\setstretch{1.1}}
+\fvset{breaklines=true}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -498,29 +507,239 @@ explícitamente antes de considerar su uso en P2.
 \section{Carga y exploración
 inicial}\label{carga-y-exploraciuxf3n-inicial}
 
+\subsection{Librerías}\label{libreruxedas}
+
+El primer bloque reúne las librerías necesarias para el proyecto. Además
+el estilo de seaborn
+
+\protect\phantomsection\label{setup}
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Cargamos el archivo csv}
+\CommentTok{\# ======================================================================}
+\CommentTok{\# CONFIGURACIÓN ÚNICA DEL REPORTE}
+\CommentTok{\# Librerías y estilos se ejecutan una sola vez}
+\CommentTok{\# ======================================================================}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ boxplot}
+\ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ hist}
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\ImportTok{import}\NormalTok{ seaborn }\ImportTok{as}\NormalTok{ sns}
+\ImportTok{from}\NormalTok{ IPython.display }\ImportTok{import}\NormalTok{ display, Latex}
 \ImportTok{import}\NormalTok{ kagglehub}
-\NormalTok{path }\OperatorTok{=}\NormalTok{ kagglehub.dataset\_download(}\StringTok{"jayjoshi37/smartphone{-}usage{-}and{-}addiction{-}prediction"}\NormalTok{)}
-\ImportTok{import}\NormalTok{ os}
-\CommentTok{\# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo}
-\NormalTok{ruta\_csv }\OperatorTok{=}\NormalTok{ os.path.join(path, }\StringTok{"Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv"}\NormalTok{)}
-\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(ruta\_csv)}
+\ImportTok{from}\NormalTok{ scipy }\ImportTok{import}\NormalTok{ stats}
 
-
-
-\CommentTok{\# Obtenemos la lista de columnas}
-\NormalTok{df.columns}
-
-\CommentTok{\# Renombramos todas las columnas para un uso natural}
-\NormalTok{df }\OperatorTok{=}\NormalTok{ df.rename(\{}\StringTok{\textquotesingle{}transaction\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_transaccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}user\_id\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}ID\_usuario\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}age\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}edad\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gender\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}genero\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}daily\_screen\_time\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_diarias\_pantalla\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}social\_media\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_redes\_sociales\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}gaming\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_videojuegos\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}work\_study\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_trabajo/estudio\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}sleep\_hours\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}horas\_sueño\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}notifications\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}notificaciones\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}app\_opens\_per\_day\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}aperturas\_apps\_por\_dia\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}weekend\_screen\_time\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}tiempo\_en\_pantalla\_fin\_de\_semana\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}stress\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_estres\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}academic\_work\_impact\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}impacto\_academico/laboral\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addiction\_level\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}nivel\_adiccion\textquotesingle{}}\NormalTok{ , }\StringTok{\textquotesingle{}addicted\_label\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{\} , axis}\OperatorTok{=}\DecValTok{1}\NormalTok{)}
+\NormalTok{sns.set\_theme(style}\OperatorTok{=}\StringTok{"whitegrid"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
+El segundo bloque, que no se imprime en el PDF para no alargarlo, define
+funciones de presentación: la función \texttt{tabla()}, que reproduce
+desde Python el estilo de tabla (\texttt{kable} con \emph{booktabs} y
+filas alternadas), en el PDF se omite el código que solo dibuja los
+gráficos, igual que en la plantilla del curso; todo ese código está
+completo y comentado en \texttt{UTEC-Report1.qmd}. Sí se muestra todo el
+código que carga, transforma o calcula.
+
+\subsection{Carga de datos}\label{carga-de-datos}
+
+Usando la librería de kaggle y os logramos una carga universal exitosa
+en cualquier equipo y evitamos errores de carga del dataset
+
+\protect\phantomsection\label{carga}
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, con label + tbl{-}cap.}
+\CommentTok{\# Cargamos el archivo csv}
+\NormalTok{path }\OperatorTok{=}\NormalTok{ (kagglehub.dataset\_download }
+\NormalTok{       (}\StringTok{"jayjoshi37/smartphone{-}usage{-}and{-}addiction{-}prediction"}\NormalTok{))}
+
+\ImportTok{import}\NormalTok{ os}
+\CommentTok{\# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del}
+\CommentTok{\# archivo}
+\NormalTok{ruta\_csv }\OperatorTok{=}\NormalTok{ (os.path.join(path, }
+           \StringTok{"Smartphone\_Usage\_And\_Addiction\_Analysis\_7500\_Rows.csv"}\NormalTok{))}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ pd.read\_csv(ruta\_csv)}
+\NormalTok{n\_filas, n\_columnas }\OperatorTok{=}\NormalTok{ df.shape}
+\BuiltInTok{print}\NormalTok{(}\SpecialStringTok{f"Dimensiones: }\SpecialCharTok{\{}\NormalTok{n\_filas}\SpecialCharTok{:,\}}\SpecialStringTok{ filas x }\SpecialCharTok{\{}\NormalTok{n\_columnas}\SpecialCharTok{\}}\SpecialStringTok{ columnas"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Dimensiones: 7,500 filas x 16 columnas
+\end{verbatim}
+
+El archivo se carga completo, con 7500 filas y 16 columnas. \texttt{df}
+no se modifica en ningún momento: todas las transformaciones posteriores
+se aplican sobre copias, de modo que cada decisión puede contrastarse
+contra el archivo original.
+
+\subsection{Dimensiones y estructura}\label{dimensiones-y-estructura}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{primeras }\OperatorTok{=}\NormalTok{ df.head(}\DecValTok{5}\NormalTok{).fillna(}\StringTok{"NaN"}\NormalTok{).T.astype(}\BuiltInTok{str}\NormalTok{)}
+\NormalTok{primeras.columns }\OperatorTok{=}\NormalTok{ [}\SpecialStringTok{f"Usuario }\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{"} \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{)]}
+\NormalTok{primeras.index.name }\OperatorTok{=} \StringTok{"Columna"}
+\NormalTok{tabla(primeras, tamanio}\OperatorTok{=}\StringTok{"footnotesize"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+
+\caption{\label{tbl-primeras-filas}Primeras cinco filas del archivo
+original, transpuestas: cada fila de la tabla es una columna del CSV.}
+
+\centering{
+
+\begingroup\footnotesize\setstretch{1.15}
+\begin{tabular}{llllll}
+\toprule
+\textbf{Columna} & \textbf{Usuario 1} & \textbf{Usuario 2} & \textbf{Usuario 3} & \textbf{Usuario 4} & \textbf{Usuario 5} \\
+\midrule
+transaction\_id & TXN00001 & TXN00002 & TXN00003 & TXN00004 & TXN00005 \\
+user\_id & U00001 & U00002 & U00003 & U00004 & U00005 \\
+age & 21 & 24 & 31 & 32 & 25 \\
+gender & Male & Other & Other & Other & Male \\
+daily\_screen\_time\_hours & 3.23 & 5.09 & 6.06 & 7.83 & 9.96 \\
+social\_media\_hours & 2.01 & 3.81 & 1.36 & 5.85 & 5.92 \\
+gaming\_hours & 0.89 & 2.24 & 3.83 & 1.51 & 3.42 \\
+work\_study\_hours & 4.55 & 4.44 & 2.35 & 3.54 & 5.27 \\
+sleep\_hours & 7.55 & 7.66 & 4.92 & 8.23 & 6.21 \\
+notifications\_per\_day & 248 & 127 & 44 & 178 & 136 \\
+app\_opens\_per\_day & 154 & 71 & 106 & 107 & 177 \\
+weekend\_screen\_time & 3.95 & 6.71 & 8.68 & 9.77 & 12.55 \\
+stress\_level & Medium & Medium & High & High & Low \\
+academic\_work\_impact & Yes & Yes & No & Yes & No \\
+addiction\_level & NaN & NaN & Mild & Moderate & Severe \\
+addicted\_label & 0 & 0 & 0 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\endgroup
+
+}
+
+\end{table}%
+
+La Tabla~\ref{tbl-primeras-filas} se presenta transpuesta porque las 16
+columnas no caben a lo ancho de la página. Ya en estas cinco filas
+aparece una señal de alerta: los usuarios 1 y 2 muestran \texttt{NaN}
+(valor nulo) en \texttt{addiction\_level}, un valor que se investiga en
+la sección (\emph{inserta sección}).
+
+\begin{table}
+
+\caption{\label{tbl-estructura}Estructura del archivo: tipo de dato
+asignado por pandas, valores no nulos, nulos y valores distintos por
+columna.}
+
+\centering{
+
+\begingroup\small\setstretch{1.15}
+\begin{tabular}{llccc}
+\toprule
+\textbf{Columna} & \textbf{Tipo (pandas)} & \textbf{No nulos} & \textbf{Nulos} & \textbf{Valores distintos} \\
+\midrule
+transaction\_id & str & 7,500 & 0 & 7,500 \\
+user\_id & str & 7,500 & 0 & 7,500 \\
+age & int64 & 7,500 & 0 & 18 \\
+gender & str & 7,500 & 0 & 3 \\
+daily\_screen\_time\_hours & float64 & 7,500 & 0 & 900 \\
+social\_media\_hours & float64 & 7,500 & 0 & 551 \\
+gaming\_hours & float64 & 7,500 & 0 & 401 \\
+work\_study\_hours & float64 & 7,500 & 0 & 551 \\
+sleep\_hours & float64 & 7,500 & 0 & 451 \\
+notifications\_per\_day & int64 & 7,500 & 0 & 231 \\
+app\_opens\_per\_day & int64 & 7,500 & 0 & 166 \\
+weekend\_screen\_time & float64 & 7,500 & 0 & 1,096 \\
+stress\_level & str & 7,500 & 0 & 3 \\
+academic\_work\_impact & str & 7,500 & 0 & 2 \\
+addiction\_level & str & 6,681 & 819 & 3 \\
+addicted\_label & int64 & 7,500 & 0 & 2 \\
+\bottomrule
+\end{tabular}
+\endgroup
+
+}
+
+\end{table}%
+
+\textbf{Interpretación.} La Tabla~\ref{tbl-estructura} permite verificar
+que el tipo asignado por pandas sea coherente con lo que representa cada
+variable:
+
+\begin{itemize}
+\tightlist
+\item
+  Las nueve variables de uso, edad y sueño se cargaron como números
+  (\texttt{int64} o \texttt{float64}) y no como texto, que es el error
+  silencioso más frecuente al leer un CSV.
+\item
+  \texttt{addicted\_label} se cargó como entero, pero es una variable
+  \textbf{categórica binaria}: el tipo de dato no coincide con su
+  naturaleza estadística, y así se tratará en el análisis.
+\item
+  Las columnas de texto (tipo \texttt{object} en pandas 2 o \texttt{str}
+  en pandas 3) son de dos clases muy distintas: \texttt{transaction\_id}
+  y \texttt{user\_id} tienen 7500 valores distintos, uno por fila, lo
+  que las identifica como \textbf{identificadores}; en cambio,
+  \texttt{gender}, \texttt{stress\_level},
+  \texttt{academic\_work\_impact} y \texttt{addiction\_level} tienen
+  entre 2 y 4 valores, es decir, son \textbf{categóricas}.
+\item
+  Solo \texttt{addiction\_level} presenta nulos np.int64(819), y muestra
+  3 valores distintos, cuando una escala de severidad suele tener cuatro
+  niveles.
+\end{itemize}
+
+\subsection{Tipos de variables y primeras
+estadísticas}\label{tipos-de-variables-y-primeras-estaduxedsticas}
+
+\begin{table}
+
+\caption{\label{tbl-diccionario}Diccionario de variables: nombre
+original, nombre usado en el reporte, tipo estadístico y descripción.}
+
+\centering{
+
+\begingroup\scriptsize\setstretch{1.1}
+\begin{tabular}{llp{2.7cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+\textbf{Columna original} & \textbf{Nombre en el reporte} & \textbf{Tipo estadístico} & \textbf{Descripción} \\
+\midrule
+transaction\_id & id\_transaccion & Identificador & Código del registro (TXN00001...) \\
+user\_id & id\_usuario & Identificador & Código del usuario (U00001...) \\
+age & edad & Cuantitativa discreta & Edad en años cumplidos \\
+gender & genero & Cualitativa nominal & Masculino, Femenino u Otro \\
+daily\_screen\_time\_hours & horas\_diarias\_pantalla & Cuantitativa continua & Horas de pantalla en un día típico \\
+social\_media\_hours & horas\_redes\_sociales & Cuantitativa continua & Horas diarias en redes sociales \\
+gaming\_hours & horas\_videojuegos & Cuantitativa continua & Horas diarias en videojuegos \\
+work\_study\_hours & horas\_trabajo\_estudio & Cuantitativa continua & Horas diarias de trabajo o estudio \\
+sleep\_hours & horas\_sueno & Cuantitativa continua & Horas de sueño por noche \\
+notifications\_per\_day & notificaciones\_por\_dia & Cuantitativa discreta & Notificaciones recibidas al día \\
+app\_opens\_per\_day & aperturas\_apps\_por\_dia & Cuantitativa discreta & Veces que abre aplicaciones al día \\
+weekend\_screen\_time & tiempo\_en\_pantalla\_fin\_de\_semana & Cuantitativa continua & Horas de pantalla en un día de fin de semana \\
+stress\_level & nivel\_estres & Cualitativa ordinal & Bajo < Medio < Alto \\
+academic\_work\_impact & impacto\_academico\_laboral & Cualitativa nominal (binaria) & Si el uso afecta sus estudios o trabajo (Sí/No) \\
+addiction\_level & nivel\_adiccion & Cualitativa ordinal & Ninguna < Leve < Moderada < Severa \\
+addicted\_label & etiqueta\_de\_adiccion & Cualitativa binaria (objetivo) & 1 = adicto, 0 = no adicto \\
+\bottomrule
+\end{tabular}
+\endgroup
+
+}
+
+\end{table}%
+
+La Tabla~\ref{tbl-diccionario} resume la naturaleza de cada variable. La
+distinción entre tipos estadísticos no es un detalle formal: decide qué
+gráficos y estadísticos corresponden a cada variable (histogramas y
+boxplots para las cuantitativas, gráficos de barras para las
+cualitativas) y, en la P2, cómo se codificará cada una.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, }
+\CommentTok{\# con label + tbl{-}cap.}
 \NormalTok{df.head(}\DecValTok{6}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -952,7 +1171,7 @@ datos}\label{anuxe1lisis-exploratorio-de-datos}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-25-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: reportar cuántos registros hay en
 cada clase de \texttt{etiqueta\_de\_adiccion} (conteo y porcentaje) y
@@ -987,29 +1206,29 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-2.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-3.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-4.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-5.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-6.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-7.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-8.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-9.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-10.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-10.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-11.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-11.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-12.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-26-output-12.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1019,7 +1238,7 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-27-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: para cada histograma, describir
 la forma de la distribución (simétrica, sesgada, con varias modas) y qué
@@ -1062,23 +1281,23 @@ tiene una escala muy distinta a las variables medidas en horas.}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-2.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-3.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-4.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-5.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-6.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-7.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-8.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-23-output-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-9.pdf}}
 
 \emph{Instrucciones para esta sección: comentar, variable por variable,
 la dispersión, la posible presencia de outliers y la simetría observada
@@ -1280,7 +1499,7 @@ ordinal y por qué.}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-30-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-35-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: identificar en el mapa de calor
 los pares de variables con correlación fuerte (positiva o negativa) y
@@ -1308,17 +1527,17 @@ selección final de variables para el modelo.}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-32-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-33-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-34-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-35-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-36-output-1.pdf}}
-
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-37-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-38-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-39-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-40-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-41-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-1.pdf}}
 
 \begin{verbatim}
 ['edad',
@@ -1336,7 +1555,7 @@ selección final de variables para el modelo.}
 ['genero', 'nivel_estres', 'impacto_academico/laboral', 'estado_adiccion']
 \end{verbatim}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-40-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-45-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: comentar cómo cambian la
 tendencia central y la dispersión de cada variable entre las dos clases,
@@ -1356,7 +1575,7 @@ para separar las clases con un solo predictor).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-41-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-46-output-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]

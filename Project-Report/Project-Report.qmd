@@ -42,6 +42,15 @@ header-includes:
   - \newcounter{none}
   - \usepackage{array}
   - \usepackage{calc}
+  - \usepackage{float}
+  - \floatplacement{table}{H}
+  - \floatplacement{figure}{H}
+  - \usepackage{colortbl}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \usepackage{etoolbox}
+  - \AtBeginEnvironment{Shaded}{\setstretch{1.1}}
+  - \fvset{breaklines=true}
 format:
   report-pdf:
     keep-tex: true
@@ -65,21 +74,6 @@ reemplaza por el texto final (redactado por el equipo, no copiado de un chat de 
 Los chunks marcados con "# TODO" son el espacio para el código en Python; ahí va la
 implementación real de cada integrante. No se debe reportar ningún número o gráfico que
 no salga de correr el código de este archivo. -->
-```
-
-```{python}
-# Configuración inicial: librerías utilizadas en todo el proyecto.
-import pandas as pd
-import numpy as np
-from matplotlib.pyplot import boxplot
-from matplotlib.pyplot import hist
-import matplotlib.pyplot as plt
-import seaborn as sns
-from IPython.display import display
-
-sns.set_theme(style="whitegrid")
-
-
 ```
 
 \newpage
@@ -116,51 +110,180 @@ La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 co
 La variable `nivel_adiccion` contiene una categorización de severidad (`None`, `Mild`, `Moderate`, `Severe`). Por su definición operativa, puede estar construida directamente a partir de la etiqueta final; por ello se audita explícitamente antes de considerar su uso en P2.
 
 # Carga y exploración inicial
+## Librerías
 
-```{=html}
-<!-- GUÍA RÁPIDA DE TABLAS (no aparece en el PDF):
-1) Que una tabla salga bonita depende de que sea la ÚLTIMA línea del chunk y que NO esté
-   envuelta en print(). `print(df.head(10))` sale como texto plano; `df.head(10)` (solo eso,
-   al final) sale como tabla con formato. Si necesitas mostrar dos tablas en el mismo chunk,
-   usa `from IPython.display import display` y llama `display(tabla1)` y `display(tabla2)`.
-2) Casos que NO salen como tabla aunque no uses print(): resultados de .info() (no devuelve
-   nada, solo imprime), listas/arrays de numpy sueltos, y objetos tipo Index como df.columns
-   (son un listado, no una tabla). Si quieres tabla, conviértelo primero a DataFrame, ej.:
-   pd.DataFrame({"columna": df.columns}).
-3) Tablas muy anchas (muchas columnas) o muy largas (muchas filas) se cortan con "...". Usa
-   df.head(n) / df[["col1","col2"]] para mostrar solo lo necesario.
-4) Para numerar una tabla y ponerle título: agrega estas dos líneas de opciones ANTES del
-   código, dentro del mismo chunk (el label debe empezar con "tbl-"):
-     #| label: tbl-mi-nombre
-     #| tbl-cap: "Título de la tabla"
-   Y para citarla en el texto: @tbl-mi-nombre (Quarto la numera solo, ej. "Tabla 1", y la
-   agrega a la Lista de Tablas). Ejemplo real abajo. -->
-```
+El primer bloque reúne las librerías necesarias para el proyecto y el estilo de seaborn
 
 ```{python}
 #| echo: true
-# Cargamos el archivo csv
+#| label: setup
+# ======================================================================
+# CONFIGURACIÓN ÚNICA DEL REPORTE
+# Librerías y estilos se ejecutan una sola vez
+# ======================================================================
+import pandas as pd
+import numpy as np
+from matplotlib.pyplot import boxplot
+from matplotlib.pyplot import hist
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, Latex
 import kagglehub
-path = kagglehub.dataset_download("jayjoshi37/smartphone-usage-and-addiction-prediction")
+from scipy import stats
+
+sns.set_theme(style="whitegrid")
+```
+
+El segundo bloque, que no se imprime en el PDF para no alargarlo, define funciones de presentación: la función `tabla()`, que reproduce desde Python el estilo de tabla (`kable` con *booktabs*), en el PDF se omite el código que solo dibuja los gráficos, igual que en la plantilla del curso; todo ese código está completo y comentado en `Project-Report.qmd`. Sí se muestra todo el código que carga, transforma o calcula.
+
+```{python}
+#| label: funciones-presentacion
+#| echo: false
+def _tex(texto):
+    """Escapa los caracteres especiales de LaTeX dentro de un texto."""
+    especiales = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%",
+                  "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",
+                  "}": r"\}", "~": r"\textasciitilde{}",
+                  "^": r"\textasciicircum{}"}
+    return "".join(especiales.get(c, c) for c in str(texto))
+
+def tabla(datos, decimales=2, indice=True, alineacion=None,
+          tamanio="small", interlineado=1.15):
+    """Imprime un DataFrame como tabla LaTeX con el estilo de la plantilla:
+    booktabs + filas alternadas, como kable() + kable_styling("striped").
+    `decimales` puede ser un número o un diccionario {columna: decimales}."""
+    d = datos.reset_index() if indice else datos.copy()
+    if alineacion is None:  # texto a la izquierda, números centrados
+        alineacion = "".join("c" if pd.api.types.is_numeric_dtype(d[c])
+                             else "l" for c in d.columns)
+
+    def celda(valor, columna):
+        dec = (decimales.get(columna, 2) if isinstance(decimales, dict)
+               else decimales)
+        if isinstance(valor, (bool, np.bool_)):
+            return "Sí" if valor else "No"
+        if isinstance(valor, (int, np.integer)):
+            return f"{valor:,}"
+        if isinstance(valor, (float, np.floating)):
+            if pd.isna(valor):
+                return "--"
+            valor = 0.0 if round(valor, dec) == 0 else valor   # sin "-0.00"
+            return f"{valor:,.{dec}f}".replace("-", "\u2212")
+        texto = _tex(valor)
+        # "{}" evita que LaTeX lea "[...]" como argumento opcional de \\
+        return "{}" + texto if texto.startswith("[") else texto
+
+    cabecera = " & ".join(rf"\textbf{{{_tex(c)}}}" for c in d.columns)
+    filas = [" & ".join(celda(v, c) for v, c in zip(fila, d.columns))
+             + r" \\" for i, fila in enumerate(d.itertuples(index=False))]
+    # display() muestra la tabla aunque tabla() no sea la última línea
+    display(Latex("\n".join([
+        rf"\begingroup\{tamanio}\setstretch{{{interlineado}}}",
+        rf"\begin{{tabular}}{{{alineacion}}}", r"\toprule",
+        cabecera + r" \\", r"\midrule", *filas, r"\bottomrule",
+        r"\end{tabular}", r"\endgroup"])))
+```
+
+## Carga de datos
+
+Usando la librería de kaggle y os logramos una carga universal exitosa en cualquier equipo y evitamos errores de carga del dataset
+
+```{python}
+#| echo: true
+#| label: carga
+# Cargamos el archivo csv
+path = (kagglehub.dataset_download 
+       ("jayjoshi37/smartphone-usage-and-addiction-prediction"))
+
 import os
-# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo
-ruta_csv = os.path.join(path, "Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv")
+# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del
+# archivo
+ruta_csv = (os.path.join(path, 
+           "Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv"))
 df = pd.read_csv(ruta_csv)
+n_filas, n_columnas = df.shape
+print(f"Dimensiones: {n_filas:,} filas x {n_columnas} columnas")
+```
 
+El archivo se carga completo, con `{python} (df.shape[0])` filas y `{python} df.shape[1]` columnas. `df` no se modifica en ningún momento: todas las transformaciones posteriores se aplican sobre copias, de modo que cada decisión puede contrastarse contra el archivo original.
 
+## Dimensiones y estructura
 
-# Obtenemos la lista de columnas
-df.columns
+```{python}
+#| echo: true
+#| label: tbl-primeras-filas
+#| tbl-cap: "Primeras cinco filas del archivo original, transpuestas: cada fila de la tabla es una columna del CSV."
+primeras = df.head(5).fillna("NaN").T.astype(str)
+primeras.columns = [f"Usuario {i}" for i in range(1, 6)]
+primeras.index.name = "Columna"
+tabla(primeras, tamanio="footnotesize")
+```
 
+La @tbl-primeras-filas se presenta transpuesta porque las `{python} df.shape[1]` columnas no caben a lo ancho de la página. Ya en estas cinco filas aparece una señal de alerta: los usuarios 1 y 2 muestran `NaN` (valor nulo) en `addiction_level`, un valor que se investiga en la sección (*inserta sección*).
+
+```{python}
+#| label: tbl-estructura
+#| tbl-cap: "Estructura del archivo: tipo de dato asignado por pandas, valores no nulos, nulos y valores distintos por columna."
+estructura = pd.DataFrame({
+    "Tipo (pandas)": df.dtypes.astype(str),
+    "No nulos": df.notna().sum(),
+    "Nulos": df.isna().sum(),
+    "Valores distintos": df.nunique(),
+})
+estructura.index.name = "Columna"
+tabla(estructura)
+```
+
+**Interpretación.** La @tbl-estructura permite verificar que el tipo asignado por pandas sea coherente con lo que representa cada variable:
+
+- Las nueve variables de uso, edad y sueño se cargaron como números (`int64` o `float64`) y no como texto, que es el error silencioso más frecuente al leer un CSV.
+- `addicted_label` se cargó como entero, pero es una variable **categórica binaria**: el tipo de dato no coincide con su naturaleza estadística, y así se tratará en el análisis.
+- Las columnas de texto (tipo `object` en pandas 2 o `str` en pandas 3) son de dos clases muy distintas: `transaction_id` y `user_id` tienen `{python} df["user_id"].nunique()` valores distintos, uno por fila, lo que las identifica como **identificadores**; en cambio, `gender`, `stress_level`, `academic_work_impact` y `addiction_level` tienen entre 2 y 4 valores, es decir, son **categóricas**.
+- Solo `addiction_level` presenta nulos `{python} df["addiction_level"].isna().sum()`, y muestra `{python} df["addiction_level"].nunique()` valores distintos, cuando una escala de severidad suele tener cuatro niveles.
+
+```{python}
+#| echo: false
 # Renombramos todas las columnas para un uso natural
 df = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
 ```
+
+## Tipos de variables y primeras estadísticas
+
+```{python}
+#| label: tbl-diccionario
+#| tbl-cap: "Diccionario de variables: nombre original, nombre usado en el reporte, tipo estadístico y descripción."
+#| echo: false
+# Bloque de documentación (no de análisis): por eso no se muestra el código.
+diccionario = pd.DataFrame([
+    ["transaction_id", "id_transaccion", "Identificador", "Código del registro (TXN00001...)"],
+    ["user_id", "id_usuario", "Identificador", "Código del usuario (U00001...)"],
+    ["age", "edad", "Cuantitativa discreta", "Edad en años cumplidos"],
+    ["gender", "genero", "Cualitativa nominal", "Masculino, Femenino u Otro"],
+    ["daily_screen_time_hours", "horas_diarias_pantalla", "Cuantitativa continua", "Horas de pantalla en un día típico"],
+    ["social_media_hours", "horas_redes_sociales", "Cuantitativa continua", "Horas diarias en redes sociales"],
+    ["gaming_hours", "horas_videojuegos", "Cuantitativa continua", "Horas diarias en videojuegos"],
+    ["work_study_hours", "horas_trabajo_estudio", "Cuantitativa continua", "Horas diarias de trabajo o estudio"],
+    ["sleep_hours", "horas_sueno", "Cuantitativa continua", "Horas de sueño por noche"],
+    ["notifications_per_day", "notificaciones_por_dia", "Cuantitativa discreta", "Notificaciones recibidas al día"],
+    ["app_opens_per_day", "aperturas_apps_por_dia", "Cuantitativa discreta", "Veces que abre aplicaciones al día"],
+    ["weekend_screen_time", "tiempo_en_pantalla_fin_de_semana", "Cuantitativa continua", "Horas de pantalla en un día de fin de semana"],
+    ["stress_level", "nivel_estres", "Cualitativa ordinal", "Bajo < Medio < Alto"],
+    ["academic_work_impact", "impacto_academico_laboral", "Cualitativa nominal (binaria)", "Si el uso afecta sus estudios o trabajo (Sí/No)"],
+    ["addiction_level", "nivel_adiccion", "Cualitativa ordinal", "Ninguna < Leve < Moderada < Severa"],
+    ["addicted_label", "etiqueta_de_adiccion", "Cualitativa binaria (objetivo)", "1 = adicto, 0 = no adicto"],
+], columns=["Columna original", "Nombre en el reporte", "Tipo estadístico", "Descripción"])
+tabla(diccionario, indice=False, tamanio="scriptsize", interlineado=1.1,
+      alineacion=r"llp{2.7cm}>{\raggedright\arraybackslash}p{4.2cm}")
+```
+
+La @tbl-diccionario resume la naturaleza de cada variable. La distinción entre tipos estadísticos no es un detalle formal: decide qué gráficos y estadísticos corresponden a cada variable (histogramas y boxplots para las cuantitativas, gráficos de barras para las cualitativas) y, en la P2, cómo se codificará cada una.
 
 ```{python}
 #| echo: true
 #| label: tbl-head
 #| tbl-cap: "Primeras 10 filas del dataset (ya con nombres de columna en español)"
-# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, con label + tbl-cap.
+# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, 
+# con label + tbl-cap.
 df.head(6)
 ```
 
