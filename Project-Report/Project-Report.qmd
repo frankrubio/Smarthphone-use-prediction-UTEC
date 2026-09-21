@@ -244,7 +244,7 @@ tabla(estructura)
 ```{python}
 #| echo: false
 # Renombramos todas las columnas para un uso natural
-df = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
+df_renombrado = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
 ```
 
 ## Tipos de variables y primeras estadísticas
@@ -254,68 +254,34 @@ df = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'ag
 #| tbl-cap: "Diccionario de variables: nombre original, nombre usado en el reporte, tipo estadístico y descripción."
 #| echo: false
 # Bloque de documentación (no de análisis): por eso no se muestra el código.
-diccionario = pd.DataFrame([
-    ["transaction_id", "id_transaccion", "Identificador", "Código del registro (TXN00001...)"],
-    ["user_id", "id_usuario", "Identificador", "Código del usuario (U00001...)"],
-    ["age", "edad", "Cuantitativa discreta", "Edad en años cumplidos"],
-    ["gender", "genero", "Cualitativa nominal", "Masculino, Femenino u Otro"],
-    ["daily_screen_time_hours", "horas_diarias_pantalla", "Cuantitativa continua", "Horas de pantalla en un día típico"],
-    ["social_media_hours", "horas_redes_sociales", "Cuantitativa continua", "Horas diarias en redes sociales"],
-    ["gaming_hours", "horas_videojuegos", "Cuantitativa continua", "Horas diarias en videojuegos"],
-    ["work_study_hours", "horas_trabajo_estudio", "Cuantitativa continua", "Horas diarias de trabajo o estudio"],
-    ["sleep_hours", "horas_sueno", "Cuantitativa continua", "Horas de sueño por noche"],
-    ["notifications_per_day", "notificaciones_por_dia", "Cuantitativa discreta", "Notificaciones recibidas al día"],
-    ["app_opens_per_day", "aperturas_apps_por_dia", "Cuantitativa discreta", "Veces que abre aplicaciones al día"],
-    ["weekend_screen_time", "tiempo_en_pantalla_fin_de_semana", "Cuantitativa continua", "Horas de pantalla en un día de fin de semana"],
-    ["stress_level", "nivel_estres", "Cualitativa ordinal", "Bajo < Medio < Alto"],
-    ["academic_work_impact", "impacto_academico_laboral", "Cualitativa nominal (binaria)", "Si el uso afecta sus estudios o trabajo (Sí/No)"],
-    ["addiction_level", "nivel_adiccion", "Cualitativa ordinal", "Ninguna < Leve < Moderada < Severa"],
-    ["addicted_label", "etiqueta_de_adiccion", "Cualitativa binaria (objetivo)", "1 = adicto, 0 = no adicto"],
-], columns=["Columna original", "Nombre en el reporte", "Tipo estadístico", "Descripción"])
+
+diccionario = pd.DataFrame({
+    "Columna original": df.columns, 
+    "Nombre en el reporte": df_renombrado.columns,
+    "Tipo estadístico": [
+        "Identificador", "Identificador", "Cuantitativa discreta", "Cualitativa nominal", 
+        "Cuantitativa continua", "Cuantitativa continua", "Cuantitativa continua", 
+        "Cuantitativa continua", "Cuantitativa continua", "Cuantitativa discreta", 
+        "Cuantitativa discreta", "Cuantitativa continua", "Cualitativa ordinal", 
+        "Cualitativa nominal (binaria)", "Cualitativa ordinal", "Cualitativa binaria (objetivo)"
+    ],
+    "Descripción": [
+        "Código del registro (TXN00001...)", "Código del usuario (U00001...)", 
+        "Edad en años cumplidos", "Masculino, Femenino u Otro", 
+        "Horas de pantalla en un día típico", "Horas diarias en redes sociales", 
+        "Horas diarias en videojuegos", "Horas diarias de trabajo o estudio", 
+        "Horas de sueño por noche", "Notificaciones recibidas al día", 
+        "Veces que abre aplicaciones al día", "Horas de pantalla en un día de fin de semana", 
+        "Bajo < Medio < Alto", "Si el uso afecta sus estudios o trabajo (Sí/No)", 
+        "Ninguna < Leve < Moderada < Severa", "1 = adicto, 0 = no adicto"
+    ]
+})
+
 tabla(diccionario, indice=False, tamanio="scriptsize", interlineado=1.1,
       alineacion=r"llp{2.7cm}>{\raggedright\arraybackslash}p{4.2cm}")
 ```
 
 La @tbl-diccionario resume la naturaleza de cada variable. La distinción entre tipos estadísticos no es un detalle formal: decide qué gráficos y estadísticos corresponden a cada variable (histogramas y boxplots para las cuantitativas, gráficos de barras para las cualitativas) y, en la P2, cómo se codificará cada una.
-
-```{python}
-#| echo: true
-#| label: tbl-head
-#| tbl-cap: "Primeras 10 filas del dataset (ya con nombres de columna en español)"
-# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, 
-# con label + tbl-cap.
-df.head(6)
-```
-
-```{python}
-# Analizamos los tipos de variables contenidos en la csv
-df.info() # Observamos valores nulos en la columna "nivel_adiccion" (antes "addiction_level")
-```
-
-```{python}
-# Obtenemos la lista de columnas
-df.columns
-```
-
-```{python}
-```
-
-## Dimensiones y tipos de variables
-
-```{python}
-#| echo: true
-# TODO: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.
-df.shape
-
-```
-
-```{python}
-#| echo: true
-# TODO: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.
-df.dtypes
-```
-
-*Instrucciones para esta sección: comentar, con base en la salida real de `df.info()` / `df.dtypes`, cuántas filas y columnas tiene el dataset, qué columnas son numéricas y cuáles categóricas, y si algún tipo de dato no corresponde con lo esperado (por ejemplo, una variable numérica cargada como texto). No repetir de memoria las cifras ya mencionadas en "Contexto del dataset"; verificarlas con el código.*
 
 ## Calidad de datos
 
@@ -327,7 +293,7 @@ df.dtypes
 ```{python}
 #| echo: true
 # TODO: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).
-df["nivel_adiccion"].isnull().sum()
+df_renombrado["nivel_adiccion"].isnull().sum()
 #Notamos que hay 819 valores nulos en la columna 'nivel_adiccion'
 ```
 
@@ -346,7 +312,7 @@ df.describe()
 Notamos que hay 819 valores nulos en la clumna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna
 
 ```{python}
-df_adiccionnull = df[df["nivel_adiccion"].isnull()]
+df_adiccionnull = df_renombrado[df_renombrado["nivel_adiccion"].isnull()]
 df_adiccionnull.head()
 ```
 
@@ -356,7 +322,7 @@ df_adiccionnull.head()
 #| echo: true
 # TODO: construir una tabla cruzada (pd.crosstab) entre nivel_adiccion y etiqueta_de_adiccion para revisar si nivel_adiccion "filtra" la respuesta.
 
-pd.crosstab(df["nivel_adiccion"], df["etiqueta_de_adiccion"])
+pd.crosstab(df_renombrado["nivel_adiccion"], df_renombrado["etiqueta_de_adiccion"])
 
 # Notamos que la columna 'nivel_adiccion' o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción
 # para alguien de adicción media p alta, la información de 'etiqueta_de_adiccion' es la necesaria y objetivo para este análisis
@@ -389,7 +355,7 @@ Esto permitirá no repetir información en el proceso de modelamiento, ya que 'n
 ```{python}
 #| echo: true
 # TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
-df_clean = df.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
+df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
 "aperturas_apps_por_dia", "tiempo_en_pantalla_fin_de_semana"]
@@ -404,11 +370,11 @@ df_clean.head()
 ```{python}
 #Notamos que podemos crear nuevas variables
 
-df_clean["horas_ocio"] = df["horas_redes_sociales"] + df["horas_videojuegos"] 
+df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"] 
 #Es el tiempo total dedicado al ocio
 
 
-df_clean["ratio_finde_diario"] = df["tiempo_en_pantalla_fin_de_semana"]/df["horas_diarias_pantalla"]
+df_clean["ratio_finde_diario"] = df_renombrado["tiempo_en_pantalla_fin_de_semana"]/df_renombrado["horas_diarias_pantalla"]
 #Esta nueva variable nos ayudara a ver que tanto más usa el celular los fines de semana.se puede concluir que
 #si 'ratio_finde_diario' es mayor a uno, usa más su celular; una persona que si 'ratio_finde_diario' es menor o igual a uno
 #entonces es normal que use mucho tiempo todos los días por lo cuál el fin de seman no es la excepción.
