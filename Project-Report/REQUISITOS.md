@@ -33,12 +33,3 @@ from IPython.display import Markdown
 Markdown(df.to_markdown(index=False))
 ```
 (requiere el paquete `tabulate`, ya incluido en el paso 1).
-
-## 4. Notas
-
-- El proyecto es 100% Python: no hace falta instalar R ni RStudio para este archivo.
-- Si `quarto render` da un error de LaTeX (paquete faltante), correr:
-  ```
-  quarto install tinytex --update-path
-  ```
-  y volver a intentar. TinyTeX instala paquetes de LaTeX faltantes automáticamente la primera vez que se usan.
