@@ -538,8 +538,11 @@ plt.show()
 ```{python}
 #| echo: true
 # TODO: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel_estres o impacto_academico/laboral vs. etiqueta_de_adiccion).
-
+for columna in cat_cols:
+  sns.histplot(data=df_clean,x = columna, hue = 'etiqueta_de_adiccion')
+  plt.show()
 ```
+
 
 *Instrucciones para esta sección: interpretar las proporciones (no solo los conteos) entre subgrupos, evitando conclusiones que estigmaticen a los usuarios. Comentar si estas variables parecen ser causa, consecuencia o simplemente indicadores asociados al uso problemático.*
 
@@ -547,21 +550,45 @@ plt.show()
 #| echo: true
 # TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
 
+sns.scatterplot(data=df, x= 'horas_trabajo/estudio', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+
 
 ```
 
 ```{python}
-#| echo: true
-# TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
+
+sns.scatterplot(data=df, x= 'horas_sueño', y= 'horas_redes_sociales', hue = 'etiqueta_de_adiccion')
+
+```
+
+```{python}
+
+sns.scatterplot(data=df, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = 'etiqueta_de_adiccion')
 
 
 ```
+
+
+```{python}
+
+sns.scatterplot(data=df, x= 'horas_videojuegos', y= 'horas_trabajo/estudio', hue = 'etiqueta_de_adiccion')
+
+```
+
+```{python}
+
+sns.scatterplot(data=df, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+
+```
+
 
 *Instrucciones para esta sección: para cada par de variables, comentar si se observa un patrón (lineal o no lineal), agrupamientos, o separación visible entre clases. Si los colores se solapan mucho, señalar que esas dos variables por sí solas no bastan para separar las clases.*
 
 ```{python}
 #| echo: true
 # TODO: calcular la covarianza entre pares de variables numéricas relevantes (num_cols).
+df_number = df_clean.select_dtypes(include='number')
+df_number.corr()
 ```
 
 *Instrucciones para esta sección: interpretar el signo de la covarianza (si dos variables crecen o decrecen juntas) y explicar por qué se complementa con la correlación (que sí permite comparar la fuerza de la relación entre variables con escalas distintas).*

@@ -1361,8 +1361,19 @@ para separar las clases con un solo predictor).}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel\_estres o impacto\_academico/laboral vs. etiqueta\_de\_adiccion).}
+\ControlFlowTok{for}\NormalTok{ columna }\KeywordTok{in}\NormalTok{ cat\_cols:}
+\NormalTok{  sns.histplot(data}\OperatorTok{=}\NormalTok{df\_clean,x }\OperatorTok{=}\NormalTok{ columna, hue }\OperatorTok{=} \StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{)}
+\NormalTok{  plt.show()}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-2.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-3.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-4.pdf}}
 
 \emph{Instrucciones para esta sección: interpretar las proporciones (no
 solo los conteos) entre subgrupos, evitando conclusiones que
