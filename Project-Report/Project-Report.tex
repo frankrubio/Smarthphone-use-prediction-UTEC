@@ -1155,11 +1155,19 @@ principalmente a adultos jóvenes.
 
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-17-output-1.pdf}}
 
-\emph{Instrucciones para esta sección: para cada histograma, describir
-la forma de la distribución (simétrica, sesgada, con varias modas) y qué
-implica para el análisis (por ejemplo, si conviene una transformación o
-estandarización más adelante). Comentar si alguna variable de conteo
-tiene una escala muy distinta a las variables medidas en horas.}
+El gráfico de barras muestra una clara asimetría y desbalance de clases,
+donde la categoría ``Adiccto'' predomina ampliamente (superando las
+5,000 observaciones) frente a la de ``No adicto'' (alrededor de 2,200).
+Este desequilibrio implica que, para fases posteriores de modelado o
+análisis estadístico, se debe considerar el balanceo de datos o métricas
+de evaluación adecuadas para evitar sesgos hacia la clase mayoritaria.*
+
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
+en cuatro partes iguales \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-cuartiles}{
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1233,11 +1241,40 @@ numéricas del dataset.}
 
 \end{figure}%
 
-\emph{Instrucciones para esta sección: comentar, variable por variable,
-la dispersión, la posible presencia de outliers y la simetría observada
-en los boxplots. Discutir si esos valores extremos deberían tratarse
-como errores de captura o si son observaciones reales del comportamiento
-de los usuarios, y justificar la decisión tomada.}
+La visualización de las variables numéricas (edad, tiempo en pantalla,
+uso de apps, sueño, etc.) muestra en general una distribución bastante
+homogénea y centrada. Salvo por ligeras asimetrías o atípicos aislados
+en hábitos de uso intensivo (como notificaciones o videojuegos), las
+observaciones representan comportamientos reales de los usuarios y no
+errores de registro, por lo que se decide conservar todas las variables
+completas para el análisis.*
+
+Se calculan las medidas de tendencia central y dispersión de cada
+variable numérica \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-media}{
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-mediana}{
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-varianza}{
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-desviacion}{
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-cv}{
+CV = \frac{s}{\bar{x}} \times 100\%
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1521,22 +1558,38 @@ variables numéricas.}
 
 \end{figure}%
 
-\emph{Instrucciones para esta sección: identificar en el mapa de calor
-los pares de variables con correlación fuerte (positiva o negativa) y
-comentar si sugieren colinealidad. Aclarar que la correlación no implica
-causalidad.}
+En el mapa de calor se observa una relación fuerte entre las horas de
+pantalla diarias y las horas de pantalla durante el fin de semana, con
+una correlación cercana a 1. Esto quiere decir que las personas que
+suelen pasar más tiempo frente a una pantalla durante el día a día
+también tienden a mantener un uso elevado los fines de semana. Debido a
+que ambas variables muestran un comportamiento muy parecido, lo que
+podría generar colinealidad.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular y ordenar las correlaciones de cada variable numérica (num\_cols) con etiqueta\_de\_adiccion.}
-\CommentTok{\#Chamba Jossep}
-\end{Highlighting}
-\end{Shaded}
+Por otro lado, la etiqueta de adicción presenta una correlación
+aproximada de 0.6 con las horas diarias de pantalla, 0.4 con el tiempo
+dedicado a redes sociales y 0.6 con las horas de pantalla durante el fin
+de semana.
 
-\emph{Instrucciones para esta sección: comentar qué variables tienen
-mayor asociación lineal con la etiqueta objetivo y cuáles tienen
-asociación muy baja. Aclarar que esto es solo un indicio y no una
-selección final de variables para el modelo.}
+Estos resultados muestran que las tres variables tienen cierta relación
+con la etiqueta de adicción. Pero es importante recordar que una
+correlación no significa necesariamente que exista una relación de causa
+y efecto.
+
+Las variables que tienen mayor asocición lineal podemos fijarnos que son
+cantidad de horas diarias en pantalla, cantidad de horas en redes
+sociales y tiempo de pantalla en los fines de semanas, siendo
+aproximadamente 0.6 , 0.4 , 0.6 aproximadamente. A diferencia del resto
+que cuenta con valores muy cercanos 0.0. Estos resultados podrían ser
+útil para futuros modelos
+
+La correlación de Pearson mide la fuerza y dirección de la relación
+lineal entre dos variables, y se calcula a partir de la covarianza y las
+desviaciones estándar de cada una \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-correlacion}{
+r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1636,10 +1689,16 @@ estrés.}
 
 \end{figure}%
 
-\emph{Instrucciones para esta sección: comentar cómo cambian la
-tendencia central y la dispersión de cada variable entre las dos clases,
-y si hay solapamiento amplio entre grupos (lo que anticiparía dificultad
-para separar las clases con un solo predictor).}
+En los tres géneros, los usuarios con etiqueta de adicción presentan una
+mediana de horas de ocio mayor que quienes tienen etiqueta 0.
+
+Las cajas del grupo con etiqueta 1 también son algo más altas, lo que
+indica mayor dispersión . Pero existe solapamiento entre ambas clases,
+por lo que las horas de ocio por sí solas no permiten separarlas
+completamente.
+
+Al comparar los géneros, las medianas y la dispersión son similares
+dentro de cada clase.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1710,11 +1769,12 @@ variables categóricas según la etiqueta de adicción.}
 
 \end{figure}%
 
-\emph{Instrucciones para esta sección: interpretar las proporciones (no
-solo los conteos) entre subgrupos, evitando conclusiones que
-estigmaticen a los usuarios. Comentar si estas variables parecen ser
-causa, consecuencia o simplemente indicadores asociados al uso
-problemático.}
+La proporción de usuarios con una etiqueta de adicción se mantiene
+bastante similar entre los distintos géneros, niveles de estrés y
+categorías de impacto académico o laboral. Esto indica que no existen
+diferencias importantes entre estos grupos. Sin embargo, con estos
+resultados no podemos concluir que estas variables sean una causa o una
+consecuencia directa del uso problemático.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1789,11 +1849,29 @@ diarias de pantalla, según la etiqueta de adicción.}
 
 \end{figure}%
 
-\emph{Instrucciones para esta sección: para cada par de variables,
-comentar si se observa un patrón (lineal o no lineal), agrupamientos, o
-separación visible entre clases. Si los colores se solapan mucho,
-señalar que esas dos variables por sí solas no bastan para separar las
-clases.}
+En la primera comparación podemos observar que a medida que aumentan las
+horas diarias frente a una pantalla, también parece aumentar la
+posibilidad de que una persona sea `adicta'. A partir de las 8 horas, se
+puede notar que la mayoría de las personas son consideradas adictas. En
+cambio, en las horas de trabajo y estudio no se observa un patrón claro.
+
+En la segunda comparación, entre las 0 y 4 horas no se logra identificar
+un patrón a simple vista. Sin embargo, entre las 4 y 6 horas podemos
+observar que todas las personas son consideradas adictas. Por otro lado,
+en las horas de sueño tampoco se aprecia un patrón claro relacionado con
+la adicción.
+
+En la tercera y cuarta comparación no se observa una tendencia clara
+entre las variables. Lo que sí podemos notar en las gráficas es que las
+personas consideradas adictas aparecen en una mayor proporción que las
+que no lo son.
+
+Finalmente, en la última gráfica podemos observar que, en las edades más
+bajas, hay una mayor cantidad de personas consideradas adictas. Además,
+nuevamente se puede apreciar que mientras aumentan las horas diarias de
+uso de pantalla, también parece aumentar la posibilidad de que una
+persona sea considerada adicta hasta el valor de 8, ya que de 8 en
+adelante la persona ya se le considera como una persona `adicta'
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1835,21 +1913,46 @@ etiqueta\_de\_adiccion & 0.00 & 0.58 & 0.41 & 0.04 & 1.00 \\
 
 \end{table}%
 
-\emph{Instrucciones para esta sección: interpretar el signo de la
-covarianza (si dos variables crecen o decrecen juntas) y explicar por
-qué se complementa con la correlación (que sí permite comparar la fuerza
-de la relación entre variables con escalas distintas).}
+La covarianza mide cómo varían juntas dos variables: positiva si crecen
+juntas, negativa si una crece cuando la otra decrece
+\autocite{walpole2012probabilidad}.
+
+\begin{equation}\protect\phantomsection\label{eq-covarianza}{
+\text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+}\end{equation}
 
 \section{Conclusiones de P1}\label{conclusiones-de-p1}
 
-\emph{Instrucciones para esta sección: redactar entre 4 y 6 conclusiones
-numeradas, basadas únicamente en los resultados obtenidos arriba (no
-inventar cifras). Deben cubrir, como mínimo: (1) calidad de datos
-(nulos, duplicados) y qué se hizo al respecto, (2) si la clase objetivo
-está balanceada o no y qué implica para P2, (3) qué variables se
-excluyen como predictoras y por qué, (4) qué variables lucen más
-prometedoras para el modelamiento, y (5) qué se debe tener en cuenta al
-pasar a la P2 (codificación, escalamiento, evaluación).}
+Hemos encontrado 819 valores nulos correspondientes a una única columna:
+\texttt{nivel\_adiccion}, por lo cual hemos optado excluir la columna
+\texttt{nivel\_adiccion\textasciigrave{}\textasciigrave{},\ puesto\ que\ revelaba\ la\ misma\ información\ que\ la\ variable\ objetivo\ que\ es}etiqueta\_de\_adiccion\texttt{.\ La\ cantidad\ de\ personas\ que\ presentan\ la\ condicion\ de\ “Adicto”\ de\ la\ variable}etiqueta\_de\_adiccion
+es 5308 y la que presentan la condición de ``No adicto'' es 2192. El
+70.77 \% presenta adicción al smartphone y el 29.22\% no presenta esta
+adicción: por lo tanto la clase objetivo no está balanceada y eso
+implica una mayor tendencia a la categoría ``Adicto'' lo cual en un
+futuro puede llevar a sesgos en el modelo de predicción. Las variables
+más prometedoras que encontramos fueron:
+\texttt{horas\_diarias\_pantalla},\texttt{horas\_redes\_sociales} ratio
+\texttt{ratio\_finde\_diario} y \texttt{nivel\_estres} reúnen
+información muy relacionada con \texttt{etiqueta\_de\_adiccion}.
+\texttt{horas\_diarias\_pantalla}: Las personas que usan más tiempo su
+celular son las que tienen la mayor cantidad de adictos.
+\texttt{horas\_redes\_sociales}: En los adictos, dedican la mayor
+cantidad de horas a las redes sociales. \texttt{ratio\_finde\_diario}:
+En las personas adictas el ratio de su uso del fin de semana con el uso
+diario normal se mantiene cerca a uno, dejando en claro que ven la misma
+cantidad de horas sin importar el día. En cambio en las no adictas
+encontramos que el ratio de su uso del fin de semana con su uso diario
+tiende siempre a más que uno, por lo cual se infiere que usan menos el
+celular en horarios de trabajo o estudio y lo usan más en su tiempo
+libre. Por último hemos encontrado que el factor más determinante en
+clasificar a una persona como Adicto o No adicto es la cantidad de horas
+que dedica al celular, específicamente a redes sociales, lo cual nos
+servirá a futuro para el entrenamiento del modelo de clasificación. Por
+otro lado, al ser un set de datos sintéticos no encontramos muchos
+patrones clásicos relacionados con estudios previos que asocian la
+adicción al smartphone con menor rendimiento académico, en parte por su
+efecto negativo sobre el sueño \autocite{rathakrishnan2021smartphone}.
 
 \section{Limitaciones y consideraciones
 éticas}\label{limitaciones-y-consideraciones-uxe9ticas}
