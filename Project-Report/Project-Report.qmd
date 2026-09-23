@@ -51,6 +51,7 @@ header-includes:
   - \usepackage{etoolbox}
   - \AtBeginEnvironment{Shaded}{\setstretch{1.1}}
   - \fvset{breaklines=true}
+  - \usepackage{csquotes}
 format:
   report-pdf:
     keep-tex: true
@@ -284,36 +285,50 @@ tabla(diccionario, indice=False, tamanio="scriptsize", interlineado=1.1,
 La @tbl-diccionario resume la naturaleza de cada variable. La distinción entre tipos estadísticos no es un detalle formal: decide qué gráficos y estadísticos corresponden a cada variable (histogramas y boxplots para las cuantitativas, gráficos de barras para las cualitativas) y, en la P2, cómo se codificará cada una.
 
 ## Calidad de datos
-
+    
 ```{python}
 #| echo: true
-# TODO: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).
+#| label: Val-nulos-colum-duplicadas
+nulos_por_columna = df.isnull().sum()
+filas_duplicadas = df.duplicated().sum()
+print("Valores nulos por columna:")
+print(nulos_por_columna[nulos_por_columna > 0])
+print(f"\nFilas duplicadas: {filas_duplicadas}")
 ```
+
+Se encontraron **819 valores nulos** en la columna `nivel_adicción`, esto es aproximadamente un 10.92% de los registros del dataset. Por otro lado, no hay filas duplicadas, probablemente esto sea porque los usuarios con `nivel_adiccion = None` simplemente no completaron esa escala de severidad. A partir de este problema, decidimos **excluir** a la variable `nivel_adicción` ya que esta representa una fuga de información y no aporta información nueva.
 
 ```{python}
-#| echo: true
-# TODO: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).
-df_renombrado["nivel_adiccion"].isnull().sum()
-#Notamos que hay 819 valores nulos en la columna 'nivel_adiccion'
+#| label: tbl-describe-num
+#| tbl-cap: "Primeras estadísticas de las variables numéricas (archivo original)."
+numericas_orig = df_renombrado.select_dtypes(include='number').columns.tolist()
+descripcion = df_renombrado[numericas_orig].describe().T
+descripcion.columns = ["n", "Media", "Desv. est.", "Mín.", "Q1", "Mediana",
+                       "Q3", "Máx."]
+descripcion.index.name = "Variable"
+tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{5cm}*{8}{c}")
 ```
 
-*Instrucciones para esta sección: reportar cuántos valores faltantes se encontraron y en qué columna(s), y cuántas filas duplicadas existen. Explicar la causa probable de los faltantes (por ejemplo, si corresponden a una categoría real como "sin severidad registrada") y justificar la decisión tomada: ¿se imputan, se eliminan o se excluye la columna? Si se excluye una variable por fuga de información, explicarlo aquí o remitir a la sección de fuga de información.*
-
-```{python}
-#| echo: true
-# TODO: revisar rangos (df.describe()) de las variables numéricas y valores únicos de las categóricas, para detectar valores imposibles o atípicos.
-df.describe()
-```
-
-*Instrucciones para esta sección: comentar si los rangos observados en `df.describe()` son plausibles para lo que representa cada variable (por ejemplo, edades, horas de uso, horas de sueño). Señalar explícitamente cualquier valor fuera de rango lógico y qué se hizo con los identificadores (`ID_transaccion`, `ID_usuario`): ¿se conservan solo como referencia o se descartan del análisis?*
+Los rangos que se observan en la anterior tabla `df.describe()` son coherentes con lo que representan las variables. La edad está entre 18 y 35 años, con una media de 26.57, las horas de pantalla diaria van de 3 a 12 horas con una media de 7.50, las horas de sueño de 4.5 a 9 con una media de 6.74 y las horas de trabajo/estudio de 0.5 a 6 con media de 3.24. Por otro lado, los valores de notificaciones por día y aperturas de apps por día muestran una alta dispersión, eso es esperable ya que cada usuario tiene distintos patrones de uso que generar cantidades completamente diferentes de notificaciones y aperturas. Además, `ID_transaccion` y `ID_usuario` se conservan únicamente como referencia para verificar autenticidad, pero no forman parte del análisis.
 
 # Preprocesamiento y decisiones de data wrangling
 
 Notamos que hay 819 valores nulos en la clumna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna
 
 ```{python}
+#|echo: True
+#|label: tbl-nulos-head
+#|tbl-cap: Estadisticas de las final con valores nulos
+columnas_mostrar = [
+    "ID_transaccion", "edad", "genero",
+    "horas_diarias_pantalla", "horas_sueño",
+    "nivel_estres", "etiqueta_de_adiccion"
+]
+
 df_adiccionnull = df_renombrado[df_renombrado["nivel_adiccion"].isnull()]
-df_adiccionnull.head()
+df_adiccionnull_head = df_adiccionnull.head()
+
+tabla(df_adiccionnull_head[columnas_mostrar], indice=False, tamanio="scriptsize", interlineado=1.1)
 ```
 
 ## Revisión de fuga de información
