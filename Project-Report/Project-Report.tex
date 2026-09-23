@@ -1032,10 +1032,6 @@ negativa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
-\CommentTok{\# usa las columnas que ya tienes cargadas en la sesión}
-
-\CommentTok{\#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas}
 \NormalTok{colores }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}steelblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}forestgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}crimson\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}gold\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightcoral\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}yellowgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,}
 \StringTok{\textquotesingle{}powderblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgray\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}plum\textquotesingle{}}\NormalTok{]}
 \NormalTok{contador }\OperatorTok{=} \DecValTok{0}
@@ -1079,7 +1075,6 @@ Cada histograma
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
 \NormalTok{df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts().plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{,color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{])}
 \NormalTok{plt.show() }\CommentTok{\#usamos la variable comunicativa de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}
 \end{Highlighting}
@@ -1087,17 +1082,23 @@ Cada histograma
 
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-17-output-1.pdf}}
 
-\emph{Instrucciones para esta sección: para cada histograma, describir
-la forma de la distribución (simétrica, sesgada, con varias modas) y qué
-implica para el análisis (por ejemplo, si conviene una transformación o
-estandarización más adelante). Comentar si alguna variable de conteo
-tiene una escala muy distinta a las variables medidas en horas.}
+\emph{El gráfico de barras muestra una clara asimetría y desbalance de
+clases, donde la categoría ``Adiccto'' predomina ampliamente (superando
+las 5,000 observaciones) frente a la de ``No adicto'' (alrededor de
+2,200). Este desequilibrio implica que, para fases posteriores de
+modelado o análisis estadístico, se debe considerar el balanceo de datos
+o métricas de evaluación adecuadas para evitar sesgos hacia la clase
+mayoritaria.}
+
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
+en cuatro partes iguales \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-cuartiles}{
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica (usar num\_cols).}
-\CommentTok{\# asegúrate de que num\_cols existe y tiene nombres reales}
-
 \NormalTok{colores }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}steelblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}forestgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightcoral\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}yellowgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,}
 \StringTok{\textquotesingle{}powderblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgray\textquotesingle{}}\NormalTok{]}
 \NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}
@@ -1146,15 +1147,43 @@ tiene una escala muy distinta a las variables medidas en horas.}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-9.pdf}}
 
-\emph{Instrucciones para esta sección: comentar, variable por variable,
-la dispersión, la posible presencia de outliers y la simetría observada
-en los boxplots. Discutir si esos valores extremos deberían tratarse
-como errores de captura o si son observaciones reales del comportamiento
-de los usuarios, y justificar la decisión tomada.}
+\emph{La visualización de las variables numéricas (edad, tiempo en
+pantalla, uso de apps, sueño, etc.) muestra en general una distribución
+bastante homogénea y centrada. Salvo por ligeras asimetrías o atípicos
+aislados en hábitos de uso intensivo (como notificaciones o
+videojuegos), las observaciones representan comportamientos reales de
+los usuarios y no errores de registro, por lo que se decide conservar
+todas las variables completas para el análisis.}
+
+Se calculan las medidas de tendencia central y dispersión de cada
+variable numérica \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-media}{
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-mediana}{
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-varianza}{
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-desviacion}{
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-cv}{
+CV = \frac{s}{\bar{x}} \times 100\%
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num\_cols).}
 \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ num\_cols:}
 \NormalTok{  display(df\_clean[i].describe())}
 \end{Highlighting}
@@ -1268,15 +1297,19 @@ max        14.880000
 Name: tiempo_pantalla_finde, dtype: float64
 \end{verbatim}
 
-\emph{Instrucciones para esta sección: comparar media y mediana para
-detectar asimetría en cada variable, e interpretar la desviación
-estándar en el contexto de la escala de cada una (no comparar
-directamente variables con unidades distintas). Señalar qué variables
-muestran mayor dispersión o valores extremos.}
+\emph{Al evaluar la relación entre la media y la mediana, la mayoría de
+las variables muestran valores muy cercanos, lo que refleja
+distribuciones mayoritariamente simétricas. En cuanto a la dispersión,
+variables de conteo diario (como notificaciones\_por\_dia y
+aperturas\_apps\_por\_dia) registran una desviación estándar mayor en
+proporción a su escala en comparación con las variables en horas (como
+horas\_sueño o horas\_trabajo/estudio), las cuales presentan mayor
+estabilidad. Finalmente, las variables asociadas a hábitos intensivos
+digitales son las que exhiben mayor variabilidad y presencia de valores
+extremos.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la frecuencia de las variables categóricas (cat\_cols: genero, nivel\_estres, impacto\_academico/laboral). \#están debajo}
 \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ cat\_cols:}
 \NormalTok{  df\_clean[i].value\_counts(normalize}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
 \end{Highlighting}
@@ -1312,17 +1345,21 @@ No adicto    0.292267
 Name: proportion, dtype: float64
 \end{verbatim}
 
-\emph{Instrucciones para esta sección: describir qué categorías son
-dominantes o poco frecuentes en cada variable categórica y comentar si
-eso podría afectar el análisis posterior (por ejemplo, categorías con
-muy pocos casos). Indicar si alguna de estas variables se tratará como
-ordinal y por qué.}
+\emph{Las variables de género (Male: 34.0\%, Other: 33.1\%, Female:
+32.8\%), nivel de estrés (High: 34.1\%, Low: 33.4\%, Medium: 32.5\%) e
+impacto académico/laboral (No: 50.0\%, Yes: 50.0\%) presentan una
+distribución completamente equitativa e uniforme, sin presencia de
+categorías minoritarias que puedan sesgar el análisis. La única
+excepción es estado\_adiccion, la cual exhibe un desbalance
+significativo donde el 70.8\% corresponde a usuarios clasificados como
+``Adicto'' y solo el 29.2\% a ``No adicto''. Por otro lado, la variable
+nivel\_estres se tratará como ordinal debido a que sus categorías (Low,
+Medium, High) poseen un orden jerárquico natural implícito.}
 
 \subsection{Análisis multivariado}\label{anuxe1lisis-multivariado}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un mapa de calor de correlaciones entre las variables numéricas (num\_cols).}
 \NormalTok{df\_num }\OperatorTok{=}\NormalTok{ df\_clean[num\_cols}\OperatorTok{+}\NormalTok{ [}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{]].copy()}
 \CommentTok{\# 1. Primero va el tamaño y la resolución (el lienzo)}
 \NormalTok{plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{30}\NormalTok{, }\DecValTok{10}\NormalTok{), dpi}\OperatorTok{=}\DecValTok{300}\NormalTok{)}
@@ -1352,6 +1389,14 @@ ordinal y por qué.}
 los pares de variables con correlación fuerte (positiva o negativa) y
 comentar si sugieren colinealidad. Aclarar que la correlación no implica
 causalidad.}
+
+La correlación de Pearson mide la fuerza y dirección de la relación
+lineal entre dos variables, y se calcula a partir de la covarianza y las
+desviaciones estándar de cada una \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-correlacion}{
+r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1468,6 +1513,14 @@ comentar si se observa un patrón (lineal o no lineal), agrupamientos, o
 separación visible entre clases. Si los colores se solapan mucho,
 señalar que esas dos variables por sí solas no bastan para separar las
 clases.}
+
+La covarianza mide cómo varían juntas dos variables: positiva si crecen
+juntas, negativa si una crece cuando la otra decrece
+\autocite{walpole2012probabilidad}.
+
+\begin{equation}\protect\phantomsection\label{eq-covarianza}{
+\text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]

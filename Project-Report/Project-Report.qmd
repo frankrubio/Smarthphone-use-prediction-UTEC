@@ -398,10 +398,6 @@ De los 7,500 registros, **5308 (70.77%)** corresponden a la clase "Con adicción
 
 ```{python}
 #| echo: true
-# TODO: graficar un histograma por cada variable numérica (usar num_cols).
-# usa las columnas que ya tienes cargadas en la sesión
-
-#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas
 colores = ['steelblue','darkorange','forestgreen','crimson','gold','lightcoral','yellowgreen','cadetblue',
 'powderblue','lightgreen','lightgray','plum']
 contador = 0
@@ -426,18 +422,21 @@ Cada histograma
 
 ```{python}
 #| echo: true
-# TODO: graficar un histograma por cada variable numérica (usar num_cols).
 df_clean['estado_adiccion'].value_counts().plot(kind='bar',color=['darkred','darkgreen'])
 plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
 ```
 
-*Instrucciones para esta sección: para cada histograma, describir la forma de la distribución (simétrica, sesgada, con varias modas) y qué implica para el análisis (por ejemplo, si conviene una transformación o estandarización más adelante). Comentar si alguna variable de conteo tiene una escala muy distinta a las variables medidas en horas.*
+*El gráfico de barras muestra una clara asimetría y desbalance de clases, donde la categoría "Adiccto" predomina ampliamente (superando las 5,000 observaciones) frente a la de "No adicto" (alrededor de 2,200). Este desequilibrio implica que, para fases posteriores de modelado o análisis estadístico, se debe considerar el balanceo de datos o métricas de evaluación adecuadas para evitar sesgos hacia la clase mayoritaria.*
+
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
+en cuatro partes iguales [@walpole2012probabilidad]:
+ 
+$$
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+$$ {#eq-cuartiles}
 
 ```{python}
 #| echo: true
-# TODO: graficar un boxplot por cada variable numérica (usar num_cols).
-# asegúrate de que num_cols existe y tiene nombres reales
-
 colores = ['steelblue','darkorange','forestgreen','lightcoral','yellowgreen','cadetblue',
 'powderblue','lightgreen','lightgray']
 num_cols = [
@@ -467,20 +466,46 @@ for col in num_cols:
     plt.show()
 ```
 
-*Instrucciones para esta sección: comentar, variable por variable, la dispersión, la posible presencia de outliers y la simetría observada en los boxplots. Discutir si esos valores extremos deberían tratarse como errores de captura o si son observaciones reales del comportamiento de los usuarios, y justificar la decisión tomada.*
+*La visualización de las variables numéricas (edad, tiempo en pantalla, uso de apps, sueño, etc.) muestra en general una distribución bastante homogénea y centrada. Salvo por ligeras asimetrías o atípicos aislados en hábitos de uso intensivo (como notificaciones o videojuegos), las observaciones representan comportamientos reales de los usuarios y no errores de registro, por lo que se decide conservar todas las variables completas para el análisis.*
+
+Se calculan las medidas de tendencia central y dispersión de cada variable
+numérica [@walpole2012probabilidad]:
+ 
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+$$ {#eq-media}
+ 
+$$
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+$$ {#eq-mediana}
+ 
+$$
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+$$ {#eq-varianza}
+ 
+$$
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+$$ {#eq-desviacion}
+ 
+$$
+CV = \frac{s}{\bar{x}} \times 100\%
+$$ {#eq-cv}
 
 ```{python}
 #| echo: true
-# TODO: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num_cols).
 for i in num_cols:
   display(df_clean[i].describe())
 ```
 
-*Instrucciones para esta sección: comparar media y mediana para detectar asimetría en cada variable, e interpretar la desviación estándar en el contexto de la escala de cada una (no comparar directamente variables con unidades distintas). Señalar qué variables muestran mayor dispersión o valores extremos.*
+*Al evaluar la relación entre la media y la mediana, la mayoría de las variables muestran valores muy cercanos, lo que refleja distribuciones mayoritariamente simétricas. En cuanto a la dispersión, variables de conteo diario (como notificaciones_por_dia y aperturas_apps_por_dia) registran una desviación estándar mayor en proporción a su escala en comparación con las variables en horas (como horas_sueño o horas_trabajo/estudio), las cuales presentan mayor estabilidad. Finalmente, las variables asociadas a hábitos intensivos digitales son las que exhiben mayor variabilidad y presencia de valores extremos.*
+
 
 ```{python}
 #| echo: true
-# TODO: graficar la frecuencia de las variables categóricas (cat_cols: genero, nivel_estres, impacto_academico/laboral). #están debajo
 for i in cat_cols:
   df_clean[i].value_counts(normalize=True)
 ```
@@ -501,13 +526,12 @@ df_clean['impacto_academico/laboral'].value_counts(normalize=True)
 df_clean["estado_adiccion"].value_counts(normalize=True)
 ```
 
-*Instrucciones para esta sección: describir qué categorías son dominantes o poco frecuentes en cada variable categórica y comentar si eso podría afectar el análisis posterior (por ejemplo, categorías con muy pocos casos). Indicar si alguna de estas variables se tratará como ordinal y por qué.*
+*Las variables de género (Male: 34.0%, Other: 33.1%, Female: 32.8%), nivel de estrés (High: 34.1%, Low: 33.4%, Medium: 32.5%) e impacto académico/laboral (No: 50.0%, Yes: 50.0%) presentan una distribución completamente equitativa e uniforme, sin presencia de categorías minoritarias que puedan sesgar el análisis. La única excepción es estado_adiccion, la cual exhibe un desbalance significativo donde el 70.8% corresponde a usuarios clasificados como "Adicto" y solo el 29.2% a "No adicto". Por otro lado, la variable nivel_estres se tratará como ordinal debido a que sus categorías (Low, Medium, High) poseen un orden jerárquico natural implícito.*
 
 ## Análisis multivariado
 
 ```{python}
 #| echo: true
-# TODO: graficar un mapa de calor de correlaciones entre las variables numéricas (num_cols).
 df_num = df_clean[num_cols+ ["etiqueta_de_adiccion"]].copy()
 # 1. Primero va el tamaño y la resolución (el lienzo)
 plt.figure(figsize=(30, 10), dpi=300)
@@ -531,6 +555,14 @@ plt.show()
 ```
 
 *Instrucciones para esta sección: identificar en el mapa de calor los pares de variables con correlación fuerte (positiva o negativa) y comentar si sugieren colinealidad. Aclarar que la correlación no implica causalidad.*
+
+La correlación de Pearson mide la fuerza y dirección de la relación lineal
+entre dos variables, y se calcula a partir de la covarianza y las
+desviaciones estándar de cada una [@walpole2012probabilidad]:
+ 
+$$
+r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
+$$ {#eq-correlacion}
 
 ```{python}
 #| echo: true
@@ -646,6 +678,14 @@ sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue 
 ```
 
 *Instrucciones para esta sección: para cada par de variables, comentar si se observa un patrón (lineal o no lineal), agrupamientos, o separación visible entre clases. Si los colores se solapan mucho, señalar que esas dos variables por sí solas no bastan para separar las clases.*
+
+La covarianza mide cómo varían juntas dos variables: positiva si crecen
+juntas, negativa si una crece cuando la otra decrece [@walpole2012probabilidad].
+ 
+$$
+\text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+$$ {#eq-covarianza}
+
 
 ```{python}
 #| echo: true
