@@ -624,7 +624,7 @@ La Tabla~\ref{tbl-primeras-filas} se presenta transpuesta porque las 16
 columnas no caben a lo ancho de la página. Ya en estas cinco filas
 aparece una señal de alerta: los usuarios 1 y 2 muestran \texttt{NaN}
 (valor nulo) en \texttt{addiction\_level}, un valor que se investiga en
-la sección (\emph{inserta sección}).
+la sección (Sección~\ref{sec-val-nul}).
 
 \begin{table}
 
@@ -856,64 +856,61 @@ TXN00014 & 32 & Male & 4.09 & 5.54 & High & 0 \\
 
 \end{table}%
 
-\subsection{Revisión de fuga de
-información}\label{revisiuxf3n-de-fuga-de-informaciuxf3n}
+\subsection{Revisión de fuga de información}\label{sec-val-nul}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: construir una tabla cruzada (pd.crosstab) entre nivel\_adiccion y etiqueta\_de\_adiccion para revisar si nivel\_adiccion "filtra" la respuesta.}
-
-\NormalTok{pd.crosstab(df\_renombrado[}\StringTok{"nivel\_adiccion"}\NormalTok{], df\_renombrado[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{])}
-
-\CommentTok{\# Notamos que la columna \textquotesingle{}nivel\_adiccion\textquotesingle{} o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción}
-\CommentTok{\# para alguien de adicción media p alta, la información de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{} es la necesaria y objetivo para este análisis}
-\CommentTok{\# puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.}
+\NormalTok{crosstab }\OperatorTok{=}\NormalTok{ pd.crosstab(df\_renombrado[}\StringTok{"nivel\_adiccion"}\NormalTok{], df\_renombrado[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{])}
+\NormalTok{tabla(crosstab)}
 \end{Highlighting}
 \end{Shaded}
 
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-etiqueta\_de\_adiccion & 0 & 1 \\
-nivel\_adiccion & & \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Mild & 1373 & 0 \\
-Moderate & 0 & 2874 \\
-Severe & 0 & 2434 \\
-\end{longtable}
+\begin{table}
+
+\caption{\label{tbl-crosstab-fuga}Tabla cruzada entre nivel\_adiccion y
+etiqueta\_de\_adiccion.}
+
+\centering{
+
+\begingroup\small\setstretch{1.15}
+\begin{tabular}{lcc}
+\toprule
+\textbf{nivel\_adiccion} & \textbf{0} & \textbf{1} \\
+\midrule
+Mild & 1,373 & 0 \\
+Moderate & 0 & 2,874 \\
+Severe & 0 & 2,434 \\
+\bottomrule
+\end{tabular}
+\endgroup
+
 }
 
-\emph{Instrucciones para esta sección: interpretar la tabla cruzada
-anterior: ¿existe alguna categoría de \texttt{nivel\_adiccion} que se
-asocie de forma perfecta o casi perfecta con una sola clase de
-\texttt{etiqueta\_de\_adiccion}? Si es así, explicar por qué eso
-constituye \textbf{fuga de información} y qué variables se decide
-excluir de \texttt{X} para la P2 (y por qué).}
+\end{table}%
 
-Notamos que la columna `nivel\_adiccion' \emph{o cae en 0 cuando es
-baja} o \emph{cae en 1 cuando es media o alta}, no hay ninguna excepción
-para alguien de adicción media p alta, la información de
-`etiqueta\_de\_adiccion' es la necesaria y objetivo para este análisis
-puesto que queremos encontrar qué patrones de uso, descanso y contexto
-personal están asociados con la etiqueta de adicción en el conjunto de
-datos que estamos abordando.
+En la tabla cruzada Notamos que la columna \texttt{nivel\_adiccion} o
+cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay
+ninguna excepción para alguien de adicción media p alta, la información
+de \texttt{etiqueta\_de\_adiccion} es la necesaria y objetivo para este
+análisis puesto que queremos encontrar qué patrones de uso, descanso y
+contexto personal están asociados con la etiqueta de adicción en el
+conjunto de datos que estamos abordando.
 
-Esto permitirá no repetir información en el proceso de modelamiento, ya
-que `nivel\_adiccion' ya revelaría que `etiqeuta\_de\_adiccion' es 1 o
-0.
-
-\emph{Instrucciones para esta sección: explicar por qué excluir las
-variables identificadas en el punto anterior protege la validez de la
-evaluación del modelo. Indicar además qué método de codificación se
-planea usar en P2 para cada variable categórica (\texttt{genero},
-\texttt{impacto\_academico/laboral}, \texttt{nivel\_estres}) y por qué
-(one-hot, binaria, ordinal, etc.), aclarando que cualquier
-transformación debe ajustarse solo con los datos de entrenamiento. Si se
-usa \texttt{scikit-learn} para esto, citar la librería
-(\textcite{Pedregosa2011}).}
+Notamos que la columna \texttt{nivel\_adiccion} \emph{o cae en 0 cuando
+es baja} o \emph{cae en 1 cuando es media o alta}, no hay ninguna
+excepción para alguien de adicción media p alta, la información de
+\texttt{etiqueta\_de\_adiccion} es la necesaria y objetivo para este
+análisis puesto que queremos encontrar qué patrones de uso, descanso y
+contexto personal están asociados con la etiqueta de adicción en el
+conjunto de datos que estamos abordando. Esto permitirá no repetir
+información en el proceso de modelamiento, ya que
+\texttt{nivel\_adiccion} ya revelaría que
+\texttt{etiqueta\_de\_adiccion} es 1 o 0. Por lo tanto, con esto
+confirmamos que incluir \texttt{nivel\_adiccion} en el predictor del
+modelo P2 sería igual a una \textbf{fuga de información}, entonces lo
+excluiremos de las variables predictoras. Además, se descartan
+\texttt{ID\_transaccion} e \texttt{ID\_usuario} al ser solo
+identificadores sin un valor predictivo.
 
 \textbf{Contrato de nombres para el resto del proyecto} (acordado por el
 equipo, para que el código de todos encaje sin romperse al juntarlo): a
@@ -921,119 +918,83 @@ partir de aquí se crean y se reutilizan siempre las mismas variables:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear df\_clean = df sin ID\_transaccion, ID\_usuario ni nivel\_adiccion (por fuga de información).}
-\CommentTok{\# num\_cols = lista de las 9 columnas numéricas (edad, horas\_diarias\_pantalla, horas\_redes\_sociales,}
-\CommentTok{\#            horas\_videojuegos, horas\_trabajo/estudio, horas\_sueño, notificaciones\_por\_dia,}
-\CommentTok{\#            aperturas\_apps\_por\_dia, tiempo\_pantalla\_finde,) }
-\CommentTok{\# cat\_cols = ["genero", "nivel\_estres", "impacto\_academico/laboral"]}
-\end{Highlighting}
-\end{Shaded}
-
-\subsubsection{Enriquecimiento de
-datos:}\label{enriquecimiento-de-datos}
-
-\emph{Instrucciones para esta sección: quien complete esta parte debe
-dejar creadas exactamente las variables \texttt{df\_clean},
-\texttt{num\_cols} y \texttt{cat\_cols} con esos nombres. Las secciones
-de EDA (más abajo) las dan por hechas y no deben volver a definirlas.}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear df\_clean = df sin ID\_transaccion, ID\_usuario ni nivel\_adiccion (por fuga de información).}
 \NormalTok{df\_clean }\OperatorTok{=}\NormalTok{ df\_renombrado.drop(columns}\OperatorTok{=}\NormalTok{[}\StringTok{"ID\_transaccion"}\NormalTok{, }\StringTok{"ID\_usuario"}\NormalTok{, }\StringTok{"nivel\_adiccion"}\NormalTok{])}
 \NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"edad"}\NormalTok{, }\StringTok{"horas\_diarias\_pantalla"}\NormalTok{, }\StringTok{"horas\_redes\_sociales"}\NormalTok{,}
 \StringTok{"horas\_videojuegos"}\NormalTok{, }\StringTok{"horas\_trabajo/estudio"}\NormalTok{, }\StringTok{"horas\_sueño"}\NormalTok{, }\StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
 \StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}
 \NormalTok{cat\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"genero"}\NormalTok{, }\StringTok{"nivel\_estres"}\NormalTok{, }\StringTok{"impacto\_academico/laboral"}\NormalTok{]}
+\NormalTok{tabla(df\_clean.head())}
 \end{Highlighting}
 \end{Shaded}
 
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}llllllllllllll@{}}
-\toprule\noalign{}
-& edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
-horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
-notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
-tiempo\_pantalla\_finde & nivel\_estres & impacto\_academico/laboral &
-etiqueta\_de\_adiccion \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 &
-Medium & Yes & 0 \\
-1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 &
-Medium & Yes & 0 \\
-2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 &
-High & No & 0 \\
-3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 &
-High & Yes & 1 \\
-4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 &
-Low & No & 1 \\
-\end{longtable}
-}
+\protect\phantomsection\label{df-limpio}
+\begingroup\small\setstretch{1.15}
+\begin{table}
+\caption{Primeras cinco filas del dataset limpio (df\_clean).}\tabularnewline
 
-{\def\LTcaptype{none} % do not increment counter
-\begin{longtable}[]{@{}llllllllllllllll@{}}
-\toprule\noalign{}
-& edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
-horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
-notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
-tiempo\_pantalla\_finde & nivel\_estres & impacto\_academico/laboral &
-etiqueta\_de\_adiccion & horas\_ocio & ratio\_finde\_diario \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 &
-Medium & Yes & 0 & 2.90 & 1.222910 \\
-1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 &
-Medium & Yes & 0 & 6.05 & 1.318271 \\
-2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 &
-High & No & 0 & 5.19 & 1.432343 \\
-3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 &
-High & Yes & 1 & 7.36 & 1.247765 \\
-4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 &
-Low & No & 1 & 9.34 & 1.260040 \\
-... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
-... & ... & ... & ... \\
-7495 & 26 & Other & 9.85 & 1.75 & 3.13 & 3.49 & 5.81 & 249 & 122 & 11.99
-& Low & Yes & 1 & 4.88 & 1.217259 \\
-7496 & 35 & Male & 5.67 & 2.33 & 2.76 & 5.90 & 8.47 & 197 & 56 & 7.08 &
-Low & No & 0 & 5.09 & 1.248677 \\
-7497 & 22 & Female & 9.99 & 3.61 & 1.09 & 1.16 & 8.17 & 207 & 24 & 12.84
-& Medium & Yes & 1 & 4.70 & 1.285285 \\
-7498 & 23 & Male & 8.74 & 1.59 & 0.07 & 4.64 & 6.19 & 134 & 62 & 10.52 &
-High & Yes & 1 & 1.66 & 1.203661 \\
-7499 & 27 & Female & 10.04 & 5.40 & 0.73 & 5.45 & 5.58 & 215 & 38 &
-12.17 & Low & Yes & 1 & 6.13 & 1.212151 \\
-\end{longtable}
-}
+\centering
+\begin{tabular}{cclccccccccllc}
+\toprule
+\textbf{index} & \textbf{edad} & \textbf{genero} & \textbf{horas\_diarias\_pantalla} & \textbf{horas\_redes\_sociales} & \textbf{horas\_videojuegos} & \textbf{horas\_trabajo/estudio} & \textbf{horas\_sueño} & \textbf{notificaciones\_por\_dia} & \textbf{aperturas\_apps\_por\_dia} & \textbf{tiempo\_pantalla\_finde} & \textbf{nivel\_estres} & \textbf{impacto\_academico/laboral} & \textbf{etiqueta\_de\_adiccion} \\
+\midrule
+0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 & Medium & Yes & 0 \\
+1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 & Medium & Yes & 0 \\
+2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 & High & No & 0 \\
+3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 & High & Yes & 1 \\
+4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 & Low & No & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection{Variable derivada para la
-comunicación}\label{variable-derivada-para-la-comunicaciuxf3n}
+\endgroup
+
+\subsubsection{Enriquecimiento de
+datos:}\label{enriquecimiento-de-datos}
+
+Se crean dos variables derivadas para el análisis exploratorio:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: agregar a df\_clean una columna nueva (por ejemplo, estado\_adiccion) que traduzca etiqueta\_de\_adiccion a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.}
-
-\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{]. replace(\{}\DecValTok{1}\NormalTok{:}\StringTok{"Adicto"}\NormalTok{, }\DecValTok{0}\NormalTok{ : }\StringTok{"No adicto"}\NormalTok{\})}
-\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
+\NormalTok{df\_clean[}\StringTok{"horas\_ocio"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_renombrado[}\StringTok{"horas\_redes\_sociales"}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_renombrado[}\StringTok{"horas\_videojuegos"}\NormalTok{]}
+\NormalTok{df\_clean[}\StringTok{"ratio\_finde\_diario"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_renombrado[}\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}\OperatorTok{/}\NormalTok{df\_renombrado[}\StringTok{"horas\_diarias\_pantalla"}\NormalTok{]}
+\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{].replace(\{}\DecValTok{1}\NormalTok{:}\StringTok{"Adicto"}\NormalTok{, }\DecValTok{0}\NormalTok{:}\StringTok{"No adicto"}\NormalTok{\})}
+\NormalTok{tabla(df\_clean.head())}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-estado_adiccion
-Adicto       5308
-No adicto    2192
-Name: count, dtype: int64
-\end{verbatim}
+\protect\phantomsection\label{variables-derivadas}
+\begingroup\small\setstretch{1.15}
+\begin{table}
+\caption{Primeras cinco filas del dataset con variables derivadas (horas\_ocio y
+ratio\_finde\_diario).}\tabularnewline
 
-\emph{Instrucciones para esta sección: confirmar que la nueva variable
-de etiquetas legibles no introduce ninguna información distinta a
-\texttt{etiqueta\_de\_adiccion} (es solo una versión ``para humanos'' de
-la misma columna) y aclarar que para el modelamiento en P2 se seguirá
-usando la versión numérica original.}
+\centering
+\begin{tabular}{cclccccccccllcccl}
+\toprule
+\textbf{index} & \textbf{edad} & \textbf{genero} & \textbf{horas\_diarias\_pantalla} & \textbf{horas\_redes\_sociales} & \textbf{horas\_videojuegos} & \textbf{horas\_trabajo/estudio} & \textbf{horas\_sueño} & \textbf{notificaciones\_por\_dia} & \textbf{aperturas\_apps\_por\_dia} & \textbf{tiempo\_pantalla\_finde} & \textbf{nivel\_estres} & \textbf{impacto\_academico/laboral} & \textbf{etiqueta\_de\_adiccion} & \textbf{horas\_ocio} & \textbf{ratio\_finde\_diario} & \textbf{estado\_adiccion} \\
+\midrule
+0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 & Medium & Yes & 0 & 2.90 & 1.22 & No adicto \\
+1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 & Medium & Yes & 0 & 6.05 & 1.32 & No adicto \\
+2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 & High & No & 0 & 5.19 & 1.43 & No adicto \\
+3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 & High & Yes & 1 & 7.36 & 1.25 & Adicto \\
+4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 & Low & No & 1 & 9.34 & 1.26 & Adicto \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\endgroup
+
+Con esto se confirma que \texttt{estado\_adiccion} es solo una
+traducción de \texttt{etiqueta\_de\_adiccion} a etiquetas legibles: 5308
+registros se etiquetaron como ``Adicto'' (equivalente a 1) y 2192 como
+``No adicto'' (equivalente a 0). No se está introduciendo nada nuevo.
+Las variables \texttt{num\_cols} y \texttt{cat\_cols} actualizadas son:
+- \texttt{num\_cols}: edad, horas\_diarias\_pantalla,
+horas\_redes\_sociales, horas\_videojuegos, horas\_trabajo/estudio,
+horas\_sueño, notificaciones\_por\_dia, aperturas\_apps\_por\_dia,
+tiempo\_en\_pantalla\_fin\_de\_semana, horas\_ocio,
+ratio\_finde\_diario, etiqueta\_de\_adiccion - \texttt{cat\_cols}:
+genero, nivel\_estres, impacto\_academico/laboral, estado\_adiccion
 
 \section{Análisis exploratorio de
 datos}\label{anuxe1lisis-exploratorio-de-datos}
@@ -1042,25 +1003,32 @@ datos}\label{anuxe1lisis-exploratorio-de-datos}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar la distribución de etiqueta\_de\_adiccion (conteo y/o porcentaje por clase), usando df\_clean  \#Aquín no se puede distribución porque etiqueta\_de\_adiccion es una variable categórica}
-\CommentTok{\#sns.barplot(data=df\_clean, x= "estado\_adiccion", y = )}
 \NormalTok{counts }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
-
 \NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{, color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{], edgecolor}\OperatorTok{=}\StringTok{"none"}\NormalTok{)}
-
 \NormalTok{plt.xlabel(}\StringTok{"Estado de adicción"}\NormalTok{)}
 \NormalTok{plt.ylabel(}\VariableTok{None}\NormalTok{)}
+\NormalTok{plt.xticks(rotation}\OperatorTok{=}\DecValTok{0}\NormalTok{)}
 \NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-19-output-1.pdf}}
+\begin{figure}[H]
 
-\emph{Instrucciones para esta sección: reportar cuántos registros hay en
-cada clase de \texttt{etiqueta\_de\_adiccion} (conteo y porcentaje) y
-comentar si existe desbalance de clases. Si lo hay, explicar qué
-implicancia tiene para la partición entrenamiento/prueba y las métricas
-que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-estado-adiccion-output-1.pdf}}
+
+}
+
+\caption{\label{fig-estado-adiccion}Distribución de la variable
+objetivo: estado de adicción (0 = No adicción, 1 = Con adicción).}
+
+\end{figure}%
+
+De los 7,500 registros, \textbf{5308 (70.77\%)} corresponden a la clase
+``Con adicción'' y \textbf{2192 (29.23\%)} a ``No adicción''. Hay un
+desbalance, la clase positiva tiene más del doble de registros que la
+negativa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1089,29 +1057,25 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-2.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-3.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-4.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-5.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-6.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-7.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-8.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-9.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-10.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-11.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-20-output-12.pdf}}
+Cada histograma
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1121,7 +1085,7 @@ que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-21-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-17-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: para cada histograma, describir
 la forma de la distribución (simétrica, sesgada, con varias modas) y qué
@@ -1164,23 +1128,23 @@ tiene una escala muy distinta a las variables medidas en horas.}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-2.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-3.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-4.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-4.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-5.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-5.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-6.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-6.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-7.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-7.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-8.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-8.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-22-output-9.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-18-output-9.pdf}}
 
 \emph{Instrucciones para esta sección: comentar, variable por variable,
 la dispersión, la posible presencia de outliers y la simetría observada
@@ -1382,7 +1346,7 @@ ordinal y por qué.}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-29-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-25-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: identificar en el mapa de calor
 los pares de variables con correlación fuerte (positiva o negativa) y
@@ -1410,17 +1374,17 @@ selección final de variables para el modelo.}
 \end{Highlighting}
 \end{Shaded}
 
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-27-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-28-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-29-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-30-output-1.pdf}}
+
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-31-output-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-32-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-33-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-34-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-35-output-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-36-output-1.pdf}}
 
 \begin{verbatim}
 ['edad',
@@ -1435,10 +1399,10 @@ selección final de variables para el modelo.}
 \end{verbatim}
 
 \begin{verbatim}
-['genero', 'nivel_estres', 'impacto_academico/laboral', 'estado_adiccion']
+['genero', 'nivel_estres', 'impacto_academico/laboral']
 \end{verbatim}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-39-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-35-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: comentar cómo cambian la
 tendencia central y la dispersión de cada variable entre las dos clases,
@@ -1458,13 +1422,22 @@ para separar las clases con un solo predictor).}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-40-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-36-output-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel\_estres o impacto\_academico/laboral vs. etiqueta\_de\_adiccion).}
+\ControlFlowTok{for}\NormalTok{ columna }\KeywordTok{in}\NormalTok{ cat\_cols:}
+\NormalTok{  sns.histplot(data}\OperatorTok{=}\NormalTok{df\_clean,x }\OperatorTok{=}\NormalTok{ columna, hue }\OperatorTok{=} \StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{)}
+\NormalTok{  plt.show()}
 \end{Highlighting}
 \end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-37-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-37-output-2.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-37-output-3.pdf}}
 
 \emph{Instrucciones para esta sección: interpretar las proporciones (no
 solo los conteos) entre subgrupos, evitando conclusiones que
@@ -1475,14 +1448,20 @@ problemático.}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num\_cols), coloreando por etiqueta\_de\_adiccion.}
+
+\NormalTok{sns.scatterplot(data}\OperatorTok{=}\NormalTok{df\_renombrado, x}\OperatorTok{=} \StringTok{\textquotesingle{}horas\_trabajo/estudio\textquotesingle{}}\NormalTok{, y}\OperatorTok{=} \StringTok{\textquotesingle{}horas\_diarias\_pantalla\textquotesingle{}}\NormalTok{, hue }\OperatorTok{=} \StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num\_cols), coloreando por etiqueta\_de\_adiccion.}
-\end{Highlighting}
-\end{Shaded}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-38-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-39-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-40-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-41-output-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-42-output-1.pdf}}
 
 \emph{Instrucciones para esta sección: para cada par de variables,
 comentar si se observa un patrón (lineal o no lineal), agrupamientos, o
@@ -1493,8 +1472,61 @@ clases.}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: calcular la covarianza entre pares de variables numéricas relevantes (num\_cols).}
+\NormalTok{df\_number }\OperatorTok{=}\NormalTok{ df\_clean.select\_dtypes(include}\OperatorTok{=}\StringTok{\textquotesingle{}number\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_number.corr()}
 \end{Highlighting}
 \end{Shaded}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& edad & horas\_diarias\_pantalla & horas\_redes\_sociales &
+horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
+notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
+tiempo\_pantalla\_finde & etiqueta\_de\_adiccion & horas\_ocio &
+ratio\_finde\_diario \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+edad & 1.000000 & 0.012767 & 0.000342 & -0.026107 & -0.017147 &
+-0.007462 & 0.000387 & -0.002276 & 0.015286 & 0.004220 & -0.015024 &
+0.002679 \\
+horas\_diarias\_pantalla & 0.012767 & 1.000000 & 0.010321 & 0.001140 &
+0.003108 & 0.019343 & 0.000811 & 0.024448 & 0.964295 & 0.577112 &
+0.009036 & -0.632299 \\
+horas\_redes\_sociales & 0.000342 & 0.010321 & 1.000000 & -0.000902 &
+-0.002580 & 0.005947 & -0.008593 & -0.000371 & 0.011404 & 0.414244 &
+0.810238 & -0.000316 \\
+horas\_videojuegos & -0.026107 & 0.001140 & -0.000902 & 1.000000 &
+0.004384 & -0.002874 & 0.015563 & -0.009917 & -0.006282 & 0.008485 &
+0.585370 & -0.019130 \\
+horas\_trabajo/estudio & -0.017147 & 0.003108 & -0.002580 & 0.004384 &
+1.000000 & -0.027150 & -0.017518 & -0.021676 & 0.004667 & 0.001103 &
+0.000478 & -0.007629 \\
+horas\_sueño & -0.007462 & 0.019343 & 0.005947 & -0.002874 & -0.027150 &
+1.000000 & 0.016273 & 0.005692 & 0.018933 & 0.035496 & 0.003137 &
+-0.002452 \\
+notificaciones\_por\_dia & 0.000387 & 0.000811 & -0.008593 & 0.015563 &
+-0.017518 & 0.016273 & 1.000000 & 0.004598 & -0.002199 & -0.000660 &
+0.002154 & -0.009572 \\
+aperturas\_apps\_por\_dia & -0.002276 & 0.024448 & -0.000371 & -0.009917
+& -0.021676 & 0.005692 & 0.004598 & 1.000000 & 0.021069 & 0.011041 &
+-0.006113 & -0.023674 \\
+tiempo\_pantalla\_finde & 0.015286 & 0.964295 & 0.011404 & -0.006282 &
+0.004667 & 0.018933 & -0.002199 & 0.021069 & 1.000000 & 0.555426 &
+0.005564 & -0.428720 \\
+etiqueta\_de\_adiccion & 0.004220 & 0.577112 & 0.414244 & 0.008485 &
+0.001103 & 0.035496 & -0.000660 & 0.011041 & 0.555426 & 1.000000 &
+0.340828 & -0.363188 \\
+horas\_ocio & -0.015024 & 0.009036 & 0.810238 & 0.585370 & 0.000478 &
+0.003137 & 0.002154 & -0.006113 & 0.005564 & 0.340828 & 1.000000 &
+-0.011468 \\
+ratio\_finde\_diario & 0.002679 & -0.632299 & -0.000316 & -0.019130 &
+-0.007629 & -0.002452 & -0.009572 & -0.023674 & -0.428720 & -0.363188 &
+-0.011468 & 1.000000 \\
+\end{longtable}
+}
 
 \emph{Instrucciones para esta sección: interpretar el signo de la
 covarianza (si dos variables crecen o decrecen juntas) y explicar por

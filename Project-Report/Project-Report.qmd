@@ -220,7 +220,7 @@ primeras.index.name = "Columna"
 tabla(primeras, tamanio="footnotesize")
 ```
 
-La @tbl-primeras-filas se presenta transpuesta porque las `{python} df.shape[1]` columnas no caben a lo ancho de la página. Ya en estas cinco filas aparece una señal de alerta: los usuarios 1 y 2 muestran `NaN` (valor nulo) en `addiction_level`, un valor que se investiga en la sección (*inserta sección*).
+La @tbl-primeras-filas se presenta transpuesta porque las `{python} df.shape[1]` columnas no caben a lo ancho de la página. Ya en estas cinco filas aparece una señal de alerta: los usuarios 1 y 2 muestran `NaN` (valor nulo) en `addiction_level`, un valor que se investiga en la sección (@sec-val-nul).
 
 ```{python}
 #| label: tbl-estructura
@@ -331,7 +331,7 @@ df_adiccionnull_head = df_adiccionnull.head()
 tabla(df_adiccionnull_head[columnas_mostrar], indice=False, tamanio="scriptsize", interlineado=1.1)
 ```
 
-## Revisión de fuga de información
+## Revisión de fuga de información{#sec-val-nul}
 
 ```{python}
 #| echo: true
@@ -349,67 +349,34 @@ Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 
 
 ```{python}
 #| echo: true
-# TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
-# num_cols = lista de las 9 columnas numéricas (edad, horas_diarias_pantalla, horas_redes_sociales,
-#            horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia,
-#            aperturas_apps_por_dia, tiempo_pantalla_finde,) 
-# cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
-```
-
-### Enriquecimiento de datos:
-
-*Instrucciones para esta sección: quien complete esta parte debe dejar creadas exactamente las variables `df_clean`, `num_cols` y `cat_cols` con esos nombres. Las secciones de EDA (más abajo) las dan por hechas y no deben volver a definirlas.*
-
-```{python}
-#| echo: true
-# TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
+#| label: df-limpio
+#| tbl-cap: "Primeras cinco filas del dataset limpio (df_clean)."
 df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
 "aperturas_apps_por_dia", "tiempo_pantalla_finde"]
 cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
+tabla(df_clean.head())
 ```
 
-```{python}
-df_clean.head()
-#Mostramos la nueva tabla con los datos limpios
-```
+### Enriquecimiento de datos:
 
-```{python}
-#Notamos que podemos crear nuevas variables
-
-df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"] 
-#Es el tiempo total dedicado al ocio
-
-
-df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
-#Esta nueva variable nos ayudara a ver que tanto más usa el celular los fines de semana.se puede concluir que
-#si 'ratio_finde_diario' es mayor a uno, usa más su celular; una persona que si 'ratio_finde_diario' es menor o igual a uno
-#entonces es normal que use mucho tiempo todos los días por lo cuál el fin de seman no es la excepción.
-
-df_clean
-```
-
-## Variable derivada para la comunicación
+Se crean dos variables derivadas para el análisis exploratorio:
 
 ```{python}
 #| echo: true
-# TODO: agregar a df_clean una columna nueva (por ejemplo, estado_adiccion) que traduzca etiqueta_de_adiccion a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.
-
-df_clean["estado_adiccion"] = df_clean["etiqueta_de_adiccion"]. replace({1:"Adicto", 0 : "No adicto"})
-df_clean["estado_adiccion"].value_counts()
+#| label: variables-derivadas
+#| tbl-cap: "Primeras cinco filas del dataset con variables derivadas (horas_ocio y ratio_finde_diario)."
+df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"]
+df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
+df_clean["estado_adiccion"] = df_clean["etiqueta_de_adiccion"].replace({1:"Adicto", 0:"No adicto"})
+tabla(df_clean.head())
 ```
 
-```{python}
-
-#num_cols y cat_cols actualizado
-num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
-"horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_pantalla_finde", "horas_ocio", "ratio_finde_diario", "etiqueta_de_adiccion"] #Etiqeuta de adicción es una variable categórica, pero tiene valores numéricos
-cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adiccion"]
-```
-
-*Instrucciones para esta sección: confirmar que la nueva variable de etiquetas legibles no introduce ninguna información distinta a `etiqueta_de_adiccion` (es solo una versión "para humanos" de la misma columna) y aclarar que para el modelamiento en P2 se seguirá usando la versión numérica original.*
+Con esto se confirma que `estado_adiccion` es solo una traducción de `etiqueta_de_adiccion` a etiquetas legibles: 5308 registros se etiquetaron como "Adicto" (equivalente a 1) y 2192 como "No adicto" (equivalente a 0). No se está introduciendo nada nuevo.
+Las variables `num_cols` y `cat_cols` actualizadas son:
+- `num_cols`: edad, horas_diarias_pantalla, horas_redes_sociales, horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia, aperturas_apps_por_dia, tiempo_en_pantalla_fin_de_semana, horas_ocio, ratio_finde_diario, etiqueta_de_adiccion
+- `cat_cols`: genero, nivel_estres, impacto_academico/laboral, estado_adiccion
 
 # Análisis exploratorio de datos
 
@@ -417,18 +384,17 @@ cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adicc
 
 ```{python}
 #| echo: true
-# TODO: graficar la distribución de etiqueta_de_adiccion (conteo y/o porcentaje por clase), usando df_clean  #Aquín no se puede distribución porque etiqueta_de_adiccion es una variable categórica
-#sns.barplot(data=df_clean, x= "estado_adiccion", y = )
+#| label: fig-estado-adiccion
+#| fig-cap: "Distribución de la variable objetivo: estado de adicción (0 = No adicción, 1 = Con adicción)."
 counts = df_clean["estado_adiccion"].value_counts()
-
 counts.plot(kind="bar", color=['darkred','darkgreen'], edgecolor="none")
-
 plt.xlabel("Estado de adicción")
 plt.ylabel(None)
+plt.xticks(rotation=0)
 plt.show()
 ```
 
-*Instrucciones para esta sección: reportar cuántos registros hay en cada clase de `etiqueta_de_adiccion` (conteo y porcentaje) y comentar si existe desbalance de clases. Si lo hay, explicar qué implicancia tiene para la partición entrenamiento/prueba y las métricas que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).*
+De los 7,500 registros, **5308 (70.77%)** corresponden a la clase "Con adicción" y **2192 (29.23%)** a "No adicción". Hay un desbalance, la clase positiva tiene más del doble de registros que la negativa.
 
 ```{python}
 #| echo: true
@@ -455,6 +421,8 @@ for col in num_cols:
     plt.show()
     contador +=1
 ```
+
+Cada histograma
 
 ```{python}
 #| echo: true
@@ -635,7 +603,9 @@ plt.show()
 ```{python}
 #| echo: true
 # TODO: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel_estres o impacto_academico/laboral vs. etiqueta_de_adiccion).
-
+for columna in cat_cols:
+  sns.histplot(data=df_clean,x = columna, hue = 'etiqueta_de_adiccion')
+  plt.show()
 ```
 
 *Instrucciones para esta sección: interpretar las proporciones (no solo los conteos) entre subgrupos, evitando conclusiones que estigmaticen a los usuarios. Comentar si estas variables parecen ser causa, consecuencia o simplemente indicadores asociados al uso problemático.*
@@ -644,13 +614,34 @@ plt.show()
 #| echo: true
 # TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
 
+sns.scatterplot(data=df_renombrado, x= 'horas_trabajo/estudio', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+
 
 ```
 
 ```{python}
-#| echo: true
-# TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
 
+sns.scatterplot(data=df_renombrado, x= 'horas_sueño', y= 'horas_redes_sociales', hue = 'etiqueta_de_adiccion')
+
+```
+
+```{python}
+
+sns.scatterplot(data=df_renombrado, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = 'etiqueta_de_adiccion')
+
+
+```
+
+
+```{python}
+
+sns.scatterplot(data=df_renombrado, x= 'horas_videojuegos', y= 'horas_trabajo/estudio', hue = 'etiqueta_de_adiccion')
+
+```
+
+```{python}
+
+sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
 ```
 
@@ -659,6 +650,8 @@ plt.show()
 ```{python}
 #| echo: true
 # TODO: calcular la covarianza entre pares de variables numéricas relevantes (num_cols).
+df_number = df_clean.select_dtypes(include='number')
+df_number.corr()
 ```
 
 *Instrucciones para esta sección: interpretar el signo de la covarianza (si dos variables crecen o decrecen juntas) y explicar por qué se complementa con la correlación (que sí permite comparar la fuerza de la relación entre variables con escalas distintas).*
