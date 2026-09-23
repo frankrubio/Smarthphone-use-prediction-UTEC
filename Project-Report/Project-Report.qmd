@@ -704,7 +704,7 @@ $$ {#eq-covarianza}
 
 Estos hallazgos son consistentes con estudios previos que asocian la adicción al smartphone con menor rendimiento académico, en parte por su efecto negativo sobre el sueño [@rathakrishnan2021smartphone].
 
-La correlación observada entre horas_redes_sociales y la etiqueta de adicción coincide con la dirección reportada por un meta-análisis reciente sobre redes sociales y rendimiento académico [@salari2025socialmedia].
+La correlación observada entre ``horas_redes_sociales` y la `etiqueta_de_adicción` coincide con la dirección reportada por un meta-análisis reciente sobre redes sociales y rendimiento académico [@salari2025socialmedia].
 
 Un estudio con un dataset público similar reporta que Random Forest es el modelo con mejor desempeño para este tipo de predicción [@azeez2026ml], lo que sugiere una línea de partida razonable para la P2.
 
