@@ -686,44 +686,44 @@ $$ {#eq-correlacion}
 #| fig-cap: "Horas de ocio según el estado de adicción."
 del plt
 import matplotlib.pyplot as plt
-sns.boxplot(data=df_clean, x="estado_adiccion", y ="horas_ocio", palette = "husl", legend=True)
+sns.boxplot(data=df_clean, x="estado_adiccion", y ="horas_ocio",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-ocio-genero
 #| fig-cap: "Horas de ocio según el género."
 colores_genero = {"Male": "skyblue", "Female": "teal", "Other": "lightseagreen"}
-sns.boxplot(data=df_clean, x = "genero", y = "horas_ocio", palette=colores_genero)
+sns.boxplot(data=df_clean, x = "genero", y = "horas_ocio", hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-ocio-impacto
 #| fig-cap: "Horas de ocio según el impacto académico o laboral."
-sns.boxplot(data=df_clean, x = "impacto_academico/laboral", y = "horas_ocio", palette = "husl")
+sns.boxplot(data=df_clean, x = "impacto_academico/laboral", y = "horas_ocio", hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-ratio-adiccion
 #| fig-cap: "Razón entre pantalla de fin de semana y pantalla diaria según el estado de adicción."
-sns.boxplot(data=df_clean, x = "estado_adiccion", y = "ratio_finde_diario", palette = "Set1")
+sns.boxplot(data=df_clean, x = "estado_adiccion", y = "ratio_finde_diario", hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-sueno-adiccion
 #| fig-cap: "Horas de sueño según el estado de adicción."
-sns.boxplot(data=df_clean, x = "estado_adiccion", y = "horas_sueño", palette = "husl")
+sns.boxplot(data=df_clean, x = "estado_adiccion", y = "horas_sueño", hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-pantalla-estres
 #| fig-cap: "Horas diarias de pantalla según el nivel de estrés."
-sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_diarias_pantalla", palette = "husl")
+sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_diarias_pantalla", hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
 #| label: fig-boxplot-ocio-estres
 #| fig-cap: "Horas de ocio según el nivel de estrés."
-sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio", palette = "husl")
+sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio",hue='etiqueta_de_adiccion')
 ```
 
 En los tres géneros, los usuarios con etiqueta de adicción presentan una mediana de horas de ocio mayor que quienes tienen etiqueta 0. 
