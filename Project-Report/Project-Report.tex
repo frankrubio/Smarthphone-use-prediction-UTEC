@@ -483,9 +483,8 @@ numéricas, cuatro variables categóricas y la etiqueta binaria objetivo.
   \textbf{Uso del smartphone:} \texttt{horas\_diarias\_pantalla},
   \texttt{horas\_redes\_sociales}, \texttt{horas\_videojuegos},
   \texttt{horas\_trabajo/estudio}, \texttt{notificaciones\_por\_dia},
-  \texttt{aperturas\_apps\_por\_dia} y
-  \texttt{tiempo\_en\_pantalla\_fin\_de\_semana} son variables numéricas
-  que miden intensidad y tipo de uso.
+  \texttt{aperturas\_apps\_por\_dia} y \texttt{tiempo\_pantalla\_finde}
+  son variables numéricas que miden intensidad y tipo de uso.
 \item
   \textbf{Bienestar y contexto:} \texttt{horas\_sueño} es numérica;
   \texttt{nivel\_estres} y \texttt{impacto\_academico/laboral} son
@@ -718,7 +717,7 @@ work\_study\_hours & horas\_trabajo/estudio & Cuantitativa continua & Horas diar
 sleep\_hours & horas\_sueño & Cuantitativa continua & Horas de sueño por noche \\
 notifications\_per\_day & notificaciones\_por\_dia & Cuantitativa discreta & Notificaciones recibidas al día \\
 app\_opens\_per\_day & aperturas\_apps\_por\_dia & Cuantitativa discreta & Veces que abre aplicaciones al día \\
-weekend\_screen\_time & tiempo\_en\_pantalla\_fin\_de\_semana & Cuantitativa continua & Horas de pantalla en un día de fin de semana \\
+weekend\_screen\_time & tiempo\_pantalla\_finde & Cuantitativa continua & Horas de pantalla en un día de fin de semana \\
 stress\_level & nivel\_estres & Cualitativa ordinal & Bajo < Medio < Alto \\
 academic\_work\_impact & impacto\_academico/laboral & Cualitativa nominal (binaria) & Si el uso afecta sus estudios o trabajo (Sí/No) \\
 addiction\_level & nivel\_adiccion & Cualitativa ordinal & Ninguna < Leve < Moderada < Severa \\
@@ -775,7 +774,7 @@ numéricas (archivo original).}
 \centering{
 
 \begingroup\small\setstretch{1.15}
-\begin{tabular}{p{5cm}*{8}{c}}
+\begin{tabular}{p{3.5cm}*{8}{c}}
 \toprule
 \textbf{Variable} & \textbf{n} & \textbf{Media} & \textbf{Desv. est.} & \textbf{Mín.} & \textbf{Q1} & \textbf{Mediana} & \textbf{Q3} & \textbf{Máx.} \\
 \midrule
@@ -787,7 +786,7 @@ horas\_trabajo/estudio & 7,500 & 3.24 & 1.60 & 0.50 & 1.85 & 3.23 & 4.64 & 6.00 
 horas\_sueño & 7,500 & 6.74 & 1.28 & 4.50 & 5.63 & 6.72 & 7.84 & 9.00 \\
 notificaciones\_por\_dia & 7,500 & 134.26 & 66.59 & 20.00 & 76.00 & 134.00 & 191.00 & 250.00 \\
 aperturas\_apps\_por\_dia & 7,500 & 97.83 & 48.42 & 15.00 & 55.00 & 98.00 & 140.00 & 180.00 \\
-tiempo\_en\_pantalla\_fin\_de\_semana & 7,500 & 9.24 & 2.72 & 3.58 & 6.96 & 9.26 & 11.54 & 14.88 \\
+tiempo\_pantalla\_finde & 7,500 & 9.24 & 2.72 & 3.58 & 6.96 & 9.26 & 11.54 & 14.88 \\
 etiqueta\_de\_adiccion & 7,500 & 0.71 & 0.45 & 0.00 & 0.00 & 1.00 & 1.00 & 1.00 \\
 \bottomrule
 \end{tabular}
@@ -925,7 +924,7 @@ partir de aquí se crean y se reutilizan siempre las mismas variables:
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: crear df\_clean = df sin ID\_transaccion, ID\_usuario ni nivel\_adiccion (por fuga de información).}
 \CommentTok{\# num\_cols = lista de las 9 columnas numéricas (edad, horas\_diarias\_pantalla, horas\_redes\_sociales,}
 \CommentTok{\#            horas\_videojuegos, horas\_trabajo/estudio, horas\_sueño, notificaciones\_por\_dia,}
-\CommentTok{\#            aperturas\_apps\_por\_dia, tiempo\_en\_pantalla\_fin\_de\_semana,) }
+\CommentTok{\#            aperturas\_apps\_por\_dia, tiempo\_pantalla\_finde,) }
 \CommentTok{\# cat\_cols = ["genero", "nivel\_estres", "impacto\_academico/laboral"]}
 \end{Highlighting}
 \end{Shaded}
@@ -944,7 +943,7 @@ de EDA (más abajo) las dan por hechas y no deben volver a definirlas.}
 \NormalTok{df\_clean }\OperatorTok{=}\NormalTok{ df\_renombrado.drop(columns}\OperatorTok{=}\NormalTok{[}\StringTok{"ID\_transaccion"}\NormalTok{, }\StringTok{"ID\_usuario"}\NormalTok{, }\StringTok{"nivel\_adiccion"}\NormalTok{])}
 \NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"edad"}\NormalTok{, }\StringTok{"horas\_diarias\_pantalla"}\NormalTok{, }\StringTok{"horas\_redes\_sociales"}\NormalTok{,}
 \StringTok{"horas\_videojuegos"}\NormalTok{, }\StringTok{"horas\_trabajo/estudio"}\NormalTok{, }\StringTok{"horas\_sueño"}\NormalTok{, }\StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
-\StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_en\_pantalla\_fin\_de\_semana"}\NormalTok{]}
+\StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}
 \NormalTok{cat\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"genero"}\NormalTok{, }\StringTok{"nivel\_estres"}\NormalTok{, }\StringTok{"impacto\_academico/laboral"}\NormalTok{]}
 \end{Highlighting}
 \end{Shaded}
@@ -955,8 +954,8 @@ de EDA (más abajo) las dan por hechas y no deben volver a definirlas.}
 & edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
 horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
 notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
-tiempo\_en\_pantalla\_fin\_de\_semana & nivel\_estres &
-impacto\_academico/laboral & etiqueta\_de\_adiccion \\
+tiempo\_pantalla\_finde & nivel\_estres & impacto\_academico/laboral &
+etiqueta\_de\_adiccion \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -980,9 +979,8 @@ Low & No & 1 \\
 & edad & genero & horas\_diarias\_pantalla & horas\_redes\_sociales &
 horas\_videojuegos & horas\_trabajo/estudio & horas\_sueño &
 notificaciones\_por\_dia & aperturas\_apps\_por\_dia &
-tiempo\_en\_pantalla\_fin\_de\_semana & nivel\_estres &
-impacto\_academico/laboral & etiqueta\_de\_adiccion & horas\_ocio &
-ratio\_finde\_diario \\
+tiempo\_pantalla\_finde & nivel\_estres & impacto\_academico/laboral &
+etiqueta\_de\_adiccion & horas\_ocio & ratio\_finde\_diario \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -1147,7 +1145,7 @@ tiene una escala muy distinta a las variables medidas en horas.}
     \StringTok{"horas\_sueño"}\NormalTok{,}
     \StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
     \StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{,}
-    \StringTok{"tiempo\_en\_pantalla\_fin\_de\_semana"}\NormalTok{,}
+    \StringTok{"tiempo\_pantalla\_finde"}\NormalTok{,}
 \NormalTok{]}\CommentTok{\#aqui descartamos "etiqueta\_de\_adiccion"}
 
 \NormalTok{contador }\OperatorTok{=} \DecValTok{0}
@@ -1303,7 +1301,7 @@ min         3.580000
 50%         9.260000
 75%        11.540000
 max        14.880000
-Name: tiempo_en_pantalla_fin_de_semana, dtype: float64
+Name: tiempo_pantalla_finde, dtype: float64
 \end{verbatim}
 
 \emph{Instrucciones para esta sección: comparar media y mediana para
@@ -1433,7 +1431,7 @@ selección final de variables para el modelo.}
  'horas_sueño',
  'notificaciones_por_dia',
  'aperturas_apps_por_dia',
- 'tiempo_en_pantalla_fin_de_semana']
+ 'tiempo_pantalla_finde']
 \end{verbatim}
 
 \begin{verbatim}

@@ -103,7 +103,7 @@ La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 co
 
 - **Identificadores:** `ID_transaccion` y `ID_usuario` son variables de texto. Se usan para verificar unicidad, pero no aportan significado analítico y se excluirán como predictores.
 - **Demografía:** `edad` (numérica) y `genero` (categórica) caracterizan la muestra.
-- **Uso del smartphone:** `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio`, `notificaciones_por_dia`, `aperturas_apps_por_dia` y `tiempo_en_pantalla_fin_de_semana` son variables numéricas que miden intensidad y tipo de uso.
+- **Uso del smartphone:** `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio`, `notificaciones_por_dia`, `aperturas_apps_por_dia` y `tiempo_pantalla_finde` son variables numéricas que miden intensidad y tipo de uso.
 - **Bienestar y contexto:** `horas_sueño` es numérica; `nivel_estres` y `impacto_academico/laboral` son categóricas. Se emplean para explorar descanso e impacto funcional.
 - **Severidad:** `nivel_adiccion` es categórica ordinal. Se describe en P1, pero se excluye como predictor en P2 por fuga de información.
 - **Objetivo:** `etiqueta_de_adiccion` es binaria: 0 significa *No adicción* y 1 significa *Con adicción*.
@@ -245,7 +245,7 @@ tabla(estructura)
 ```{python}
 #| echo: false
 # Renombramos todas las columnas para un uso natural
-df_renombrado = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
+df_renombrado = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_pantalla_finde' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
 ```
 
 ## Tipos de variables y primeras estadísticas
@@ -306,7 +306,7 @@ descripcion = df_renombrado[numericas_orig].describe().T
 descripcion.columns = ["n", "Media", "Desv. est.", "Mín.", "Q1", "Mediana",
                        "Q3", "Máx."]
 descripcion.index.name = "Variable"
-tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{5cm}*{8}{c}")
+tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{3.5cm}*{8}{c}")
 ```
 
 Los rangos que se observan en la anterior tabla `df.describe()` son coherentes con lo que representan las variables. La edad está entre 18 y 35 años, con una media de 26.57, las horas de pantalla diaria van de 3 a 12 horas con una media de 7.50, las horas de sueño de 4.5 a 9 con una media de 6.74 y las horas de trabajo/estudio de 0.5 a 6 con media de 3.24. Por otro lado, los valores de notificaciones por día y aperturas de apps por día muestran una alta dispersión, eso es esperable ya que cada usuario tiene distintos patrones de uso que generar cantidades completamente diferentes de notificaciones y aperturas. Además, `ID_transaccion` y `ID_usuario` se conservan únicamente como referencia para verificar autenticidad, pero no forman parte del análisis.
@@ -335,22 +335,15 @@ tabla(df_adiccionnull_head[columnas_mostrar], indice=False, tamanio="scriptsize"
 
 ```{python}
 #| echo: true
-# TODO: construir una tabla cruzada (pd.crosstab) entre nivel_adiccion y etiqueta_de_adiccion para revisar si nivel_adiccion "filtra" la respuesta.
-
-pd.crosstab(df_renombrado["nivel_adiccion"], df_renombrado["etiqueta_de_adiccion"])
-
-# Notamos que la columna 'nivel_adiccion' o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción
-# para alguien de adicción media p alta, la información de 'etiqueta_de_adiccion' es la necesaria y objetivo para este análisis
-# puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
+#| label: tbl-crosstab-fuga
+#| tbl-cap: "Tabla cruzada entre nivel_adiccion y etiqueta_de_adiccion."
+crosstab = pd.crosstab(df_renombrado["nivel_adiccion"], df_renombrado["etiqueta_de_adiccion"])
+tabla(crosstab)
 ```
 
-*Instrucciones para esta sección: interpretar la tabla cruzada anterior: ¿existe alguna categoría de `nivel_adiccion` que se asocie de forma perfecta o casi perfecta con una sola clase de `etiqueta_de_adiccion`? Si es así, explicar por qué eso constituye **fuga de información** y qué variables se decide excluir de `X` para la P2 (y por qué).*
+En la tabla cruzada Notamos que la columna `nivel_adiccion` o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
 
-Notamos que la columna 'nivel_adiccion' *o cae en 0 cuando es baja* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de 'etiqueta_de_adiccion' es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
-
-Esto permitirá no repetir información en el proceso de modelamiento, ya que 'nivel_adiccion' ya revelaría que 'etiqeuta_de_adiccion' es 1 o 0.
-
-*Instrucciones para esta sección: explicar por qué excluir las variables identificadas en el punto anterior protege la validez de la evaluación del modelo. Indicar además qué método de codificación se planea usar en P2 para cada variable categórica (`genero`, `impacto_academico/laboral`, `nivel_estres`) y por qué (one-hot, binaria, ordinal, etc.), aclarando que cualquier transformación debe ajustarse solo con los datos de entrenamiento. Si se usa `scikit-learn` para esto, citar la librería (@Pedregosa2011).*
+Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando. Esto permitirá no repetir información en el proceso de modelamiento, ya que `nivel_adiccion` ya revelaría que `etiqueta_de_adiccion` es 1 o 0. Por lo tanto, con esto confirmamos que incluir `nivel_adiccion` en el predictor del modelo P2 sería igual a una **fuga de información**, entonces lo excluiremos de las variables predictoras. Además, se descartan `ID_transaccion` e `ID_usuario` al ser solo identificadores sin un valor predictivo. 
 
 **Contrato de nombres para el resto del proyecto** (acordado por el equipo, para que el código de todos encaje sin romperse al juntarlo): a partir de aquí se crean y se reutilizan siempre las mismas variables:
 
@@ -359,7 +352,7 @@ Esto permitirá no repetir información en el proceso de modelamiento, ya que 'n
 # TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
 # num_cols = lista de las 9 columnas numéricas (edad, horas_diarias_pantalla, horas_redes_sociales,
 #            horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia,
-#            aperturas_apps_por_dia, tiempo_en_pantalla_fin_de_semana,) 
+#            aperturas_apps_por_dia, tiempo_pantalla_finde,) 
 # cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
 ```
 
@@ -373,7 +366,7 @@ Esto permitirá no repetir información en el proceso de modelamiento, ya que 'n
 df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_en_pantalla_fin_de_semana"]
+"aperturas_apps_por_dia", "tiempo_pantalla_finde"]
 cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
 ```
 
@@ -389,7 +382,7 @@ df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["
 #Es el tiempo total dedicado al ocio
 
 
-df_clean["ratio_finde_diario"] = df_renombrado["tiempo_en_pantalla_fin_de_semana"]/df_renombrado["horas_diarias_pantalla"]
+df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
 #Esta nueva variable nos ayudara a ver que tanto más usa el celular los fines de semana.se puede concluir que
 #si 'ratio_finde_diario' es mayor a uno, usa más su celular; una persona que si 'ratio_finde_diario' es menor o igual a uno
 #entonces es normal que use mucho tiempo todos los días por lo cuál el fin de seman no es la excepción.
@@ -412,7 +405,7 @@ df_clean["estado_adiccion"].value_counts()
 #num_cols y cat_cols actualizado
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_en_pantalla_fin_de_semana", "horas_ocio", "ratio_finde_diario", "etiqueta_de_adiccion"] #Etiqeuta de adicción es una variable categórica, pero tiene valores numéricos
+"aperturas_apps_por_dia", "tiempo_pantalla_finde", "horas_ocio", "ratio_finde_diario", "etiqueta_de_adiccion"] #Etiqeuta de adicción es una variable categórica, pero tiene valores numéricos
 cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adiccion"]
 ```
 
@@ -488,7 +481,7 @@ num_cols = [
     "horas_sueño",
     "notificaciones_por_dia",
     "aperturas_apps_por_dia",
-    "tiempo_en_pantalla_fin_de_semana",
+    "tiempo_pantalla_finde",
 ]#aqui descartamos "etiqueta_de_adiccion"
 
 contador = 0
