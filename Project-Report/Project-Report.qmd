@@ -42,6 +42,16 @@ header-includes:
   - \newcounter{none}
   - \usepackage{array}
   - \usepackage{calc}
+  - \usepackage{float}
+  - \floatplacement{table}{H}
+  - \floatplacement{figure}{H}
+  - \usepackage{colortbl}
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \usepackage{etoolbox}
+  - \AtBeginEnvironment{Shaded}{\setstretch{1.1}}
+  - \fvset{breaklines=true}
+  - \usepackage{csquotes}
 format:
   report-pdf:
     keep-tex: true
@@ -65,21 +75,6 @@ reemplaza por el texto final (redactado por el equipo, no copiado de un chat de 
 Los chunks marcados con "# TODO" son el espacio para el código en Python; ahí va la
 implementación real de cada integrante. No se debe reportar ningún número o gráfico que
 no salga de correr el código de este archivo. -->
-```
-
-```{python}
-# Configuración inicial: librerías utilizadas en todo el proyecto.
-import pandas as pd
-import numpy as np
-from matplotlib.pyplot import boxplot
-from matplotlib.pyplot import hist
-import matplotlib.pyplot as plt
-import seaborn as sns
-from IPython.display import display
-
-sns.set_theme(style="whitegrid")
-
-
 ```
 
 \newpage
@@ -108,7 +103,7 @@ La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 co
 
 - **Identificadores:** `ID_transaccion` y `ID_usuario` son variables de texto. Se usan para verificar unicidad, pero no aportan significado analítico y se excluirán como predictores.
 - **Demografía:** `edad` (numérica) y `genero` (categórica) caracterizan la muestra.
-- **Uso del smartphone:** `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio`, `notificaciones_por_dia`, `aperturas_apps_por_dia` y `tiempo_en_pantalla_fin_de_semana` son variables numéricas que miden intensidad y tipo de uso.
+- **Uso del smartphone:** `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio`, `notificaciones_por_dia`, `aperturas_apps_por_dia` y `tiempo_pantalla_finde` son variables numéricas que miden intensidad y tipo de uso.
 - **Bienestar y contexto:** `horas_sueño` es numérica; `nivel_estres` y `impacto_academico/laboral` son categóricas. Se emplean para explorar descanso e impacto funcional.
 - **Severidad:** `nivel_adiccion` es categórica ordinal. Se describe en P1, pero se excluye como predictor en P2 por fuga de información.
 - **Objetivo:** `etiqueta_de_adiccion` es binaria: 0 significa *No adicción* y 1 significa *Con adicción*.
@@ -116,203 +111,272 @@ La unidad de análisis es el usuario. El dataset incluye 7,500 registros y 16 co
 La variable `nivel_adiccion` contiene una categorización de severidad (`None`, `Mild`, `Moderate`, `Severe`). Por su definición operativa, puede estar construida directamente a partir de la etiqueta final; por ello se audita explícitamente antes de considerar su uso en P2.
 
 # Carga y exploración inicial
+## Librerías
 
-```{=html}
-<!-- GUÍA RÁPIDA DE TABLAS (no aparece en el PDF):
-1) Que una tabla salga bonita depende de que sea la ÚLTIMA línea del chunk y que NO esté
-   envuelta en print(). `print(df.head(10))` sale como texto plano; `df.head(10)` (solo eso,
-   al final) sale como tabla con formato. Si necesitas mostrar dos tablas en el mismo chunk,
-   usa `from IPython.display import display` y llama `display(tabla1)` y `display(tabla2)`.
-2) Casos que NO salen como tabla aunque no uses print(): resultados de .info() (no devuelve
-   nada, solo imprime), listas/arrays de numpy sueltos, y objetos tipo Index como df.columns
-   (son un listado, no una tabla). Si quieres tabla, conviértelo primero a DataFrame, ej.:
-   pd.DataFrame({"columna": df.columns}).
-3) Tablas muy anchas (muchas columnas) o muy largas (muchas filas) se cortan con "...". Usa
-   df.head(n) / df[["col1","col2"]] para mostrar solo lo necesario.
-4) Para numerar una tabla y ponerle título: agrega estas dos líneas de opciones ANTES del
-   código, dentro del mismo chunk (el label debe empezar con "tbl-"):
-     #| label: tbl-mi-nombre
-     #| tbl-cap: "Título de la tabla"
-   Y para citarla en el texto: @tbl-mi-nombre (Quarto la numera solo, ej. "Tabla 1", y la
-   agrega a la Lista de Tablas). Ejemplo real abajo. -->
-```
+El primer bloque reúne las librerías necesarias para el proyecto y el estilo de seaborn
 
 ```{python}
 #| echo: true
-# Cargamos el archivo csv
+#| label: setup
+# ======================================================================
+# CONFIGURACIÓN ÚNICA DEL REPORTE
+# Librerías y estilos se ejecutan una sola vez
+# ======================================================================
+import pandas as pd
+import numpy as np
+from matplotlib.pyplot import boxplot
+from matplotlib.pyplot import hist
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, Latex
 import kagglehub
-path = kagglehub.dataset_download("jayjoshi37/smartphone-usage-and-addiction-prediction")
+from scipy import stats
+
+sns.set_theme(style="whitegrid")
+```
+
+El segundo bloque, que no se imprime en el PDF para no alargarlo, define funciones de presentación: la función `tabla()`, que reproduce desde Python el estilo de tabla (`kable` con *booktabs*), en el PDF se omite el código que solo dibuja los gráficos, igual que en la plantilla del curso; todo ese código está completo y comentado en `Project-Report.qmd`. Sí se muestra todo el código que carga, transforma o calcula.
+
+```{python}
+#| label: funciones-presentacion
+#| echo: false
+def _tex(texto):
+    """Escapa los caracteres especiales de LaTeX dentro de un texto."""
+    especiales = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%",
+                  "$": r"\$", "#": r"\#", "_": r"\_", "{": r"\{",
+                  "}": r"\}", "~": r"\textasciitilde{}",
+                  "^": r"\textasciicircum{}"}
+    return "".join(especiales.get(c, c) for c in str(texto))
+
+def tabla(datos, decimales=2, indice=True, alineacion=None,
+          tamanio="small", interlineado=1.15):
+    """Imprime un DataFrame como tabla LaTeX con el estilo de la plantilla:
+    booktabs + filas alternadas, como kable() + kable_styling("striped").
+    `decimales` puede ser un número o un diccionario {columna: decimales}."""
+    d = datos.reset_index() if indice else datos.copy()
+    if alineacion is None:  # texto a la izquierda, números centrados
+        alineacion = "".join("c" if pd.api.types.is_numeric_dtype(d[c])
+                             else "l" for c in d.columns)
+
+    def celda(valor, columna):
+        dec = (decimales.get(columna, 2) if isinstance(decimales, dict)
+               else decimales)
+        if isinstance(valor, (bool, np.bool_)):
+            return "Sí" if valor else "No"
+        if isinstance(valor, (int, np.integer)):
+            return f"{valor:,}"
+        if isinstance(valor, (float, np.floating)):
+            if pd.isna(valor):
+                return "--"
+            valor = 0.0 if round(valor, dec) == 0 else valor   # sin "-0.00"
+            return f"{valor:,.{dec}f}".replace("-", "\u2212")
+        texto = _tex(valor)
+        # "{}" evita que LaTeX lea "[...]" como argumento opcional de \\
+        return "{}" + texto if texto.startswith("[") else texto
+
+    cabecera = " & ".join(rf"\textbf{{{_tex(c)}}}" for c in d.columns)
+    filas = [" & ".join(celda(v, c) for v, c in zip(fila, d.columns))
+             + r" \\" for i, fila in enumerate(d.itertuples(index=False))]
+    # display() muestra la tabla aunque tabla() no sea la última línea
+    display(Latex("\n".join([
+        rf"\begingroup\{tamanio}\setstretch{{{interlineado}}}",
+        rf"\begin{{tabular}}{{{alineacion}}}", r"\toprule",
+        cabecera + r" \\", r"\midrule", *filas, r"\bottomrule",
+        r"\end{tabular}", r"\endgroup"])))
+```
+
+## Carga de datos
+
+Usando la librería de kaggle y os logramos una carga universal exitosa en cualquier equipo y evitamos errores de carga del dataset
+
+```{python}
+#| echo: true
+#| label: carga
+# Cargamos el archivo csv
+path = (kagglehub.dataset_download 
+       ("jayjoshi37/smartphone-usage-and-addiction-prediction"))
+
 import os
-# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del archivo
-ruta_csv = os.path.join(path, "Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv")
+# Ruta directa al archivo CSV combinando la ruta de descarga y el nombre del
+# archivo
+ruta_csv = (os.path.join(path, 
+           "Smartphone_Usage_And_Addiction_Analysis_7500_Rows.csv"))
 df = pd.read_csv(ruta_csv)
+n_filas, n_columnas = df.shape
+print(f"Dimensiones: {n_filas:,} filas x {n_columnas} columnas")
+```
 
+El archivo se carga completo, con `{python} (df.shape[0])` filas y `{python} df.shape[1]` columnas. `df` no se modifica en ningún momento: todas las transformaciones posteriores se aplican sobre copias, de modo que cada decisión puede contrastarse contra el archivo original.
 
+## Dimensiones y estructura
 
-# Obtenemos la lista de columnas
-df.columns
+```{python}
+#| echo: true
+#| label: tbl-primeras-filas
+#| tbl-cap: "Primeras cinco filas del archivo original, transpuestas: cada fila de la tabla es una columna del CSV."
+primeras = df.head(5).fillna("NaN").T.astype(str)
+primeras.columns = [f"Usuario {i}" for i in range(1, 6)]
+primeras.index.name = "Columna"
+tabla(primeras, tamanio="footnotesize")
+```
 
+La @tbl-primeras-filas se presenta transpuesta porque las `{python} df.shape[1]` columnas no caben a lo ancho de la página. Ya en estas cinco filas aparece una señal de alerta: los usuarios 1 y 2 muestran `NaN` (valor nulo) en `addiction_level`, un valor que se investiga en la sección (@sec-val-nul).
+
+```{python}
+#| label: tbl-estructura
+#| tbl-cap: "Estructura del archivo: tipo de dato asignado por pandas, valores no nulos, nulos y valores distintos por columna."
+estructura = pd.DataFrame({
+    "Tipo (pandas)": df.dtypes.astype(str),
+    "No nulos": df.notna().sum(),
+    "Nulos": df.isna().sum(),
+    "Valores distintos": df.nunique(),
+})
+estructura.index.name = "Columna"
+tabla(estructura)
+```
+
+**Interpretación.** La @tbl-estructura permite verificar que el tipo asignado por pandas sea coherente con lo que representa cada variable:
+
+- Las nueve variables de uso, edad y sueño se cargaron como números (`int64` o `float64`) y no como texto, que es el error silencioso más frecuente al leer un CSV.
+- `addicted_label` se cargó como entero, pero es una variable **categórica binaria**: el tipo de dato no coincide con su naturaleza estadística, y así se tratará en el análisis.
+- Las columnas de texto (tipo `object` en pandas 2 o `str` en pandas 3) son de dos clases muy distintas: `transaction_id` y `user_id` tienen `{python} df["user_id"].nunique()` valores distintos, uno por fila, lo que las identifica como **identificadores**; en cambio, `gender`, `stress_level`, `academic_work_impact` y `addiction_level` tienen entre 2 y 4 valores, es decir, son **categóricas**.
+- Solo `addiction_level` presenta nulos `{python} df["addiction_level"].isna().sum()`, y muestra `{python} df["addiction_level"].nunique()` valores distintos, cuando una escala de severidad suele tener cuatro niveles.
+
+```{python}
+#| echo: false
 # Renombramos todas las columnas para un uso natural
-df = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_en_pantalla_fin_de_semana' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
+df_renombrado = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_pantalla_finde' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
 ```
+
+## Tipos de variables y primeras estadísticas
 
 ```{python}
-#| echo: true
-#| label: tbl-head
-#| tbl-cap: "Primeras 10 filas del dataset (ya con nombres de columna en español)"
-# Ejemplo de tabla bien formada: sin print(), como última línea del chunk, con label + tbl-cap.
-df.head(6)
+#| label: tbl-diccionario
+#| tbl-cap: "Diccionario de variables: nombre original, nombre usado en el reporte, tipo estadístico y descripción."
+#| echo: false
+# Bloque de documentación (no de análisis): por eso no se muestra el código.
+
+diccionario = pd.DataFrame({
+    "Columna original": df.columns, 
+    "Nombre en el reporte": df_renombrado.columns,
+    "Tipo estadístico": [
+        "Identificador", "Identificador", "Cuantitativa discreta", "Cualitativa nominal", 
+        "Cuantitativa continua", "Cuantitativa continua", "Cuantitativa continua", 
+        "Cuantitativa continua", "Cuantitativa continua", "Cuantitativa discreta", 
+        "Cuantitativa discreta", "Cuantitativa continua", "Cualitativa ordinal", 
+        "Cualitativa nominal (binaria)", "Cualitativa ordinal", "Cualitativa binaria (objetivo)"
+    ],
+    "Descripción": [
+        "Código del registro (TXN00001...)", "Código del usuario (U00001...)", 
+        "Edad en años cumplidos", "Masculino, Femenino u Otro", 
+        "Horas de pantalla en un día típico", "Horas diarias en redes sociales", 
+        "Horas diarias en videojuegos", "Horas diarias de trabajo o estudio", 
+        "Horas de sueño por noche", "Notificaciones recibidas al día", 
+        "Veces que abre aplicaciones al día", "Horas de pantalla en un día de fin de semana", 
+        "Bajo < Medio < Alto", "Si el uso afecta sus estudios o trabajo (Sí/No)", 
+        "Ninguna < Leve < Moderada < Severa", "1 = adicto, 0 = no adicto"
+    ]
+})
+
+tabla(diccionario, indice=False, tamanio="scriptsize", interlineado=1.1,
+      alineacion=r"llp{2.7cm}>{\raggedright\arraybackslash}p{4.2cm}")
 ```
 
-```{python}
-# Analizamos los tipos de variables contenidos en la csv
-df.info() # Observamos valores nulos en la columna "nivel_adiccion" (antes "addiction_level")
-```
-
-```{python}
-# Obtenemos la lista de columnas
-df.columns
-```
-
-```{python}
-```
-
-## Dimensiones y tipos de variables
-
-```{python}
-#| echo: true
-# TODO: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.
-df.shape
-
-```
-
-```{python}
-#| echo: true
-# TODO: mostrar df.shape y df.dtypes (o df.info()) para revisar dimensiones y tipos de variables.
-df.dtypes
-```
-
-*Instrucciones para esta sección: comentar, con base en la salida real de `df.info()` / `df.dtypes`, cuántas filas y columnas tiene el dataset, qué columnas son numéricas y cuáles categóricas, y si algún tipo de dato no corresponde con lo esperado (por ejemplo, una variable numérica cargada como texto). No repetir de memoria las cifras ya mencionadas en "Contexto del dataset"; verificarlas con el código.*
+La @tbl-diccionario resume la naturaleza de cada variable. La distinción entre tipos estadísticos no es un detalle formal: decide qué gráficos y estadísticos corresponden a cada variable (histogramas y boxplots para las cuantitativas, gráficos de barras para las cualitativas) y, en la P2, cómo se codificará cada una.
 
 ## Calidad de datos
-
+    
 ```{python}
 #| echo: true
-# TODO: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).
+#| label: Val-nulos-colum-duplicadas
+nulos_por_columna = df.isnull().sum()
+filas_duplicadas = df.duplicated().sum()
+print("Valores nulos por columna:")
+print(nulos_por_columna[nulos_por_columna > 0])
+print(f"\nFilas duplicadas: {filas_duplicadas}")
 ```
+
+Se encontraron **819 valores nulos** en la columna `nivel_adicción`, esto es aproximadamente un 10.92% de los registros del dataset. Por otro lado, no hay filas duplicadas, probablemente esto sea porque los usuarios con `nivel_adiccion = None` simplemente no completaron esa escala de severidad. A partir de este problema, decidimos **excluir** a la variable `nivel_adicción` ya que esta representa una fuga de información y no aporta información nueva.
 
 ```{python}
-#| echo: true
-# TODO: contar valores nulos por columna (df.isnull().sum()) y filas duplicadas (df.duplicated().sum()).
-df["nivel_adiccion"].isnull().sum()
-#Notamos que hay 819 valores nulos en la columna 'nivel_adiccion'
+#| label: tbl-describe-num
+#| tbl-cap: "Primeras estadísticas de las variables numéricas (archivo original)."
+numericas_orig = df_renombrado.select_dtypes(include='number').columns.tolist()
+descripcion = df_renombrado[numericas_orig].describe().T
+descripcion.columns = ["n", "Media", "Desv. est.", "Mín.", "Q1", "Mediana",
+                       "Q3", "Máx."]
+descripcion.index.name = "Variable"
+tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{3.5cm}*{8}{c}")
 ```
 
-*Instrucciones para esta sección: reportar cuántos valores faltantes se encontraron y en qué columna(s), y cuántas filas duplicadas existen. Explicar la causa probable de los faltantes (por ejemplo, si corresponden a una categoría real como "sin severidad registrada") y justificar la decisión tomada: ¿se imputan, se eliminan o se excluye la columna? Si se excluye una variable por fuga de información, explicarlo aquí o remitir a la sección de fuga de información.*
-
-```{python}
-#| echo: true
-# TODO: revisar rangos (df.describe()) de las variables numéricas y valores únicos de las categóricas, para detectar valores imposibles o atípicos.
-df.describe()
-```
-
-*Instrucciones para esta sección: comentar si los rangos observados en `df.describe()` son plausibles para lo que representa cada variable (por ejemplo, edades, horas de uso, horas de sueño). Señalar explícitamente cualquier valor fuera de rango lógico y qué se hizo con los identificadores (`ID_transaccion`, `ID_usuario`): ¿se conservan solo como referencia o se descartan del análisis?*
+Los rangos que se observan en la anterior tabla `df.describe()` son coherentes con lo que representan las variables. La edad está entre 18 y 35 años, con una media de 26.57, las horas de pantalla diaria van de 3 a 12 horas con una media de 7.50, las horas de sueño de 4.5 a 9 con una media de 6.74 y las horas de trabajo/estudio de 0.5 a 6 con media de 3.24. Por otro lado, los valores de notificaciones por día y aperturas de apps por día muestran una alta dispersión, eso es esperable ya que cada usuario tiene distintos patrones de uso que generar cantidades completamente diferentes de notificaciones y aperturas. Además, `ID_transaccion` y `ID_usuario` se conservan únicamente como referencia para verificar autenticidad, pero no forman parte del análisis.
 
 # Preprocesamiento y decisiones de data wrangling
 
 Notamos que hay 819 valores nulos en la clumna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna
 
 ```{python}
-df_adiccionnull = df[df["nivel_adiccion"].isnull()]
-df_adiccionnull.head()
+#|echo: True
+#|label: tbl-nulos-head
+#|tbl-cap: Estadisticas de las final con valores nulos
+columnas_mostrar = [
+    "ID_transaccion", "edad", "genero",
+    "horas_diarias_pantalla", "horas_sueño",
+    "nivel_estres", "etiqueta_de_adiccion"
+]
+
+df_adiccionnull = df_renombrado[df_renombrado["nivel_adiccion"].isnull()]
+df_adiccionnull_head = df_adiccionnull.head()
+
+tabla(df_adiccionnull_head[columnas_mostrar], indice=False, tamanio="scriptsize", interlineado=1.1)
 ```
 
-## Revisión de fuga de información
+## Revisión de fuga de información{#sec-val-nul}
 
 ```{python}
 #| echo: true
-# TODO: construir una tabla cruzada (pd.crosstab) entre nivel_adiccion y etiqueta_de_adiccion para revisar si nivel_adiccion "filtra" la respuesta.
-
-pd.crosstab(df["nivel_adiccion"], df["etiqueta_de_adiccion"])
-
-# Notamos que la columna 'nivel_adiccion' o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción
-# para alguien de adicción media p alta, la información de 'etiqueta_de_adiccion' es la necesaria y objetivo para este análisis
-# puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
+#| label: tbl-crosstab-fuga
+#| tbl-cap: "Tabla cruzada entre nivel_adiccion y etiqueta_de_adiccion."
+crosstab = pd.crosstab(df_renombrado["nivel_adiccion"], df_renombrado["etiqueta_de_adiccion"])
+tabla(crosstab)
 ```
 
-*Instrucciones para esta sección: interpretar la tabla cruzada anterior: ¿existe alguna categoría de `nivel_adiccion` que se asocie de forma perfecta o casi perfecta con una sola clase de `etiqueta_de_adiccion`? Si es así, explicar por qué eso constituye **fuga de información** y qué variables se decide excluir de `X` para la P2 (y por qué).*
+En la tabla cruzada Notamos que la columna `nivel_adiccion` o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
 
-Notamos que la columna 'nivel_adiccion' *o cae en 0 cuando es baja* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de 'etiqueta_de_adiccion' es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
-
-Esto permitirá no repetir información en el proceso de modelamiento, ya que 'nivel_adiccion' ya revelaría que 'etiqeuta_de_adiccion' es 1 o 0.
-
-*Instrucciones para esta sección: explicar por qué excluir las variables identificadas en el punto anterior protege la validez de la evaluación del modelo. Indicar además qué método de codificación se planea usar en P2 para cada variable categórica (`genero`, `impacto_academico/laboral`, `nivel_estres`) y por qué (one-hot, binaria, ordinal, etc.), aclarando que cualquier transformación debe ajustarse solo con los datos de entrenamiento. Si se usa `scikit-learn` para esto, citar la librería (@Pedregosa2011).*
+Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando. Esto permitirá no repetir información en el proceso de modelamiento, ya que `nivel_adiccion` ya revelaría que `etiqueta_de_adiccion` es 1 o 0. Por lo tanto, con esto confirmamos que incluir `nivel_adiccion` en el predictor del modelo P2 sería igual a una **fuga de información**, entonces lo excluiremos de las variables predictoras. Además, se descartan `ID_transaccion` e `ID_usuario` al ser solo identificadores sin un valor predictivo. 
 
 **Contrato de nombres para el resto del proyecto** (acordado por el equipo, para que el código de todos encaje sin romperse al juntarlo): a partir de aquí se crean y se reutilizan siempre las mismas variables:
 
 ```{python}
 #| echo: true
-# TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
-# num_cols = lista de las 9 columnas numéricas (edad, horas_diarias_pantalla, horas_redes_sociales,
-#            horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia,
-#            aperturas_apps_por_dia, tiempo_en_pantalla_fin_de_semana,) 
-# cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
+#| label: df-limpio
+#| tbl-cap: "Primeras cinco filas del dataset limpio (df_clean)."
+df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
+num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
+"horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
+"aperturas_apps_por_dia", "tiempo_pantalla_finde"]
+cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
+tabla(df_clean.head())
 ```
 
 ### Enriquecimiento de datos:
 
-*Instrucciones para esta sección: quien complete esta parte debe dejar creadas exactamente las variables `df_clean`, `num_cols` y `cat_cols` con esos nombres. Las secciones de EDA (más abajo) las dan por hechas y no deben volver a definirlas.*
+Se crean dos variables derivadas para el análisis exploratorio:
 
 ```{python}
 #| echo: true
-# TODO: crear df_clean = df sin ID_transaccion, ID_usuario ni nivel_adiccion (por fuga de información).
-df_clean = df.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
-num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
-"horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_en_pantalla_fin_de_semana"]
-cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
+#| label: variables-derivadas
+#| tbl-cap: "Primeras cinco filas del dataset con variables derivadas (horas_ocio y ratio_finde_diario)."
+df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"]
+df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
+df_clean["estado_adiccion"] = df_clean["etiqueta_de_adiccion"].replace({1:"Adicto", 0:"No adicto"})
+tabla(df_clean.head())
 ```
 
-```{python}
-df_clean.head()
-#Mostramos la nueva tabla con los datos limpios
-```
-
-```{python}
-#Notamos que podemos crear nuevas variables
-
-df_clean["horas_ocio"] = df["horas_redes_sociales"] + df["horas_videojuegos"] 
-#Es el tiempo total dedicado al ocio
-
-
-df_clean["ratio_finde_diario"] = df["tiempo_en_pantalla_fin_de_semana"]/df["horas_diarias_pantalla"]
-#Esta nueva variable nos ayudara a ver que tanto más usa el celular los fines de semana.se puede concluir que
-#si 'ratio_finde_diario' es mayor a uno, usa más su celular; una persona que si 'ratio_finde_diario' es menor o igual a uno
-#entonces es normal que use mucho tiempo todos los días por lo cuál el fin de seman no es la excepción.
-
-df_clean
-```
-
-## Variable derivada para la comunicación
-
-```{python}
-#| echo: true
-# TODO: agregar a df_clean una columna nueva (por ejemplo, estado_adiccion) que traduzca etiqueta_de_adiccion a etiquetas legibles ("No adicción" / "Con adicción") solo para tablas y gráficos.
-
-df_clean["estado_adiccion"] = df_clean["etiqueta_de_adiccion"]. replace({1:"Adicto", 0 : "No adicto"})
-df_clean["estado_adiccion"].value_counts()
-```
-
-```{python}
-
-#num_cols y cat_cols actualizado
-num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
-"horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_en_pantalla_fin_de_semana", "horas_ocio", "ratio_finde_diario", "etiqueta_de_adiccion"] #Etiqeuta de adicción es una variable categórica, pero tiene valores numéricos
-cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adiccion"]
-```
-
-*Instrucciones para esta sección: confirmar que la nueva variable de etiquetas legibles no introduce ninguna información distinta a `etiqueta_de_adiccion` (es solo una versión "para humanos" de la misma columna) y aclarar que para el modelamiento en P2 se seguirá usando la versión numérica original.*
+Con esto se confirma que `estado_adiccion` es solo una traducción de `etiqueta_de_adiccion` a etiquetas legibles: 5308 registros se etiquetaron como "Adicto" (equivalente a 1) y 2192 como "No adicto" (equivalente a 0). No se está introduciendo nada nuevo.
+Las variables `num_cols` y `cat_cols` actualizadas son:
+- `num_cols`: edad, horas_diarias_pantalla, horas_redes_sociales, horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia, aperturas_apps_por_dia, tiempo_en_pantalla_fin_de_semana, horas_ocio, ratio_finde_diario, etiqueta_de_adiccion
+- `cat_cols`: genero, nivel_estres, impacto_academico/laboral, estado_adiccion
 
 # Análisis exploratorio de datos
 
@@ -320,18 +384,17 @@ cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral", "estado_adicc
 
 ```{python}
 #| echo: true
-# TODO: graficar la distribución de etiqueta_de_adiccion (conteo y/o porcentaje por clase), usando df_clean  #Aquín no se puede distribución porque etiqueta_de_adiccion es una variable categórica
-#sns.barplot(data=df_clean, x= "estado_adiccion", y = )
+#| label: fig-estado-adiccion
+#| fig-cap: "Distribución de la variable objetivo: estado de adicción (0 = No adicción, 1 = Con adicción)."
 counts = df_clean["estado_adiccion"].value_counts()
-
 counts.plot(kind="bar", color=['darkred','darkgreen'], edgecolor="none")
-
 plt.xlabel("Estado de adicción")
 plt.ylabel(None)
+plt.xticks(rotation=0)
 plt.show()
 ```
 
-*Instrucciones para esta sección: reportar cuántos registros hay en cada clase de `etiqueta_de_adiccion` (conteo y porcentaje) y comentar si existe desbalance de clases. Si lo hay, explicar qué implicancia tiene para la partición entrenamiento/prueba y las métricas que se deberán usar en P2 (por ejemplo, estratificación, F1, recall).*
+De los 7,500 registros, **5308 (70.77%)** corresponden a la clase "Con adicción" y **2192 (29.23%)** a "No adicción". Hay un desbalance, la clase positiva tiene más del doble de registros que la negativa.
 
 ```{python}
 #| echo: true
@@ -359,6 +422,8 @@ for col in num_cols:
     contador +=1
 ```
 
+Cada histograma
+
 ```{python}
 #| echo: true
 # TODO: graficar un histograma por cada variable numérica (usar num_cols).
@@ -384,7 +449,7 @@ num_cols = [
     "horas_sueño",
     "notificaciones_por_dia",
     "aperturas_apps_por_dia",
-    "tiempo_en_pantalla_fin_de_semana",
+    "tiempo_pantalla_finde",
 ]#aqui descartamos "etiqueta_de_adiccion"
 
 contador = 0
@@ -458,67 +523,64 @@ sns.heatmap(
     cbar_kws={"shrink": 1},  # Barra de color un poco más chica
     annot_kws={"size": 23},  # Números chiquitos para que no se amontonen
 )
-plt.xticks(fontsize=29)   # etiquetas del eje X más grandes
+plt.xticks(fontsize=29,rotation=90)   # etiquetas del eje X más grandes
 plt.yticks(fontsize=29)   # etiquetas del eje Y más grandes
 # 3. Ponemos el título y mostramos
 plt.title("Matriz de Correlación de Variables Numéricas")
 plt.show()
 ```
 
-*Instrucciones para esta sección: identificar en el mapa de calor los pares de variables con correlación fuerte (positiva o negativa) y comentar si sugieren colinealidad. Aclarar que la correlación no implica causalidad.*
+*En el mapa de calor se observa una relación fuerte entre las horas de pantalla diarias y las horas de pantalla durante el fin de semana, con una correlación cercana a 1. Esto quiere decir que las personas que suelen pasar más tiempo frente a una pantalla durante el día a día también tienden a mantener un uso elevado los fines de semana. Debido a que ambas variables muestran un comportamiento muy parecido, lo que podría generar colinealidad.
+
+Por otro lado, la etiqueta de adicción presenta una correlación aproximada de 0.6 con las horas diarias de pantalla, 0.4 con el tiempo dedicado a redes sociales y 0.6 con las horas de pantalla durante el fin de semana.
+
+Estos resultados muestran que las tres variables tienen cierta relación con la etiqueta de adicción. Pero es importante recordar que una correlación no significa necesariamente que exista una relación de causa y efecto. 
+
+
+
+*Las variables que tienen mayor asocición lineal podemos fijarnos que son cantidad de horas diarias en pantalla, cantidad de horas en redes sociales y tiempo de pantalla en los fines de semanas, siendo aproximadamente 0.6 , 0.4 , 0.6 aproximadamente. A diferencia del resto que cuenta con valores muy cercanos 0.0. Estos resultados podrían ser útil para futuros modelos*
 
 ```{python}
 #| echo: true
-# TODO: calcular y ordenar las correlaciones de cada variable numérica (num_cols) con etiqueta_de_adiccion.
-#Chamba Jossep
-
-```
-
-*Instrucciones para esta sección: comentar qué variables tienen mayor asociación lineal con la etiqueta objetivo y cuáles tienen asociación muy baja. Aclarar que esto es solo un indicio y no una selección final de variables para el modelo.*
-
-```{python}
-#| echo: true
-# TODO: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas_diarias_pantalla, horas_redes_sociales, horas_sueño) separadas por etiqueta_de_adiccion.
 del plt
 import matplotlib.pyplot as plt
-sns.boxplot(data=df_clean, x="estado_adiccion", y ="horas_ocio", palette = "husl", legend=True)
+sns.boxplot(data=df_clean, x="estado_adiccion", y ="horas_ocio",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
-colores_genero = {"Male": "skyblue", "Female": "teal", "Other": "lightseagreen"}
-sns.boxplot(data=df_clean, x = "genero", y = "horas_ocio", palette=colores_genero)
+
+sns.boxplot(data=df_clean, x = "genero", y = "horas_ocio",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
-sns.boxplot(data=df_clean, x = "impacto_academico/laboral", y = "horas_ocio", palette = "husl")
+sns.boxplot(data=df_clean, x = "impacto_academico/laboral", y = "horas_ocio",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
-sns.boxplot(data=df_clean, x = "estado_adiccion", y = "ratio_finde_diario", palette = "Set1")
+sns.boxplot(data=df_clean, x = "estado_adiccion", y = "ratio_finde_diario",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
-sns.boxplot(data=df_clean, x = "estado_adiccion", y = "horas_sueño", palette = "husl")
+sns.boxplot(data=df_clean, x = "estado_adiccion", y = "horas_sueño",hue='etiqueta_de_adiccion')
 ```
 
 ```{python}
-sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_diarias_pantalla", palette = "husl")
+sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_diarias_pantalla",hue='etiqueta_de_adiccion')
 ```
+
 
 ```{python}
-num_cols
-```
-
-```{python}
-cat_cols
-```
-
-```{python}
-sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio", palette = "husl")
+sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio", hue = "etiqueta_de_adiccion")
 ```
 
 
-*Instrucciones para esta sección: comentar cómo cambian la tendencia central y la dispersión de cada variable entre las dos clases, y si hay solapamiento amplio entre grupos (lo que anticiparía dificultad para separar las clases con un solo predictor).*
+*En los tres géneros, los usuarios con etiqueta de adicción presentan una mediana de horas de ocio mayor que quienes tienen etiqueta 0. 
+
+Las cajas del grupo con etiqueta 1 también son algo más altas, lo que indica mayor dispersión . Pero existe solapamiento entre ambas clases, por lo que las horas de ocio por sí solas no permiten separarlas completamente. 
+
+Al comparar los géneros, las medianas y la dispersión son similares dentro de cada clase. *
+
+
 
 ```{python}
 #| echo: true
@@ -536,34 +598,31 @@ plt.show()
 
 
 ```{python}
-#| echo: true
-# TODO: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel_estres o impacto_academico/laboral vs. etiqueta_de_adiccion).
+
 for columna in cat_cols:
   sns.histplot(data=df_clean,x = columna, hue = 'etiqueta_de_adiccion')
   plt.show()
 ```
 
-
-*Instrucciones para esta sección: interpretar las proporciones (no solo los conteos) entre subgrupos, evitando conclusiones que estigmaticen a los usuarios. Comentar si estas variables parecen ser causa, consecuencia o simplemente indicadores asociados al uso problemático.*
+*La proporción de usuarios con una etiqueta de adicción se mantiene bastante similar entre los distintos géneros, niveles de estrés y categorías de impacto académico o laboral. Esto indica que no existen diferencias importantes entre estos grupos. Sin embargo, con estos resultados no podemos concluir que estas variables sean una causa o una consecuencia directa del uso problemático.*
 
 ```{python}
-#| echo: true
-# TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
 
-sns.scatterplot(data=df, x= 'horas_trabajo/estudio', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+
+sns.scatterplot(data=df_renombrado, x= 'horas_trabajo/estudio', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
 
 ```
 
 ```{python}
 
-sns.scatterplot(data=df, x= 'horas_sueño', y= 'horas_redes_sociales', hue = 'etiqueta_de_adiccion')
+sns.scatterplot(data=df_renombrado, x= 'horas_sueño', y= 'horas_redes_sociales', hue = 'etiqueta_de_adiccion')
 
 ```
 
 ```{python}
 
-sns.scatterplot(data=df, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = 'etiqueta_de_adiccion')
+sns.scatterplot(data=df_renombrado, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = 'etiqueta_de_adiccion')
 
 
 ```
@@ -571,18 +630,25 @@ sns.scatterplot(data=df, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = '
 
 ```{python}
 
-sns.scatterplot(data=df, x= 'horas_videojuegos', y= 'horas_trabajo/estudio', hue = 'etiqueta_de_adiccion')
+sns.scatterplot(data=df_renombrado, x= 'horas_videojuegos', y= 'horas_trabajo/estudio', hue = 'etiqueta_de_adiccion')
 
 ```
 
 ```{python}
 
-sns.scatterplot(data=df, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
 ```
 
+En la primera comparación podemos observar que a medida que aumentan las horas diarias frente a una pantalla, también parece aumentar la posibilidad de que una persona sea 'adicta'. A partir de las 8 horas, se puede notar que la mayoría de las personas son consideradas adictas. En cambio, en las horas de trabajo y estudio no se observa un patrón claro.
 
-*Instrucciones para esta sección: para cada par de variables, comentar si se observa un patrón (lineal o no lineal), agrupamientos, o separación visible entre clases. Si los colores se solapan mucho, señalar que esas dos variables por sí solas no bastan para separar las clases.*
+En la segunda comparación, entre las 0 y 4 horas no se logra identificar un patrón a simple vista. Sin embargo, entre las 4 y 6 horas podemos observar que todas las personas son consideradas adictas. Por otro lado, en las horas de sueño tampoco se aprecia un patrón claro relacionado con la adicción.
+
+En la tercera y cuarta comparación no se observa una tendencia clara entre las variables. Lo que sí podemos notar en las gráficas es que las personas consideradas adictas aparecen en una mayor proporción que las que no lo son.
+
+Finalmente, en la última gráfica podemos observar que, en las edades más bajas, hay una mayor cantidad de personas consideradas adictas. Además, nuevamente se puede apreciar que mientras aumentan las horas diarias de uso de pantalla, también parece aumentar la posibilidad de que una persona sea considerada adicta.
+hasta el valor de 8, ya que de 8 en adelante la persona ya se le gconsidera como una persona 'adicta'*
+
 
 ```{python}
 #| echo: true
