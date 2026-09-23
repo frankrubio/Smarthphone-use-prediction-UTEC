@@ -131,6 +131,7 @@ import seaborn as sns
 from IPython.display import display, Latex
 import kagglehub
 from scipy import stats
+import math
 
 sns.set_theme(style="whitegrid")
 ```
@@ -356,7 +357,11 @@ num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
 "aperturas_apps_por_dia", "tiempo_pantalla_finde"]
 cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
-tabla(df_clean.head())
+vista_df_clean = df_clean.head().T
+vista_df_clean.columns = [f"Usuario {i}" for i in range(1, 6)]
+vista_df_clean.index.name = "Columna"
+
+tabla(vista_df_clean, tamanio="footnotesize")
 ```
 
 ### Enriquecimiento de datos:
@@ -369,8 +374,12 @@ Se crean dos variables derivadas para el análisis exploratorio:
 #| tbl-cap: "Primeras cinco filas del dataset con variables derivadas (horas_ocio y ratio_finde_diario)."
 df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"]
 df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
-df_clean["estado_adiccion"] = df_clean["etiqueta_de_adiccion"].replace({1:"Adicto", 0:"No adicto"})
-tabla(df_clean.head())
+df_clean["estado_adiccion"] = df_renombrado["etiqueta_de_adiccion"].replace({1:"Adicto", 0:"No adicto"})
+vista2_df_clean = df_clean.head().T
+vista2_df_clean.columns = [f"Usuario {i}" for i in range(1, 6)]
+vista2_df_clean.index.name = "Columna"
+
+tabla(vista2_df_clean, tamanio="footnotesize")
 ```
 
 Con esto se confirma que `estado_adiccion` es solo una traducción de `etiqueta_de_adiccion` a etiquetas legibles: 5308 registros se etiquetaron como "Adicto" (equivalente a 1) y 2192 como "No adicto" (equivalente a 0). No se está introduciendo nada nuevo.
@@ -398,36 +407,61 @@ De los 7,500 registros, **5308 (70.77%)** corresponden a la clase "Con adicción
 
 ```{python}
 #| echo: true
-# TODO: graficar un histograma por cada variable numérica (usar num_cols).
-# usa las columnas que ya tienes cargadas en la sesión
+#| label: fig-histogramas-numericos
+#| fig-cap: "Histogramas de las variables numéricas del dataset."
+colores = [
+    "steelblue", "darkorange", "forestgreen",
+    "crimson", "gold", "lightcoral",
+    "yellowgreen", "cadetblue", "powderblue",
+    "lightgreen", "lightgray", "plum"
+]
 
-#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas
-colores = ['steelblue','darkorange','forestgreen','crimson','gold','lightcoral','yellowgreen','cadetblue',
-'powderblue','lightgreen','lightgray','plum']
-contador = 0
-for col in num_cols:
-    plt.figure(figsize=(4, 3))
+n_columnas = 3
+n_filas = math.ceil(len(num_cols) / n_columnas)
+
+fig, axes = plt.subplots(
+    n_filas,
+    n_columnas,
+    figsize=(10.5, 2.25 * n_filas),
+    constrained_layout=True
+)
+
+axes = axes.flatten()
+
+for i, col in enumerate(num_cols):
     sns.histplot(
         data=df_clean,
         x=col,
         bins=20,
         kde=False,
-        color= colores[contador]
+        color=colores[i % len(colores)],
+        ax=axes[i]
     )
-    plt.title(f"Histograma de {col}")
-    plt.xlabel(None)
-    plt.ylabel(None)
-    plt.tight_layout() #es una función de matplotlib que ajusta automáticamente los márgenes
-    plt.show()
-    contador +=1
+
+    axes[i].set_title(col.replace("_", " "), fontsize=8)
+    axes[i].set_xlabel("")
+    axes[i].set_ylabel("Frecuencia", fontsize=7)
+    axes[i].tick_params(axis="both", labelsize=6)
+
+# Quitar recuadros que no se usan
+for ax in axes[len(num_cols):]:
+    ax.remove()
+
+fig.suptitle(
+    "Distribución de las variables numéricas",
+    fontsize=11
+)
+
+plt.show()
 ```
 
-Cada histograma
+Cada histograma muestra cómo se distribuyen los valores de cada variable numérica. En las variables relacionadas con la interacción, como `notificaciones_por_dia` y `aperturas_apps_por_dia`, se observa una dispersión bastante amplia. Aunque la mayoría de los usuarios se concentra en rangos intermedios, también hay algunos con frecuencias mucho más altas. Por otro lado, las variables expresadas en horas, como `horas_diarias_pantalla`, `horas_redes_sociales`, `horas_videojuegos`, `horas_trabajo/estudio` y `horas_sueño`, presentan rangos más reducidos. En particular, `horas_sueño` se concentra alrededor de valores medios, mientras que el tiempo de pantalla y de uso de redes sociales varía más entre los usuarios. La edad también se encuentra dentro de un rango relativamente limitado, correspondiente principalmente a adultos jóvenes.
+
 
 ```{python}
 #| echo: true
-# TODO: graficar un histograma por cada variable numérica (usar num_cols).
-df_clean['estado_adiccion'].value_counts().plot(kind='bar',color=['darkred','darkgreen'])
+df_clean['estado_adiccion'].value_counts().plot(kind='bar',color=['darkred',
+                                                               'darkgreen'])
 plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
 ```
 
@@ -663,7 +697,5 @@ df_number.corr()
 # Limitaciones y consideraciones éticas
 
 El archivo no incluye documentación sobre el muestreo, instrumento de medición, país, periodo de recolección ni procedimiento de etiquetado. En consecuencia, la muestra no debe asumirse representativa de la población universitaria peruana ni de un grupo demográfico específico. Además, el término "adicción" debe tratarse como una etiqueta del dataset y no como un diagnóstico clínico. La evidencia académica recomienda emplear instrumentos validados y distinguir entre uso frecuente y uso problemático @Kwon2013; @Csibi2018.
-
-Si este análisis se trasladara a un contexto real, la privacidad, el consentimiento informado y el riesgo de estigmatización serían centrales. Una predicción debe apoyar la prevención o la derivación voluntaria, nunca justificar sanciones automáticas o decisiones de alto impacto.
 
 # Referencias

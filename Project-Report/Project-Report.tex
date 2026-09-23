@@ -923,25 +923,37 @@ partir de aquí se crean y se reutilizan siempre las mismas variables:
 \StringTok{"horas\_videojuegos"}\NormalTok{, }\StringTok{"horas\_trabajo/estudio"}\NormalTok{, }\StringTok{"horas\_sueño"}\NormalTok{, }\StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
 \StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}
 \NormalTok{cat\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"genero"}\NormalTok{, }\StringTok{"nivel\_estres"}\NormalTok{, }\StringTok{"impacto\_academico/laboral"}\NormalTok{]}
-\NormalTok{tabla(df\_clean.head())}
+\NormalTok{vista\_df\_clean }\OperatorTok{=}\NormalTok{ df\_clean.head().T}
+\NormalTok{vista\_df\_clean.columns }\OperatorTok{=}\NormalTok{ [}\SpecialStringTok{f"Usuario }\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{"} \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{)]}
+\NormalTok{vista\_df\_clean.index.name }\OperatorTok{=} \StringTok{"Columna"}
+
+\NormalTok{tabla(vista\_df\_clean, tamanio}\OperatorTok{=}\StringTok{"footnotesize"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \protect\phantomsection\label{df-limpio}
-\begingroup\small\setstretch{1.15}
+\begingroup\footnotesize\setstretch{1.15}
 \begin{table}
 \caption{Primeras cinco filas del dataset limpio (df\_clean).}\tabularnewline
 
 \centering
-\begin{tabular}{cclccccccccllc}
+\begin{tabular}{llllll}
 \toprule
-\textbf{index} & \textbf{edad} & \textbf{genero} & \textbf{horas\_diarias\_pantalla} & \textbf{horas\_redes\_sociales} & \textbf{horas\_videojuegos} & \textbf{horas\_trabajo/estudio} & \textbf{horas\_sueño} & \textbf{notificaciones\_por\_dia} & \textbf{aperturas\_apps\_por\_dia} & \textbf{tiempo\_pantalla\_finde} & \textbf{nivel\_estres} & \textbf{impacto\_academico/laboral} & \textbf{etiqueta\_de\_adiccion} \\
+\textbf{Columna} & \textbf{Usuario 1} & \textbf{Usuario 2} & \textbf{Usuario 3} & \textbf{Usuario 4} & \textbf{Usuario 5} \\
 \midrule
-0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 & Medium & Yes & 0 \\
-1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 & Medium & Yes & 0 \\
-2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 & High & No & 0 \\
-3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 & High & Yes & 1 \\
-4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 & Low & No & 1 \\
+edad & 21 & 24 & 31 & 32 & 25 \\
+genero & Male & Other & Other & Other & Male \\
+horas\_diarias\_pantalla & 3.23 & 5.09 & 6.06 & 7.83 & 9.96 \\
+horas\_redes\_sociales & 2.01 & 3.81 & 1.36 & 5.85 & 5.92 \\
+horas\_videojuegos & 0.89 & 2.24 & 3.83 & 1.51 & 3.42 \\
+horas\_trabajo/estudio & 4.55 & 4.44 & 2.35 & 3.54 & 5.27 \\
+horas\_sueño & 7.55 & 7.66 & 4.92 & 8.23 & 6.21 \\
+notificaciones\_por\_dia & 248 & 127 & 44 & 178 & 136 \\
+aperturas\_apps\_por\_dia & 154 & 71 & 106 & 107 & 177 \\
+tiempo\_pantalla\_finde & 3.95 & 6.71 & 8.68 & 9.77 & 12.55 \\
+nivel\_estres & Medium & Medium & High & High & Low \\
+impacto\_academico/laboral & Yes & Yes & No & Yes & No \\
+etiqueta\_de\_adiccion & 0 & 0 & 0 & 1 & 1 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -957,27 +969,42 @@ Se crean dos variables derivadas para el análisis exploratorio:
 \begin{Highlighting}[]
 \NormalTok{df\_clean[}\StringTok{"horas\_ocio"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_renombrado[}\StringTok{"horas\_redes\_sociales"}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_renombrado[}\StringTok{"horas\_videojuegos"}\NormalTok{]}
 \NormalTok{df\_clean[}\StringTok{"ratio\_finde\_diario"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_renombrado[}\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}\OperatorTok{/}\NormalTok{df\_renombrado[}\StringTok{"horas\_diarias\_pantalla"}\NormalTok{]}
-\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{].replace(\{}\DecValTok{1}\NormalTok{:}\StringTok{"Adicto"}\NormalTok{, }\DecValTok{0}\NormalTok{:}\StringTok{"No adicto"}\NormalTok{\})}
-\NormalTok{tabla(df\_clean.head())}
+\NormalTok{df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_renombrado[}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{].replace(\{}\DecValTok{1}\NormalTok{:}\StringTok{"Adicto"}\NormalTok{, }\DecValTok{0}\NormalTok{:}\StringTok{"No adicto"}\NormalTok{\})}
+\NormalTok{vista2\_df\_clean }\OperatorTok{=}\NormalTok{ df\_clean.head().T}
+\NormalTok{vista2\_df\_clean.columns }\OperatorTok{=}\NormalTok{ [}\SpecialStringTok{f"Usuario }\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{"} \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{)]}
+\NormalTok{vista2\_df\_clean.index.name }\OperatorTok{=} \StringTok{"Columna"}
+
+\NormalTok{tabla(vista2\_df\_clean, tamanio}\OperatorTok{=}\StringTok{"footnotesize"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \protect\phantomsection\label{variables-derivadas}
-\begingroup\small\setstretch{1.15}
+\begingroup\footnotesize\setstretch{1.15}
 \begin{table}
 \caption{Primeras cinco filas del dataset con variables derivadas (horas\_ocio y
 ratio\_finde\_diario).}\tabularnewline
 
 \centering
-\begin{tabular}{cclccccccccllcccl}
+\begin{tabular}{llllll}
 \toprule
-\textbf{index} & \textbf{edad} & \textbf{genero} & \textbf{horas\_diarias\_pantalla} & \textbf{horas\_redes\_sociales} & \textbf{horas\_videojuegos} & \textbf{horas\_trabajo/estudio} & \textbf{horas\_sueño} & \textbf{notificaciones\_por\_dia} & \textbf{aperturas\_apps\_por\_dia} & \textbf{tiempo\_pantalla\_finde} & \textbf{nivel\_estres} & \textbf{impacto\_academico/laboral} & \textbf{etiqueta\_de\_adiccion} & \textbf{horas\_ocio} & \textbf{ratio\_finde\_diario} & \textbf{estado\_adiccion} \\
+\textbf{Columna} & \textbf{Usuario 1} & \textbf{Usuario 2} & \textbf{Usuario 3} & \textbf{Usuario 4} & \textbf{Usuario 5} \\
 \midrule
-0 & 21 & Male & 3.23 & 2.01 & 0.89 & 4.55 & 7.55 & 248 & 154 & 3.95 & Medium & Yes & 0 & 2.90 & 1.22 & No adicto \\
-1 & 24 & Other & 5.09 & 3.81 & 2.24 & 4.44 & 7.66 & 127 & 71 & 6.71 & Medium & Yes & 0 & 6.05 & 1.32 & No adicto \\
-2 & 31 & Other & 6.06 & 1.36 & 3.83 & 2.35 & 4.92 & 44 & 106 & 8.68 & High & No & 0 & 5.19 & 1.43 & No adicto \\
-3 & 32 & Other & 7.83 & 5.85 & 1.51 & 3.54 & 8.23 & 178 & 107 & 9.77 & High & Yes & 1 & 7.36 & 1.25 & Adicto \\
-4 & 25 & Male & 9.96 & 5.92 & 3.42 & 5.27 & 6.21 & 136 & 177 & 12.55 & Low & No & 1 & 9.34 & 1.26 & Adicto \\
+edad & 21 & 24 & 31 & 32 & 25 \\
+genero & Male & Other & Other & Other & Male \\
+horas\_diarias\_pantalla & 3.23 & 5.09 & 6.06 & 7.83 & 9.96 \\
+horas\_redes\_sociales & 2.01 & 3.81 & 1.36 & 5.85 & 5.92 \\
+horas\_videojuegos & 0.89 & 2.24 & 3.83 & 1.51 & 3.42 \\
+horas\_trabajo/estudio & 4.55 & 4.44 & 2.35 & 3.54 & 5.27 \\
+horas\_sueño & 7.55 & 7.66 & 4.92 & 8.23 & 6.21 \\
+notificaciones\_por\_dia & 248 & 127 & 44 & 178 & 136 \\
+aperturas\_apps\_por\_dia & 154 & 71 & 106 & 107 & 177 \\
+tiempo\_pantalla\_finde & 3.95 & 6.71 & 8.68 & 9.77 & 12.55 \\
+nivel\_estres & Medium & Medium & High & High & Low \\
+impacto\_academico/laboral & Yes & Yes & No & Yes & No \\
+etiqueta\_de\_adiccion & 0 & 0 & 0 & 1 & 1 \\
+horas\_ocio & 2.90 & 6.05 & 5.19 & 7.36 & 9.34 \\
+ratio\_finde\_diario & 1.22 & 1.32 & 1.43 & 1.25 & 1.26 \\
+estado\_adiccion & No adicto & No adicto & No adicto & Adicto & Adicto \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1032,48 +1059,67 @@ negativa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un histograma por cada variable numérica (usar num\_cols).}
-\CommentTok{\# usa las columnas que ya tienes cargadas en la sesión}
+\ImportTok{import}\NormalTok{ math}
 
-\CommentTok{\#crear una  variable j que pase por una lista que tenga los nombres bien escritos de los histogramas}
-\NormalTok{colores }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}steelblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkorange\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}forestgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}crimson\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}gold\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightcoral\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}yellowgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}cadetblue\textquotesingle{}}\NormalTok{,}
-\StringTok{\textquotesingle{}powderblue\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgreen\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}lightgray\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}plum\textquotesingle{}}\NormalTok{]}
-\NormalTok{contador }\OperatorTok{=} \DecValTok{0}
-\ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ num\_cols:}
-\NormalTok{    plt.figure(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\NormalTok{colores }\OperatorTok{=}\NormalTok{ [}
+    \StringTok{"steelblue"}\NormalTok{, }\StringTok{"darkorange"}\NormalTok{, }\StringTok{"forestgreen"}\NormalTok{,}
+    \StringTok{"crimson"}\NormalTok{, }\StringTok{"gold"}\NormalTok{, }\StringTok{"lightcoral"}\NormalTok{,}
+    \StringTok{"yellowgreen"}\NormalTok{, }\StringTok{"cadetblue"}\NormalTok{, }\StringTok{"powderblue"}\NormalTok{,}
+    \StringTok{"lightgreen"}\NormalTok{, }\StringTok{"lightgray"}\NormalTok{, }\StringTok{"plum"}
+\NormalTok{]}
+
+\NormalTok{n\_columnas }\OperatorTok{=} \DecValTok{3}
+\NormalTok{n\_filas }\OperatorTok{=}\NormalTok{ math.ceil(}\BuiltInTok{len}\NormalTok{(num\_cols) }\OperatorTok{/}\NormalTok{ n\_columnas)}
+
+\NormalTok{fig, axes }\OperatorTok{=}\NormalTok{ plt.subplots(}
+\NormalTok{    n\_filas,}
+\NormalTok{    n\_columnas,}
+\NormalTok{    figsize}\OperatorTok{=}\NormalTok{(}\FloatTok{10.5}\NormalTok{, }\FloatTok{2.25} \OperatorTok{*}\NormalTok{ n\_filas),}
+\NormalTok{    constrained\_layout}\OperatorTok{=}\VariableTok{True}
+\NormalTok{)}
+
+\NormalTok{axes }\OperatorTok{=}\NormalTok{ axes.flatten()}
+
+\ControlFlowTok{for}\NormalTok{ i, col }\KeywordTok{in} \BuiltInTok{enumerate}\NormalTok{(num\_cols):}
 \NormalTok{    sns.histplot(}
 \NormalTok{        data}\OperatorTok{=}\NormalTok{df\_clean,}
 \NormalTok{        x}\OperatorTok{=}\NormalTok{col,}
 \NormalTok{        bins}\OperatorTok{=}\DecValTok{20}\NormalTok{,}
 \NormalTok{        kde}\OperatorTok{=}\VariableTok{False}\NormalTok{,}
-\NormalTok{        color}\OperatorTok{=}\NormalTok{ colores[contador]}
+\NormalTok{        color}\OperatorTok{=}\NormalTok{colores[i }\OperatorTok{\%} \BuiltInTok{len}\NormalTok{(colores)],}
+\NormalTok{        ax}\OperatorTok{=}\NormalTok{axes[i]}
 \NormalTok{    )}
-\NormalTok{    plt.title(}\SpecialStringTok{f"Histograma de }\SpecialCharTok{\{}\NormalTok{col}\SpecialCharTok{\}}\SpecialStringTok{"}\NormalTok{)}
-\NormalTok{    plt.xlabel(}\VariableTok{None}\NormalTok{)}
-\NormalTok{    plt.ylabel(}\VariableTok{None}\NormalTok{)}
-\NormalTok{    plt.tight\_layout() }\CommentTok{\#es una función de matplotlib que ajusta automáticamente los márgenes}
-\NormalTok{    plt.show()}
-\NormalTok{    contador }\OperatorTok{+=}\DecValTok{1}
+
+\NormalTok{    axes[i].set\_title(col.replace(}\StringTok{"\_"}\NormalTok{, }\StringTok{" "}\NormalTok{), fontsize}\OperatorTok{=}\DecValTok{8}\NormalTok{)}
+\NormalTok{    axes[i].set\_xlabel(}\StringTok{""}\NormalTok{)}
+\NormalTok{    axes[i].set\_ylabel(}\StringTok{"Frecuencia"}\NormalTok{, fontsize}\OperatorTok{=}\DecValTok{7}\NormalTok{)}
+\NormalTok{    axes[i].tick\_params(axis}\OperatorTok{=}\StringTok{"both"}\NormalTok{, labelsize}\OperatorTok{=}\DecValTok{6}\NormalTok{)}
+
+\CommentTok{\# Quitar recuadros que no se usan}
+\ControlFlowTok{for}\NormalTok{ ax }\KeywordTok{in}\NormalTok{ axes[}\BuiltInTok{len}\NormalTok{(num\_cols):]:}
+\NormalTok{    ax.remove()}
+
+\NormalTok{fig.suptitle(}
+    \StringTok{"Distribución de las variables numéricas"}\NormalTok{,}
+\NormalTok{    fontsize}\OperatorTok{=}\DecValTok{11}
+\NormalTok{)}
+
+\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-1.pdf}}
+\begin{figure}[H]
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-2.pdf}}
+\centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-histogramas-numericos-output-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-4.pdf}}
+}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-5.pdf}}
+\caption{\label{fig-histogramas-numericos}Histogramas de las variables
+numéricas del dataset.}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-6.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-7.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-8.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-16-output-9.pdf}}
+\end{figure}%
 
 Cada histograma
 
@@ -1555,12 +1601,6 @@ Además, el término ``adicción'' debe tratarse como una etiqueta del
 dataset y no como un diagnóstico clínico. La evidencia académica
 recomienda emplear instrumentos validados y distinguir entre uso
 frecuente y uso problemático \textcite{Kwon2013}; \textcite{Csibi2018}.
-
-Si este análisis se trasladara a un contexto real, la privacidad, el
-consentimiento informado y el riesgo de estigmatización serían
-centrales. Una predicción debe apoyar la prevención o la derivación
-voluntaria, nunca justificar sanciones automáticas o decisiones de alto
-impacto.
 
 \printbibliography[title=Referencias]
 
