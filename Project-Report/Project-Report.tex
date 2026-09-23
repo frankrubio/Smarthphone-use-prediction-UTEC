@@ -1116,6 +1116,13 @@ implica para el análisis (por ejemplo, si conviene una transformación o
 estandarización más adelante). Comentar si alguna variable de conteo
 tiene una escala muy distinta a las variables medidas en horas.}
 
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
+en cuatro partes iguales \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-cuartiles}{
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+}\end{equation}
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# }\AlertTok{TODO}\CommentTok{: graficar un boxplot por cada variable numérica (usar num\_cols).}
@@ -1174,6 +1181,33 @@ la dispersión, la posible presencia de outliers y la simetría observada
 en los boxplots. Discutir si esos valores extremos deberían tratarse
 como errores de captura o si son observaciones reales del comportamiento
 de los usuarios, y justificar la decisión tomada.}
+
+Se calculan las medidas de tendencia central y dispersión de cada
+variable numérica \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-cv}{
+CV = \frac{s}{\bar{x}} \times 100\%
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-mediana}{
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-media}{
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-varianza}{
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+}\end{equation}
+
+\begin{equation}\protect\phantomsection\label{eq-desviacion}{
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+}\end{equation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1383,6 +1417,13 @@ causalidad.}
 \end{Highlighting}
 \end{Shaded}
 
+La correlación de Pearson mide la fuerza y dirección de la relación
+lineal entre dos variables, y se calcula a partir de la covarianza y las
+desviaciones estándar de cada una \autocite{walpole2012probabilidad}:
+\begin{equation}\protect\phantomsection\label{eq-correlacion}{
+r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
+}\end{equation}
+
 \emph{Instrucciones para esta sección: comentar qué variables tienen
 mayor asociación lineal con la etiqueta objetivo y cuáles tienen
 asociación muy baja. Aclarar que esto es solo un indicio y no una
@@ -1483,6 +1524,14 @@ clases.}
 \end{Highlighting}
 \end{Shaded}
 
+La covarianza mide cómo varían juntas dos variables: positiva si crecen
+juntas, negativa si una crece cuando la otra decrece
+\autocite{walpole2012probabilidad}.
+
+\begin{equation}\protect\phantomsection\label{eq-covarianza}{
+\text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+}\end{equation}
+
 \emph{Instrucciones para esta sección: interpretar el signo de la
 covarianza (si dos variables crecen o decrecen juntas) y explicar por
 qué se complementa con la correlación (que sí permite comparar la fuerza
@@ -1498,6 +1547,20 @@ está balanceada o no y qué implica para P2, (3) qué variables se
 excluyen como predictoras y por qué, (4) qué variables lucen más
 prometedoras para el modelamiento, y (5) qué se debe tener en cuenta al
 pasar a la P2 (codificación, escalamiento, evaluación).}
+
+Estos hallazgos son consistentes con estudios previos que asocian la
+adicción al smartphone con menor rendimiento académico, en parte por su
+efecto negativo sobre el sueño \autocite{rathakrishnan2021smartphone}.
+
+La correlación observada entre horas\_redes\_sociales y la etiqueta de
+adicción coincide con la dirección reportada por un meta-análisis
+reciente sobre redes sociales y rendimiento académico
+\autocite{salari2025socialmedia}.
+
+Un estudio con un dataset público similar reporta que Random Forest es
+el modelo con mejor desempeño para este tipo de predicción
+\autocite{azeez2026ml}, lo que sugiere una línea de partida razonable
+para la P2.
 
 \section{Limitaciones y consideraciones
 éticas}\label{limitaciones-y-consideraciones-uxe9ticas}

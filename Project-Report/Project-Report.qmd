@@ -457,6 +457,12 @@ plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
 
 *Instrucciones para esta sección: para cada histograma, describir la forma de la distribución (simétrica, sesgada, con varias modas) y qué implica para el análisis (por ejemplo, si conviene una transformación o estandarización más adelante). Comentar si alguna variable de conteo tiene una escala muy distinta a las variables medidas en horas.*
 
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados en cuatro partes iguales [@walpole2012probabilidad]:
+
+$$
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+$$ {#eq-cuartiles}
+
 ```{python}
 #| echo: true
 # TODO: graficar un boxplot por cada variable numérica (usar num_cols).
@@ -492,6 +498,32 @@ for col in num_cols:
 ```
 
 *Instrucciones para esta sección: comentar, variable por variable, la dispersión, la posible presencia de outliers y la simetría observada en los boxplots. Discutir si esos valores extremos deberían tratarse como errores de captura o si son observaciones reales del comportamiento de los usuarios, y justificar la decisión tomada.*
+
+Se calculan las medidas de tendencia central y dispersión de cada variable numérica [@walpole2012probabilidad]:
+
+$$
+CV = \frac{s}{\bar{x}} \times 100\%
+$$ {#eq-cv}
+
+$$
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+$$ {#eq-mediana}
+
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+$$ {#eq-media}
+
+$$
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+$$ {#eq-varianza}
+
+$$
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+$$ {#eq-desviacion}
 
 ```{python}
 #| echo: true
@@ -562,6 +594,11 @@ plt.show()
 #Chamba Jossep
 
 ```
+
+La correlación de Pearson mide la fuerza y dirección de la relación lineal entre dos variables, y se calcula a partir de la covarianza y las desviaciones estándar de cada una [@walpole2012probabilidad]:
+$$
+r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
+$$ {#eq-correlacion}
 
 *Instrucciones para esta sección: comentar qué variables tienen mayor asociación lineal con la etiqueta objetivo y cuáles tienen asociación muy baja. Aclarar que esto es solo un indicio y no una selección final de variables para el modelo.*
 
@@ -653,11 +690,23 @@ plt.show()
 # TODO: calcular la covarianza entre pares de variables numéricas relevantes (num_cols).
 ```
 
+La covarianza mide cómo varían juntas dos variables: positiva si crecen juntas, negativa si una crece cuando la otra decrece [@walpole2012probabilidad].
+
+$$
+\text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
+$$ {#eq-covarianza}
+
 *Instrucciones para esta sección: interpretar el signo de la covarianza (si dos variables crecen o decrecen juntas) y explicar por qué se complementa con la correlación (que sí permite comparar la fuerza de la relación entre variables con escalas distintas).*
 
 # Conclusiones de P1
 
 *Instrucciones para esta sección: redactar entre 4 y 6 conclusiones numeradas, basadas únicamente en los resultados obtenidos arriba (no inventar cifras). Deben cubrir, como mínimo: (1) calidad de datos (nulos, duplicados) y qué se hizo al respecto, (2) si la clase objetivo está balanceada o no y qué implica para P2, (3) qué variables se excluyen como predictoras y por qué, (4) qué variables lucen más prometedoras para el modelamiento, y (5) qué se debe tener en cuenta al pasar a la P2 (codificación, escalamiento, evaluación).*
+
+Estos hallazgos son consistentes con estudios previos que asocian la adicción al smartphone con menor rendimiento académico, en parte por su efecto negativo sobre el sueño [@rathakrishnan2021smartphone].
+
+La correlación observada entre horas_redes_sociales y la etiqueta de adicción coincide con la dirección reportada por un meta-análisis reciente sobre redes sociales y rendimiento académico [@salari2025socialmedia].
+
+Un estudio con un dataset público similar reporta que Random Forest es el modelo con mejor desempeño para este tipo de predicción [@azeez2026ml], lo que sugiere una línea de partida razonable para la P2.
 
 # Limitaciones y consideraciones éticas
 
