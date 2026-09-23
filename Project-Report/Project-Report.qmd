@@ -555,6 +555,10 @@ x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
 $$ {#eq-mediana}
  
 $$
+Mo = L_i + \left( \frac{d_1}{d_1 + d_2} \right) \cdot A_i
+$$ {#eq-moda}
+
+$$
 s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
 $$ {#eq-varianza}
  
@@ -575,7 +579,7 @@ for i in num_cols:
   display(df_clean[i].describe())
 ```
 
-*Instrucciones para esta sección: comparar media y mediana para detectar asimetría en cada variable, e interpretar la desviación estándar en el contexto de la escala de cada una (no comparar directamente variables con unidades distintas). Señalar qué variables muestran mayor dispersión o valores extremos.*
+Al evaluar la relación entre la media y la mediana, la mayoría de las variables muestran valores muy cercanos, lo que refleja distribuciones mayoritariamente simétricas. En cuanto a la dispersión, variables de conteo diario (como notificaciones_por_dia y aperturas_apps_por_dia) registran una desviación estándar mayor en proporción a su escala en comparación con las variables en horas (como horas_sueño o horas_trabajo/estudio), las cuales presentan mayor estabilidad. Finalmente, las variables asociadas a hábitos intensivos digitales son las que exhiben mayor variabilidad y presencia de valores extremos.
 
 ```{python}
 #| echo: true
@@ -607,7 +611,7 @@ df_clean['impacto_academico/laboral'].value_counts(normalize=True)
 df_clean["estado_adiccion"].value_counts(normalize=True)
 ```
 
-*Instrucciones para esta sección: describir qué categorías son dominantes o poco frecuentes en cada variable categórica y comentar si eso podría afectar el análisis posterior (por ejemplo, categorías con muy pocos casos). Indicar si alguna de estas variables se tratará como ordinal y por qué.*
+Las variables de género (Male: 34.0%, Other: 33.1%, Female: 32.8%), nivel de estrés (High: 34.1%, Low: 33.4%, Medium: 32.5%) e impacto académico/laboral (No: 50.0%, Yes: 50.0%) presentan una distribución completamente equitativa e uniforme, sin presencia de categorías minoritarias que puedan sesgar el análisis. La única excepción es estado_adiccion, la cual exhibe un desbalance significativo donde el 70.8% corresponde a usuarios clasificados como "Adicto" y solo el 29.2% a "No adicto". Por otro lado, la variable nivel_estres se tratará como ordinal debido a que sus categorías (Low, Medium, High) poseen un orden jerárquico natural implícito.
 
 ## Análisis multivariado
 

@@ -337,6 +337,24 @@ muestra %>%
 
 ```
 
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
+$$ {#eq-media}
+ 
+$$
+\text{Mediana} =
+\begin{cases}
+x_{\left(\frac{n+1}{2}\right)} & \text{si } n \text{ es impar} \\[6pt]
+\dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+\end{cases}
+$$ {#eq-mediana}
+$$
+Mo = L_i + \left( \frac{d_1}{d_1 + d_2} \right) \cdot A_i
+$$ {#eq-moda}
+$$
+Mo = \text{Mode}(X)
+$$ {#eq-moda}
+
 **Interpretación*:** La media representa el valor promedio de producción, mientras que la mediana indica el punto medio. La moda muestra la producción más común entre los agricultores.
 
 # MEDIDAS DE DISPERSIÓN
@@ -351,6 +369,20 @@ muestra %>%
   )
 
 ```
+
+$$
+R = X_{\text{máx}} - X_{\text{mín}}
+$$ {#eq-rango}
+$$
+s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2
+$$ {#eq-varianza}
+ 
+$$
+s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
+$$ {#eq-desviacion}
+$$
+CV = \frac{s}{\bar{x}} \times 100\%
+$$ {#eq-cv}
 
 **Interpretación:** Un coeficiente de variación bajo sugiere que los datos están relativamente concentrados cerca de la media, lo cual se interpreta como estabilidad productiva [@gonzales2020].
 
