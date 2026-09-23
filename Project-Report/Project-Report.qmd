@@ -170,7 +170,7 @@ def tabla(datos, decimales=2, indice=True, alineacion=None,
             if pd.isna(valor):
                 return "--"
             valor = 0.0 if round(valor, dec) == 0 else valor   # sin "-0.00"
-            return f"{valor:,.{dec}f}".replace("-", "\u2212")
+            return f"{valor:,.{dec}f}"
         texto = _tex(valor)
         # "{}" evita que LaTeX lea "[...]" como argumento opcional de \\
         return "{}" + texto if texto.startswith("[") else texto
@@ -317,9 +317,9 @@ Los rangos que se observan en la anterior tabla `df.describe()` son coherentes c
 Notamos que hay 819 valores nulos en la clumna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna
 
 ```{python}
-#|echo: True
-#|label: tbl-nulos-head
-#|tbl-cap: Estadisticas de las final con valores nulos
+#| echo: true
+#| label: tbl-nulos-head
+#| tbl-cap: "Primeras filas con valores nulos en nivel de adicción."
 columnas_mostrar = [
     "ID_transaccion", "edad", "genero",
     "horas_diarias_pantalla", "horas_sueño",
@@ -350,7 +350,7 @@ Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 
 
 ```{python}
 #| echo: true
-#| label: df-limpio
+#| label: tbl-dataset-limpio
 #| tbl-cap: "Primeras cinco filas del dataset limpio (df_clean)."
 df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
@@ -370,10 +370,13 @@ Se crean dos variables derivadas para el análisis exploratorio:
 
 ```{python}
 #| echo: true
-#| label: variables-derivadas
+#| label: tbl-variables-derivadas
 #| tbl-cap: "Primeras cinco filas del dataset con variables derivadas (horas_ocio y ratio_finde_diario)."
 df_clean["horas_ocio"] = df_renombrado["horas_redes_sociales"] + df_renombrado["horas_videojuegos"]
-df_clean["ratio_finde_diario"] = df_renombrado["tiempo_pantalla_finde"]/df_renombrado["horas_diarias_pantalla"]
+df_clean["ratio_finde_diario"] = (
+    df_renombrado["tiempo_pantalla_finde"]
+    / df_renombrado["horas_diarias_pantalla"]
+)
 df_clean["estado_adiccion"] = df_renombrado["etiqueta_de_adiccion"].replace({1:"Adicto", 0:"No adicto"})
 vista2_df_clean = df_clean.head().T
 vista2_df_clean.columns = [f"Usuario {i}" for i in range(1, 6)]
@@ -469,11 +472,14 @@ plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
 
 ```{python}
 #| echo: true
-# TODO: graficar un boxplot por cada variable numérica (usar num_cols).
-# asegúrate de que num_cols existe y tiene nombres reales
+#| label: fig-boxplots-numericos
+#| fig-cap: "Boxplots de las variables numéricas del dataset."
+colores = [
+    "steelblue", "darkorange", "forestgreen",
+    "lightcoral", "yellowgreen", "cadetblue",
+    "powderblue", "lightgreen", "lightgray"
+]
 
-colores = ['steelblue','darkorange','forestgreen','lightcoral','yellowgreen','cadetblue',
-'powderblue','lightgreen','lightgray']
 num_cols = [
     "edad",
     "horas_diarias_pantalla",
@@ -484,28 +490,52 @@ num_cols = [
     "notificaciones_por_dia",
     "aperturas_apps_por_dia",
     "tiempo_pantalla_finde",
-]#aqui descartamos "etiqueta_de_adiccion"
+]
 
-contador = 0
-for col in num_cols:
-    plt.figure(figsize=(4, 3))
+n_columnas = 3
+n_filas = math.ceil(len(num_cols) / n_columnas)
+
+fig, axes = plt.subplots(
+    n_filas,
+    n_columnas,
+    figsize=(10.5, 2.4 * n_filas),
+    constrained_layout=True
+)
+
+axes = axes.flatten()
+
+for i, col in enumerate(num_cols):
     sns.boxplot(
         data=df_clean,
         y=col,
-        color=colores[contador],
+        color=colores[i % len(colores)],
+        ax=axes[i],
+        width=0.45,
+        fliersize=2
     )
-    contador += 1
-    plt.xlabel("")
-    plt.ylabel(col)
-    plt.tight_layout()
-    plt.show()
+
+    axes[i].set_title(col.replace("_", " "), fontsize=8)
+    axes[i].set_xlabel("")
+    axes[i].set_ylabel("")
+    axes[i].tick_params(axis="both", labelsize=6)
+
+for ax in axes[len(num_cols):]:
+    ax.remove()
+
+fig.suptitle(
+    "Dispersión y valores atípicos de las variables numéricas",
+    fontsize=11
+)
+
+plt.show()
 ```
 
 *Instrucciones para esta sección: comentar, variable por variable, la dispersión, la posible presencia de outliers y la simetría observada en los boxplots. Discutir si esos valores extremos deberían tratarse como errores de captura o si son observaciones reales del comportamiento de los usuarios, y justificar la decisión tomada.*
 
 ```{python}
 #| echo: true
-# TODO: calcular media, mediana, moda, desviación estándar, varianza, rango y cuartiles por variable numérica (num_cols).
+#| label: tbl-estadisticos-descriptivos
+#| tbl-cap: "Estadísticos descriptivos de las variables numéricas."
 for i in num_cols:
   display(df_clean[i].describe())
 ```
@@ -514,24 +544,31 @@ for i in num_cols:
 
 ```{python}
 #| echo: true
-# TODO: graficar la frecuencia de las variables categóricas (cat_cols: genero, nivel_estres, impacto_academico/laboral). #están debajo
 for i in cat_cols:
   df_clean[i].value_counts(normalize=True)
 ```
 
 ```{python}
+#| label: tbl-proporcion-genero
+#| tbl-cap: "Proporción de registros por género."
 df_clean['genero'].value_counts(normalize=True)
 ```
 
 ```{python}
+#| label: tbl-proporcion-estres
+#| tbl-cap: "Proporción de registros por nivel de estrés."
 df_clean['nivel_estres'].value_counts(normalize=True)
 ```
 
 ```{python}
+#| label: tbl-proporcion-impacto
+#| tbl-cap: "Proporción de registros por impacto académico o laboral."
 df_clean['impacto_academico/laboral'].value_counts(normalize=True)
 ```
 
 ```{python}
+#| label: tbl-proporcion-adiccion
+#| tbl-cap: "Proporción de registros por estado de adicción."
 df_clean["estado_adiccion"].value_counts(normalize=True)
 ```
 
@@ -541,26 +578,50 @@ df_clean["estado_adiccion"].value_counts(normalize=True)
 
 ```{python}
 #| echo: true
-# TODO: graficar un mapa de calor de correlaciones entre las variables numéricas (num_cols).
-df_num = df_clean[num_cols+ ["etiqueta_de_adiccion"]].copy()
-# 1. Primero va el tamaño y la resolución (el lienzo)
-plt.figure(figsize=(30, 10), dpi=300)
+#| label: fig-matriz-correlacion
+#| fig-cap: "Matriz de correlación de las variables numéricas."
+df_num = df_clean[num_cols + ["etiqueta_de_adiccion"]].copy()
 
-# 2. Luego armamos el mapa de calor con tus mismos parámetros
+nombres_cortos = {
+    "edad": "Edad",
+    "horas_diarias_pantalla": "Pantalla diaria",
+    "horas_redes_sociales": "Redes sociales",
+    "horas_videojuegos": "Videojuegos",
+    "horas_trabajo/estudio": "Trabajo/estudio",
+    "horas_sueño": "Sueño",
+    "notificaciones_por_dia": "Notificaciones",
+    "aperturas_apps_por_dia": "Aperturas apps",
+    "tiempo_pantalla_finde": "Pantalla fin de sem.",
+    "etiqueta_de_adiccion": "Adicción"
+}
+
+correlacion = df_num.corr()
+correlacion = correlacion.rename(
+    index=nombres_cortos,
+    columns=nombres_cortos
+)
+
+fig, ax = plt.subplots(figsize=(10, 8))
+
 sns.heatmap(
-    df_num.corr(),
+    correlacion,
     annot=True,
-    fmt=".1f",
+    fmt=".2f",
+    vmin=-1,
     vmax=1,
     center=0,
-    linewidths=0.5,  # Líneas divisorias sutiles
-    cbar_kws={"shrink": 1},  # Barra de color un poco más chica
-    annot_kws={"size": 23},  # Números chiquitos para que no se amontonen
+    cmap="vlag",
+    linewidths=0.4,
+    cbar_kws={"shrink": 0.8},
+    annot_kws={"size": 7},
+    ax=ax
 )
-plt.xticks(fontsize=29)   # etiquetas del eje X más grandes
-plt.yticks(fontsize=29)   # etiquetas del eje Y más grandes
-# 3. Ponemos el título y mostramos
-plt.title("Matriz de Correlación de Variables Numéricas")
+
+ax.set_title("Matriz de correlación de variables numéricas", fontsize=11, pad=12)
+ax.tick_params(axis="x", labelsize=8, rotation=40)
+ax.tick_params(axis="y", labelsize=8, rotation=0)
+
+plt.tight_layout()
 plt.show()
 ```
 
@@ -577,42 +638,47 @@ plt.show()
 
 ```{python}
 #| echo: true
-# TODO: graficar boxplots comparativos de variables numéricas clave (por ejemplo, horas_diarias_pantalla, horas_redes_sociales, horas_sueño) separadas por etiqueta_de_adiccion.
+#| label: fig-boxplot-ocio-adiccion
+#| fig-cap: "Horas de ocio según el estado de adicción."
 del plt
 import matplotlib.pyplot as plt
 sns.boxplot(data=df_clean, x="estado_adiccion", y ="horas_ocio", palette = "husl", legend=True)
 ```
 
 ```{python}
+#| label: fig-boxplot-ocio-genero
+#| fig-cap: "Horas de ocio según el género."
 colores_genero = {"Male": "skyblue", "Female": "teal", "Other": "lightseagreen"}
 sns.boxplot(data=df_clean, x = "genero", y = "horas_ocio", palette=colores_genero)
 ```
 
 ```{python}
+#| label: fig-boxplot-ocio-impacto
+#| fig-cap: "Horas de ocio según el impacto académico o laboral."
 sns.boxplot(data=df_clean, x = "impacto_academico/laboral", y = "horas_ocio", palette = "husl")
 ```
 
 ```{python}
+#| label: fig-boxplot-ratio-adiccion
+#| fig-cap: "Razón entre pantalla de fin de semana y pantalla diaria según el estado de adicción."
 sns.boxplot(data=df_clean, x = "estado_adiccion", y = "ratio_finde_diario", palette = "Set1")
 ```
 
 ```{python}
+#| label: fig-boxplot-sueno-adiccion
+#| fig-cap: "Horas de sueño según el estado de adicción."
 sns.boxplot(data=df_clean, x = "estado_adiccion", y = "horas_sueño", palette = "husl")
 ```
 
 ```{python}
+#| label: fig-boxplot-pantalla-estres
+#| fig-cap: "Horas diarias de pantalla según el nivel de estrés."
 sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_diarias_pantalla", palette = "husl")
 ```
 
 ```{python}
-num_cols
-```
-
-```{python}
-cat_cols
-```
-
-```{python}
+#| label: fig-boxplot-ocio-estres
+#| fig-cap: "Horas de ocio según el nivel de estrés."
 sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio", palette = "husl")
 ```
 
@@ -621,6 +687,8 @@ sns.boxplot(data=df_clean, x = "nivel_estres", y = "horas_ocio", palette = "husl
 
 ```{python}
 #| echo: true
+#| label: fig-estres-adiccion
+#| fig-cap: "Nivel de estrés según el estado de adicción."
 plt.figure(figsize=(8,5))
 sns.countplot(data=df_clean, x="nivel_estres", hue="estado_adiccion",
               order=["Low","Medium","High"], palette="colorblind")
@@ -636,7 +704,8 @@ plt.show()
 
 ```{python}
 #| echo: true
-# TODO: graficar histogramas o barras agrupadas comparando subgrupos (por ejemplo, nivel_estres o impacto_academico/laboral vs. etiqueta_de_adiccion).
+#| label: fig-categoricas-adiccion
+#| fig-cap: "Distribución de las variables categóricas según la etiqueta de adicción."
 for columna in cat_cols:
   sns.histplot(data=df_clean,x = columna, hue = 'etiqueta_de_adiccion')
   plt.show()
@@ -646,7 +715,8 @@ for columna in cat_cols:
 
 ```{python}
 #| echo: true
-# TODO: graficar al menos 5 diagramas de dispersión (scatterplots) entre pares de variables numéricas (num_cols), coloreando por etiqueta_de_adiccion.
+#| label: fig-dispersion-trabajo-pantalla
+#| fig-cap: "Relación entre horas de trabajo o estudio y horas diarias de pantalla, según la etiqueta de adicción."
 
 sns.scatterplot(data=df_renombrado, x= 'horas_trabajo/estudio', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
@@ -654,12 +724,16 @@ sns.scatterplot(data=df_renombrado, x= 'horas_trabajo/estudio', y= 'horas_diaria
 ```
 
 ```{python}
+#| label: fig-dispersion-sueno-redes
+#| fig-cap: "Relación entre horas de sueño y horas en redes sociales, según la etiqueta de adicción."
 
 sns.scatterplot(data=df_renombrado, x= 'horas_sueño', y= 'horas_redes_sociales', hue = 'etiqueta_de_adiccion')
 
 ```
 
 ```{python}
+#| label: fig-dispersion-notificaciones-sueno
+#| fig-cap: "Relación entre notificaciones por día y horas de sueño, según la etiqueta de adicción."
 
 sns.scatterplot(data=df_renombrado, x= 'notificaciones_por_dia', y= 'horas_sueño', hue = 'etiqueta_de_adiccion')
 
@@ -668,12 +742,16 @@ sns.scatterplot(data=df_renombrado, x= 'notificaciones_por_dia', y= 'horas_sueñ
 
 
 ```{python}
+#| label: fig-dispersion-videojuegos-trabajo
+#| fig-cap: "Relación entre horas de videojuegos y horas de trabajo o estudio, según la etiqueta de adicción."
 
 sns.scatterplot(data=df_renombrado, x= 'horas_videojuegos', y= 'horas_trabajo/estudio', hue = 'etiqueta_de_adiccion')
 
 ```
 
 ```{python}
+#| label: fig-dispersion-edad-pantalla
+#| fig-cap: "Relación entre edad y horas diarias de pantalla, según la etiqueta de adicción."
 
 sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
@@ -683,9 +761,18 @@ sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue 
 
 ```{python}
 #| echo: true
-# TODO: calcular la covarianza entre pares de variables numéricas relevantes (num_cols).
-df_number = df_clean.select_dtypes(include='number')
-df_number.corr()
+#| label: tbl-matriz-correlacion
+#| tbl-cap: "Matriz de correlación entre las variables numéricas."
+variables = [
+    "edad",
+    "horas_diarias_pantalla",
+    "horas_redes_sociales",
+    "horas_sueño",
+    "etiqueta_de_adiccion"
+]
+
+matriz_correlacion = df_clean[variables].corr().round(2)
+tabla(matriz_correlacion, decimales=2, tamanio="scriptsize")
 ```
 
 *Instrucciones para esta sección: interpretar el signo de la covarianza (si dos variables crecen o decrecen juntas) y explicar por qué se complementa con la correlación (que sí permite comparar la fuerza de la relación entre variables con escalas distintas).*
