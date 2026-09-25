@@ -307,7 +307,7 @@ Los rangos que se observan en la anterior tabla `df.describe()` son coherentes c
 
 # Preprocesamiento y decisiones de data wrangling
 
-Notamos que hay 819 valores nulos en la clumna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna
+Notamos que hay 819 valores nulos en la columna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna (la siguiente tabla es de valores nulos):
 
 ```{python}
 #| echo: true
