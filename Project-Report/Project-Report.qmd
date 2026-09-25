@@ -66,17 +66,6 @@ execute:
 \providecommand{\pandocbounded}[1]{#1}
 ```
 
-```{=html}
-<!-- PLANTILLA DE TRABAJO (este comentario no aparece en el PDF):
-Cada bloque en cursiva que empieza con "Instrucciones para esta sección" indica qué debe
-escribir la persona encargada de esa parte, una vez que haya corrido el código y tenga
-resultados reales. Al terminar una sección, se borra el bloque de instrucciones y se
-reemplaza por el texto final (redactado por el equipo, no copiado de un chat de IA).
-Los chunks marcados con "# TODO" son el espacio para el código en Python; ahí va la
-implementación real de cada integrante. No se debe reportar ningún número o gráfico que
-no salga de correr el código de este archivo. -->
-```
-
 \newpage
 
 # Resumen
@@ -124,6 +113,7 @@ El primer bloque reúne las librerías necesarias para el proyecto y el estilo d
 # ======================================================================
 import pandas as pd
 import numpy as np
+from stack_data import Variable
 from matplotlib.pyplot import boxplot
 from matplotlib.pyplot import hist
 import matplotlib.pyplot as plt
@@ -190,9 +180,11 @@ def tabla(datos, decimales=2, indice=True, alineacion=None,
 
 Usando la librería de kaggle y os logramos una carga universal exitosa en cualquier equipo y evitamos errores de carga del dataset
 
+\newpage
+
 ```{python}
 #| echo: true
-#| label: carga
+#| label: carga-dataset
 # Cargamos el archivo csv
 path = (kagglehub.dataset_download 
        ("jayjoshi37/smartphone-usage-and-addiction-prediction"))
@@ -286,7 +278,8 @@ tabla(diccionario, indice=False, tamanio="scriptsize", interlineado=1.1,
 La @tbl-diccionario resume la naturaleza de cada variable. La distinción entre tipos estadísticos no es un detalle formal: decide qué gráficos y estadísticos corresponden a cada variable (histogramas y boxplots para las cuantitativas, gráficos de barras para las cualitativas) y, en la P2, cómo se codificará cada una.
 
 ## Calidad de datos
-    
+
+
 ```{python}
 #| echo: true
 #| label: Val-nulos-colum-duplicadas
@@ -390,23 +383,11 @@ Las variables `num_cols` y `cat_cols` actualizadas son:
 - `num_cols`: edad, horas_diarias_pantalla, horas_redes_sociales, horas_videojuegos, horas_trabajo/estudio, horas_sueño, notificaciones_por_dia, aperturas_apps_por_dia, tiempo_en_pantalla_fin_de_semana, horas_ocio, ratio_finde_diario, etiqueta_de_adiccion
 - `cat_cols`: genero, nivel_estres, impacto_academico/laboral, estado_adiccion
 
+\newpage
+
 # Análisis exploratorio de datos
 
 ## Análisis univariado
-
-```{python}
-#| echo: true
-#| label: fig-estado-adiccion
-#| fig-cap: "Distribución de la variable objetivo: estado de adicción (0 = No adicción, 1 = Con adicción)."
-counts = df_clean["estado_adiccion"].value_counts()
-counts.plot(kind="bar", color=['darkred','darkgreen'], edgecolor="none")
-plt.xlabel("Estado de adicción")
-plt.ylabel(None)
-plt.xticks(rotation=0)
-plt.show()
-```
-
-De los 7,500 registros, **5308 (70.77%)** corresponden a la clase "Con adicción" y **2192 (29.23%)** a "No adicción". Hay un desbalance, la clase positiva tiene más del doble de registros que la negativa.
 
 ```{python}
 #| echo: true
@@ -463,19 +444,19 @@ Cada histograma muestra cómo se distribuyen los valores de cada variable numér
 
 ```{python}
 #| echo: true
-df_clean['estado_adiccion'].value_counts().plot(kind='bar',color=['darkred',
-                                                               'darkgreen'])
-plt.show() #usamos la variable comunicativa de 'etiqueta_de_adiccion'
+#| label: fig-estado-adiccion
+#| fig-cap: "Distribución de la variable objetivo: estado de adicción (0 = No adicción, 1 = Con adicción)."
+counts = df_clean['estado_adiccion'].value_counts()
+counts.plot(kind='bar',color=['darkred','darkgreen'])
+plt.xlabel("Estado de adicción")
+plt.ylabel("Frecuencia")
+plt.xticks(rotation=0)
+plt.show()
 ```
 
 El gráfico de barras muestra una clara asimetría y desbalance de clases, donde la categoría "Adiccto" predomina ampliamente (superando las 5,000 observaciones) frente a la de "No adicto" (alrededor de 2,200). Este desequilibrio implica que, para fases posteriores de modelado o análisis estadístico, se debe considerar el balanceo de datos o métricas de evaluación adecuadas para evitar sesgos hacia la clase mayoritaria.*
 
-Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
-en cuatro partes iguales [@walpole2012probabilidad]:
- 
-$$
-Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
-$$ {#eq-cuartiles}
+\newpage
 
 ```{python}
 #| echo: true
@@ -537,10 +518,28 @@ fig.suptitle(
 plt.show()
 ```
 
-La visualización de las variables numéricas (edad, tiempo en pantalla, uso de apps, sueño, etc.) muestra en general una distribución bastante homogénea y centrada. Salvo por ligeras asimetrías o atípicos aislados en hábitos de uso intensivo (como notificaciones o videojuegos), las observaciones representan comportamientos reales de los usuarios y no errores de registro, por lo que se decide conservar todas las variables completas para el análisis.*
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados  en cuatro partes iguales [@walpole2012probabilidad]:
+ 
+$$
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+$$ {#eq-cuartiles}
 
-Se calculan las medidas de tendencia central y dispersión de cada variable
-numérica [@walpole2012probabilidad]:
+La visualización de las variables numéricas (edad, tiempo en pantalla, uso de apps, sueño, etc.) muestra en general una distribución bastante homogénea y centrada. Salvo por ligeras asimetrías o atípicos aislados en hábitos de uso intensivo (como notificaciones o videojuegos), las observaciones representan comportamientos reales de los usuarios y no errores de registro, por lo que se decide conservar todas las variables completas para el análisis.
+
+\newpage
+
+```{python}
+#| echo: true
+#| label: tbl-estadistica-descriptiva
+#| tbl-cap: "Estadística descriptiva de las variables numéricas."
+descripcion = df_clean[num_cols].describe().T
+descripcion.columns = [
+"n", "Media", "Desv. est.", "Mín.", "Q1", "Mediana","Q3", "Máx."]
+descripcion.index.name = "Variable"
+tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{3.5cm}*{8}{c}")
+```
+
+Se calculan las medidas de tendencia central y dispersión de cada variable numérica [@walpole2012probabilidad]:
  
 $$
 \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i
@@ -566,16 +565,7 @@ $$
 CV = \frac{s}{\bar{x}} \times 100\%
 $$ {#eq-cv}
 
-
-```{python}
-#| echo: true
-#| label: tbl-estadisticos-descriptivos
-#| tbl-cap: "Estadísticos descriptivos de las variables numéricas."
-for i in num_cols:
-  display(df_clean[i].describe())
-```
-
-*Instrucciones para esta sección: comparar media y mediana para detectar asimetría en cada variable, e interpretar la desviación estándar en el contexto de la escala de cada una (no comparar directamente variables con unidades distintas). Señalar qué variables muestran mayor dispersión o valores extremos.*
+En general, al comparar la media y la mediana de las variables numéricas observamos distribuciones relativamente equilibradas y sin una asimetría marcada. Por ejemplo, la edad presenta una media de 26.57 y una mediana de 27 años; las horas diarias de pantalla, 7.50 y 7.53; las horas en redes sociales, 3.27 y 3.27; las horas de trabajo/estudio, 3.24 y 3.23; las horas de sueño, 6.74 y 6.72; y el tiempo de pantalla durante el fin de semana, 9.24 y 9.26. En videojuegos, la diferencia es ligeramente mayor, con una media de 2.01 y una mediana de 2.04 horas, lo que sugiere una ligera asimetría. Con respecto a la desviación estándar: las notificaciones por día (66.59) y las aperturas de aplicaciones (48.42) tienen una dispersión amplia, mientras que entre las variables medidas en horas destacan el tiempo de pantalla durante el fin de semana (2.72) y las horas diarias de pantalla (2.61). Los boxplots también muestran algunos valores extremos o atípicos aislados, especialmente en variables relacionadas con el uso intensivo del celular, como las notificaciones y los videojuegos. En resumen, estas variables presentan mayor variabilidad en los patrones de uso, aunque los valores extremos fueron considerados comportamientos posibles de los usuarios y se conservaron para el análisis. 
 
 ```{python}
 #| echo: true
@@ -584,30 +574,46 @@ for i in cat_cols:
 ```
 
 ```{python}
+#| echo: false
 #| label: tbl-proporcion-genero
 #| tbl-cap: "Proporción de registros por género."
-df_clean['genero'].value_counts(normalize=True)
+proporcion = df_clean['genero'].value_counts(normalize=True).mul(100).to_frame().T
+proporcion.index.name = "Variable"
+
+tabla (proporcion, decimales = 2, interlineado=1.0)
 ```
 
 ```{python}
+#| echo: false
 #| label: tbl-proporcion-estres
 #| tbl-cap: "Proporción de registros por nivel de estrés."
-df_clean['nivel_estres'].value_counts(normalize=True)
+proporcion = df_clean['nivel_estres'].value_counts(normalize=True).mul(100).to_frame().T
+proporcion.index.name = "Variable"
+
+tabla (proporcion, decimales = 2, interlineado=1.0)
 ```
 
 ```{python}
+#| echo: false
 #| label: tbl-proporcion-impacto
 #| tbl-cap: "Proporción de registros por impacto académico o laboral."
-df_clean['impacto_academico/laboral'].value_counts(normalize=True)
+proporcion = df_clean['impacto_academico/laboral'].value_counts(normalize=True).mul(100).to_frame().T
+proporcion.index.name = "Variable"
+
+tabla (proporcion, decimales = 2, interlineado=1.0)
 ```
 
 ```{python}
+#| echo: false
 #| label: tbl-proporcion-adiccion
 #| tbl-cap: "Proporción de registros por estado de adicción."
-df_clean["estado_adiccion"].value_counts(normalize=True)
+proporcion = df_clean['estado_adiccion'].value_counts(normalize=True).mul(100).to_frame().T
+proporcion.index.name = "Variable"
+
+tabla (proporcion, decimales = 2, interlineado=1.0)
 ```
 
-*Instrucciones para esta sección: describir qué categorías son dominantes o poco frecuentes en cada variable categórica y comentar si eso podría afectar el análisis posterior (por ejemplo, categorías con muy pocos casos). Indicar si alguna de estas variables se tratará como ordinal y por qué.*
+En las variables categóricas se observa bien equilibridad en `género`, ya que Masculino representa el 34.04 %, Otro el 33.15 % y Femenino el 32.81 %, el `estrés` tambien se presenta de manera similar Alto concentra el 34.13 %, Bajo el 33.37 % y Medio el 32.49 %. En el `impacto academico o laboral` hay practicamente una igualdas en No (50.04 %) y Sí (49.96 %). En diferencia, la variable `estado de adiccón` presenta un desbalance evidente: Adicto representa el 70.77 % de los registros, mientras que No adicto corresponde al 29.23 %, esta va a ser importante para modelos predictivos posteriores. De las variables categóricas utilizadas, `nivel_estres` se tratará como ordinal, debido a que sus categorías tienen un orden natural: Bajo < Medio < Alto; en cambio, ``género` e `impacto académico/laboral` son variables nominales y `estado_adiccion` es una variable binaria.
 
 ## Análisis multivariado
 
@@ -615,49 +621,7 @@ df_clean["estado_adiccion"].value_counts(normalize=True)
 #| echo: true
 #| label: fig-matriz-correlacion
 #| fig-cap: "Matriz de correlación de las variables numéricas."
-df_num = df_clean[num_cols + ["etiqueta_de_adiccion"]].copy()
-
-nombres_cortos = {
-    "edad": "Edad",
-    "horas_diarias_pantalla": "Pantalla diaria",
-    "horas_redes_sociales": "Redes sociales",
-    "horas_videojuegos": "Videojuegos",
-    "horas_trabajo/estudio": "Trabajo/estudio",
-    "horas_sueño": "Sueño",
-    "notificaciones_por_dia": "Notificaciones",
-    "aperturas_apps_por_dia": "Aperturas apps",
-    "tiempo_pantalla_finde": "Pantalla fin de sem.",
-    "etiqueta_de_adiccion": "Adicción"
-}
-
-correlacion = df_num.corr()
-correlacion = correlacion.rename(
-    index=nombres_cortos,
-    columns=nombres_cortos
-)
-
-fig, ax = plt.subplots(figsize=(10, 8))
-
-sns.heatmap(
-    correlacion,
-    annot=True,
-    fmt=".2f",
-    vmin=-1,
-    vmax=1,
-    center=0,
-    cmap="vlag",
-    linewidths=0.4,
-    cbar_kws={"shrink": 0.8},
-    annot_kws={"size": 7},
-    ax=ax
-)
-
-ax.set_title("Matriz de correlación de variables numéricas", fontsize=11, pad=12)
-ax.tick_params(axis="x", labelsize=8, rotation=40)
-ax.tick_params(axis="y", labelsize=8, rotation=0)
-
-plt.tight_layout()
-plt.show()
+sns.heatmap(df_clean.corr(numeric_only = True), annot = True, fmt=".2f", cmap="vlag")
 ```
 
 En el mapa de calor se observa una relación fuerte entre las horas de pantalla diarias y las horas de pantalla durante el fin de semana, con una correlación cercana a 1. Esto quiere decir que las personas que suelen pasar más tiempo frente a una pantalla durante el día a día también tienden a mantener un uso elevado los fines de semana. Debido a que ambas variables muestran un comportamiento muy parecido, lo que podría generar colinealidad.
@@ -668,9 +632,7 @@ Estos resultados muestran que las tres variables tienen cierta relación con la 
 
 Las variables que tienen mayor asocición lineal podemos fijarnos que son cantidad de horas diarias en pantalla, cantidad de horas en redes sociales y tiempo de pantalla en los fines de semanas, siendo aproximadamente 0.6 , 0.4 , 0.6 aproximadamente. A diferencia del resto que cuenta con valores muy cercanos 0.0. Estos resultados podrían ser útil para futuros modelos
 
-La correlación de Pearson mide la fuerza y dirección de la relación lineal
-entre dos variables, y se calcula a partir de la covarianza y las
-desviaciones estándar de cada una [@walpole2012probabilidad]:
+La correlación de Pearson mide la fuerza y dirección de la relación lineal entre dos variables, y se calcula a partir de la covarianza y las desviaciones estándar de cada una [@walpole2012probabilidad]:
  
 $$
 r_{xy} = \frac{\text{cov}(x,y)}{s_x \, s_y}
@@ -743,12 +705,27 @@ plt.show()
 ```
 
 ```{python}
-#| echo: true
-#| label: fig-categoricas-adiccion
-#| fig-cap: "Distribución de las variables categóricas según la etiqueta de adicción."
-for columna in cat_cols:
-  sns.histplot(data=df_clean,x = columna, hue = 'etiqueta_de_adiccion')
-  plt.show()
+#| echo: True
+#| label: fig-genero-adiccion
+#| fig-cap: "Distribución de genero según la etiqueta de adicción."
+sns.histplot(data=df_clean,x = df_clean["genero"], hue = 'etiqueta_de_adiccion')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| label: fig-nivel_estres-adiccion
+#| fig-cap: "Distribución del nivel de estrés según la etiqueta de adicción."
+sns.histplot(data=df_clean,x = df_clean["nivel_estres"], hue = 'etiqueta_de_adiccion')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| label: fig-impacto_academico/social-adiccion
+#| fig-cap: "Distribución del impacto academico y social según la etiqueta de adicción."
+sns.histplot(data=df_clean,x = df_clean["impacto_academico/laboral"], hue = 'etiqueta_de_adiccion')
+plt.show()
 ```
 
 La proporción de usuarios con una etiqueta de adicción se mantiene bastante similar entre los distintos géneros, niveles de estrés y categorías de impacto académico o laboral. Esto indica que no existen diferencias importantes entre estos grupos. Sin embargo, con estos resultados no podemos concluir que estas variables sean una causa o una consecuencia directa del uso problemático.
@@ -793,7 +770,7 @@ sns.scatterplot(data=df_renombrado, x= 'horas_videojuegos', y= 'horas_trabajo/es
 #| label: fig-dispersion-edad-pantalla
 #| fig-cap: "Relación entre edad y horas diarias de pantalla, según la etiqueta de adicción."
 
-sns.scatterplot(data=df_renombrado, x= 'edad', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
+sns.scatterplot(data=df_renombrado, x= 'horas_redes_sociales', y= 'horas_diarias_pantalla', hue = 'etiqueta_de_adiccion')
 
 ```
 

@@ -521,6 +521,7 @@ estilo de seaborn
 \CommentTok{\# ======================================================================}
 \ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
 \ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{from}\NormalTok{ stack\_data }\ImportTok{import}\NormalTok{ Variable}
 \ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ boxplot}
 \ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ hist}
 \ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
@@ -547,7 +548,9 @@ transforma o calcula.
 Usando la librería de kaggle y os logramos una carga universal exitosa
 en cualquier equipo y evitamos errores de carga del dataset
 
-\protect\phantomsection\label{carga}
+\newpage
+
+\protect\phantomsection\label{carga-dataset}
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Cargamos el archivo csv}
@@ -1034,39 +1037,12 @@ tiempo\_en\_pantalla\_fin\_de\_semana, horas\_ocio,
 ratio\_finde\_diario, etiqueta\_de\_adiccion - \texttt{cat\_cols}:
 genero, nivel\_estres, impacto\_academico/laboral, estado\_adiccion
 
+\newpage
+
 \section{Análisis exploratorio de
 datos}\label{anuxe1lisis-exploratorio-de-datos}
 
 \subsection{Análisis univariado}\label{anuxe1lisis-univariado}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{counts }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"estado\_adiccion"}\NormalTok{].value\_counts()}
-\NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{, color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{], edgecolor}\OperatorTok{=}\StringTok{"none"}\NormalTok{)}
-\NormalTok{plt.xlabel(}\StringTok{"Estado de adicción"}\NormalTok{)}
-\NormalTok{plt.ylabel(}\VariableTok{None}\NormalTok{)}
-\NormalTok{plt.xticks(rotation}\OperatorTok{=}\DecValTok{0}\NormalTok{)}
-\NormalTok{plt.show()}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}[H]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-estado-adiccion-output-1.pdf}}
-
-}
-
-\caption{\label{fig-estado-adiccion}Distribución de la variable
-objetivo: estado de adicción (0 = No adicción, 1 = Con adicción).}
-
-\end{figure}%
-
-De los 7,500 registros, \textbf{5308 (70.77\%)} corresponden a la clase
-``Con adicción'' y \textbf{2192 (29.23\%)} a ``No adicción''. Hay un
-desbalance, la clase positiva tiene más del doble de registros que la
-negativa.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1147,13 +1123,27 @@ principalmente a adultos jóvenes.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts().plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{,color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}
-                                                               \StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{])}
-\NormalTok{plt.show() }\CommentTok{\#usamos la variable comunicativa de \textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}
+\NormalTok{counts }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{\textquotesingle{}estado\_adiccion\textquotesingle{}}\NormalTok{].value\_counts()}
+\NormalTok{counts.plot(kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{,color}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}darkred\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}darkgreen\textquotesingle{}}\NormalTok{])}
+\NormalTok{plt.xlabel(}\StringTok{"Estado de adicción"}\NormalTok{)}
+\NormalTok{plt.ylabel(}\StringTok{"Frecuencia"}\NormalTok{)}
+\NormalTok{plt.xticks(rotation}\OperatorTok{=}\DecValTok{0}\NormalTok{)}
+\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/cell-17-output-1.pdf}}
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-estado-adiccion-output-1.pdf}}
+
+}
+
+\caption{\label{fig-estado-adiccion}Distribución de la variable
+objetivo: estado de adicción (0 = No adicción, 1 = Con adicción).}
+
+\end{figure}%
 
 El gráfico de barras muestra una clara asimetría y desbalance de clases,
 donde la categoría ``Adiccto'' predomina ampliamente (superando las
@@ -1162,12 +1152,7 @@ Este desequilibrio implica que, para fases posteriores de modelado o
 análisis estadístico, se debe considerar el balanceo de datos o métricas
 de evaluación adecuadas para evitar sesgos hacia la clase mayoritaria.*
 
-Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
-en cuatro partes iguales \autocite{walpole2012probabilidad}:
-
-\begin{equation}\protect\phantomsection\label{eq-cuartiles}{
-Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
-}\end{equation}
+\newpage
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1241,13 +1226,61 @@ numéricas del dataset.}
 
 \end{figure}%
 
+Los boxplots se apoyan en los cuartiles, que dividen los datos ordenados
+en cuatro partes iguales \autocite{walpole2012probabilidad}:
+
+\begin{equation}\protect\phantomsection\label{eq-cuartiles}{
+Q_k = \text{valor en la posición } \frac{k}{4}(n+1)
+}\end{equation}
+
 La visualización de las variables numéricas (edad, tiempo en pantalla,
 uso de apps, sueño, etc.) muestra en general una distribución bastante
 homogénea y centrada. Salvo por ligeras asimetrías o atípicos aislados
 en hábitos de uso intensivo (como notificaciones o videojuegos), las
 observaciones representan comportamientos reales de los usuarios y no
 errores de registro, por lo que se decide conservar todas las variables
-completas para el análisis.*
+completas para el análisis.
+
+\newpage
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{descripcion }\OperatorTok{=}\NormalTok{ df\_clean[num\_cols].describe().T}
+\NormalTok{descripcion.columns }\OperatorTok{=}\NormalTok{ [}
+\StringTok{"n"}\NormalTok{, }\StringTok{"Media"}\NormalTok{, }\StringTok{"Desv. est."}\NormalTok{, }\StringTok{"Mín."}\NormalTok{, }\StringTok{"Q1"}\NormalTok{, }\StringTok{"Mediana"}\NormalTok{,}\StringTok{"Q3"}\NormalTok{, }\StringTok{"Máx."}\NormalTok{]}
+\NormalTok{descripcion.index.name }\OperatorTok{=} \StringTok{"Variable"}
+\NormalTok{tabla(descripcion, decimales}\OperatorTok{=}\NormalTok{\{}\StringTok{"n"}\NormalTok{: }\DecValTok{0}\NormalTok{\}, tamanio}\OperatorTok{=}\StringTok{"small"}\NormalTok{, alineacion}\OperatorTok{=}\VerbatimStringTok{r"p\{3}\DecValTok{.}\VerbatimStringTok{5cm\}}\OperatorTok{*\{8\}}\VerbatimStringTok{\{c\}"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+
+\caption{\label{tbl-estadistica-descriptiva}Estadística descriptiva de
+las variables numéricas.}
+
+\centering{
+
+\begingroup\small\setstretch{1.15}
+\begin{tabular}{p{3.5cm}*{8}{c}}
+\toprule
+\textbf{Variable} & \textbf{n} & \textbf{Media} & \textbf{Desv. est.} & \textbf{Mín.} & \textbf{Q1} & \textbf{Mediana} & \textbf{Q3} & \textbf{Máx.} \\
+\midrule
+edad & 7,500 & 26.57 & 5.20 & 18.00 & 22.00 & 27.00 & 31.00 & 35.00 \\
+horas\_diarias\_pantalla & 7,500 & 7.50 & 2.61 & 3.00 & 5.22 & 7.53 & 9.81 & 12.00 \\
+horas\_redes\_sociales & 7,500 & 3.27 & 1.59 & 0.50 & 1.91 & 3.27 & 4.63 & 6.00 \\
+horas\_videojuegos & 7,500 & 2.01 & 1.15 & 0.00 & 1.02 & 2.04 & 2.99 & 4.00 \\
+horas\_trabajo/estudio & 7,500 & 3.24 & 1.60 & 0.50 & 1.85 & 3.23 & 4.64 & 6.00 \\
+horas\_sueño & 7,500 & 6.74 & 1.28 & 4.50 & 5.63 & 6.72 & 7.84 & 9.00 \\
+notificaciones\_por\_dia & 7,500 & 134.26 & 66.59 & 20.00 & 76.00 & 134.00 & 191.00 & 250.00 \\
+aperturas\_apps\_por\_dia & 7,500 & 97.83 & 48.42 & 15.00 & 55.00 & 98.00 & 140.00 & 180.00 \\
+tiempo\_pantalla\_finde & 7,500 & 9.24 & 2.72 & 3.58 & 6.96 & 9.26 & 11.54 & 14.88 \\
+\bottomrule
+\end{tabular}
+\endgroup
+
+}
+
+\end{table}%
 
 Se calculan las medidas de tendencia central y dispersión de cada
 variable numérica \autocite{walpole2012probabilidad}:
@@ -1276,137 +1309,25 @@ s = \sqrt{s^2} = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})^2}
 CV = \frac{s}{\bar{x}} \times 100\%
 }\end{equation}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ num\_cols:}
-\NormalTok{  display(df\_clean[i].describe())}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{table}
-
-\caption{\label{tbl-estadisticos-descriptivos}Estadísticos descriptivos
-de las variables numéricas.}
-
-\centering{
-
-\begin{verbatim}
-count    7500.000000
-mean       26.568800
-std         5.197108
-min        18.000000
-25%        22.000000
-50%        27.000000
-75%        31.000000
-max        35.000000
-Name: edad, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        7.499912
-std         2.609188
-min         3.000000
-25%         5.220000
-50%         7.525000
-75%         9.810000
-max        12.000000
-Name: horas_diarias_pantalla, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        3.273484
-std         1.585342
-min         0.500000
-25%         1.910000
-50%         3.270000
-75%         4.630000
-max         6.000000
-Name: horas_redes_sociales, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        2.014183
-std         1.146039
-min         0.000000
-25%         1.020000
-50%         2.040000
-75%         2.990000
-max         4.000000
-Name: horas_videojuegos, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        3.242420
-std         1.600765
-min         0.500000
-25%         1.850000
-50%         3.230000
-75%         4.640000
-max         6.000000
-Name: horas_trabajo/estudio, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        6.737561
-std         1.283605
-min         4.500000
-25%         5.630000
-50%         6.720000
-75%         7.840000
-max         9.000000
-Name: horas_sueño, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean      134.257333
-std        66.586883
-min        20.000000
-25%        76.000000
-50%       134.000000
-75%       191.000000
-max       250.000000
-Name: notificaciones_por_dia, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean       97.832400
-std        48.423349
-min        15.000000
-25%        55.000000
-50%        98.000000
-75%       140.000000
-max       180.000000
-Name: aperturas_apps_por_dia, dtype: float64
-\end{verbatim}
-
-\begin{verbatim}
-count    7500.000000
-mean        9.243827
-std         2.718281
-min         3.580000
-25%         6.960000
-50%         9.260000
-75%        11.540000
-max        14.880000
-Name: tiempo_pantalla_finde, dtype: float64
-\end{verbatim}
-
-}
-
-\end{table}%
-
-\emph{Instrucciones para esta sección: comparar media y mediana para
-detectar asimetría en cada variable, e interpretar la desviación
-estándar en el contexto de la escala de cada una (no comparar
-directamente variables con unidades distintas). Señalar qué variables
-muestran mayor dispersión o valores extremos.}
+En general, al comparar la media y la mediana de las variables numéricas
+observamos distribuciones relativamente equilibradas y sin una asimetría
+marcada. Por ejemplo, la edad presenta una media de 26.57 y una mediana
+de 27 años; las horas diarias de pantalla, 7.50 y 7.53; las horas en
+redes sociales, 3.27 y 3.27; las horas de trabajo/estudio, 3.24 y 3.23;
+las horas de sueño, 6.74 y 6.72; y el tiempo de pantalla durante el fin
+de semana, 9.24 y 9.26. En videojuegos, la diferencia es ligeramente
+mayor, con una media de 2.01 y una mediana de 2.04 horas, lo que sugiere
+una ligera asimetría. Con respecto a la desviación estándar: las
+notificaciones por día (66.59) y las aperturas de aplicaciones (48.42)
+tienen una dispersión amplia, mientras que entre las variables medidas
+en horas destacan el tiempo de pantalla durante el fin de semana (2.72)
+y las horas diarias de pantalla (2.61). Los boxplots también muestran
+algunos valores extremos o atípicos aislados, especialmente en variables
+relacionadas con el uso intensivo del celular, como las notificaciones y
+los videojuegos. En resumen, estas variables presentan mayor
+variabilidad en los patrones de uso, aunque los valores extremos fueron
+considerados comportamientos posibles de los usuarios y se conservaron
+para el análisis.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1422,13 +1343,15 @@ género.}
 
 \centering{
 
-\begin{verbatim}
-genero
-Male      0.340400
-Other     0.331467
-Female    0.328133
-Name: proportion, dtype: float64
-\end{verbatim}
+\begingroup\small\setstretch{1.0}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Variable} & \textbf{Male} & \textbf{Other} & \textbf{Female} \\
+\midrule
+proportion & 34.04 & 33.15 & 32.81 \\
+\bottomrule
+\end{tabular}
+\endgroup
 
 }
 
@@ -1441,13 +1364,15 @@ de estrés.}
 
 \centering{
 
-\begin{verbatim}
-nivel_estres
-High      0.341333
-Low       0.333733
-Medium    0.324933
-Name: proportion, dtype: float64
-\end{verbatim}
+\begingroup\small\setstretch{1.0}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Variable} & \textbf{High} & \textbf{Low} & \textbf{Medium} \\
+\midrule
+proportion & 34.13 & 33.37 & 32.49 \\
+\bottomrule
+\end{tabular}
+\endgroup
 
 }
 
@@ -1460,12 +1385,15 @@ impacto académico o laboral.}
 
 \centering{
 
-\begin{verbatim}
-impacto_academico/laboral
-No     0.5004
-Yes    0.4996
-Name: proportion, dtype: float64
-\end{verbatim}
+\begingroup\small\setstretch{1.0}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Variable} & \textbf{No} & \textbf{Yes} \\
+\midrule
+proportion & 50.04 & 49.96 \\
+\bottomrule
+\end{tabular}
+\endgroup
 
 }
 
@@ -1478,70 +1406,41 @@ estado de adicción.}
 
 \centering{
 
-\begin{verbatim}
-estado_adiccion
-Adicto       0.707733
-No adicto    0.292267
-Name: proportion, dtype: float64
-\end{verbatim}
+\begingroup\small\setstretch{1.0}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Variable} & \textbf{Adicto} & \textbf{No adicto} \\
+\midrule
+proportion & 70.77 & 29.23 \\
+\bottomrule
+\end{tabular}
+\endgroup
 
 }
 
 \end{table}%
 
-\emph{Instrucciones para esta sección: describir qué categorías son
-dominantes o poco frecuentes en cada variable categórica y comentar si
-eso podría afectar el análisis posterior (por ejemplo, categorías con
-muy pocos casos). Indicar si alguna de estas variables se tratará como
-ordinal y por qué.}
+En las variables categóricas se observa bien equilibridad en
+\texttt{género}, ya que Masculino representa el 34.04 \%, Otro el 33.15
+\% y Femenino el 32.81 \%, el \texttt{estrés} tambien se presenta de
+manera similar Alto concentra el 34.13 \%, Bajo el 33.37 \% y Medio el
+32.49 \%. En el \texttt{impacto\ academico\ o\ laboral} hay
+practicamente una igualdas en No (50.04 \%) y Sí (49.96 \%). En
+diferencia, la variable \texttt{estado\ de\ adiccón} presenta un
+desbalance evidente: Adicto representa el 70.77 \% de los registros,
+mientras que No adicto corresponde al 29.23 \%, esta va a ser importante
+para modelos predictivos posteriores. De las variables categóricas
+utilizadas, \texttt{nivel\_estres} se tratará como ordinal, debido a que
+sus categorías tienen un orden natural: Bajo \textless{} Medio
+\textless{} Alto; en cambio, `\texttt{género} e
+\texttt{impacto\ académico/laboral} son variables nominales y
+\texttt{estado\_adiccion} es una variable binaria.
 
 \subsection{Análisis multivariado}\label{anuxe1lisis-multivariado}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{df\_num }\OperatorTok{=}\NormalTok{ df\_clean[num\_cols }\OperatorTok{+}\NormalTok{ [}\StringTok{"etiqueta\_de\_adiccion"}\NormalTok{]].copy()}
-
-\NormalTok{nombres\_cortos }\OperatorTok{=}\NormalTok{ \{}
-    \StringTok{"edad"}\NormalTok{: }\StringTok{"Edad"}\NormalTok{,}
-    \StringTok{"horas\_diarias\_pantalla"}\NormalTok{: }\StringTok{"Pantalla diaria"}\NormalTok{,}
-    \StringTok{"horas\_redes\_sociales"}\NormalTok{: }\StringTok{"Redes sociales"}\NormalTok{,}
-    \StringTok{"horas\_videojuegos"}\NormalTok{: }\StringTok{"Videojuegos"}\NormalTok{,}
-    \StringTok{"horas\_trabajo/estudio"}\NormalTok{: }\StringTok{"Trabajo/estudio"}\NormalTok{,}
-    \StringTok{"horas\_sueño"}\NormalTok{: }\StringTok{"Sueño"}\NormalTok{,}
-    \StringTok{"notificaciones\_por\_dia"}\NormalTok{: }\StringTok{"Notificaciones"}\NormalTok{,}
-    \StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{: }\StringTok{"Aperturas apps"}\NormalTok{,}
-    \StringTok{"tiempo\_pantalla\_finde"}\NormalTok{: }\StringTok{"Pantalla fin de sem."}\NormalTok{,}
-    \StringTok{"etiqueta\_de\_adiccion"}\NormalTok{: }\StringTok{"Adicción"}
-\NormalTok{\}}
-
-\NormalTok{correlacion }\OperatorTok{=}\NormalTok{ df\_num.corr()}
-\NormalTok{correlacion }\OperatorTok{=}\NormalTok{ correlacion.rename(}
-\NormalTok{    index}\OperatorTok{=}\NormalTok{nombres\_cortos,}
-\NormalTok{    columns}\OperatorTok{=}\NormalTok{nombres\_cortos}
-\NormalTok{)}
-
-\NormalTok{fig, ax }\OperatorTok{=}\NormalTok{ plt.subplots(figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{8}\NormalTok{))}
-
-\NormalTok{sns.heatmap(}
-\NormalTok{    correlacion,}
-\NormalTok{    annot}\OperatorTok{=}\VariableTok{True}\NormalTok{,}
-\NormalTok{    fmt}\OperatorTok{=}\StringTok{".2f"}\NormalTok{,}
-\NormalTok{    vmin}\OperatorTok{={-}}\DecValTok{1}\NormalTok{,}
-\NormalTok{    vmax}\OperatorTok{=}\DecValTok{1}\NormalTok{,}
-\NormalTok{    center}\OperatorTok{=}\DecValTok{0}\NormalTok{,}
-\NormalTok{    cmap}\OperatorTok{=}\StringTok{"vlag"}\NormalTok{,}
-\NormalTok{    linewidths}\OperatorTok{=}\FloatTok{0.4}\NormalTok{,}
-\NormalTok{    cbar\_kws}\OperatorTok{=}\NormalTok{\{}\StringTok{"shrink"}\NormalTok{: }\FloatTok{0.8}\NormalTok{\},}
-\NormalTok{    annot\_kws}\OperatorTok{=}\NormalTok{\{}\StringTok{"size"}\NormalTok{: }\DecValTok{7}\NormalTok{\},}
-\NormalTok{    ax}\OperatorTok{=}\NormalTok{ax}
-\NormalTok{)}
-
-\NormalTok{ax.set\_title(}\StringTok{"Matriz de correlación de variables numéricas"}\NormalTok{, fontsize}\OperatorTok{=}\DecValTok{11}\NormalTok{, pad}\OperatorTok{=}\DecValTok{12}\NormalTok{)}
-\NormalTok{ax.tick\_params(axis}\OperatorTok{=}\StringTok{"x"}\NormalTok{, labelsize}\OperatorTok{=}\DecValTok{8}\NormalTok{, rotation}\OperatorTok{=}\DecValTok{40}\NormalTok{)}
-\NormalTok{ax.tick\_params(axis}\OperatorTok{=}\StringTok{"y"}\NormalTok{, labelsize}\OperatorTok{=}\DecValTok{8}\NormalTok{, rotation}\OperatorTok{=}\DecValTok{0}\NormalTok{)}
-
-\NormalTok{plt.tight\_layout()}
-\NormalTok{plt.show()}
+\NormalTok{sns.heatmap(df\_clean.corr(numeric\_only }\OperatorTok{=} \VariableTok{True}\NormalTok{), annot }\OperatorTok{=} \VariableTok{True}\NormalTok{, fmt}\OperatorTok{=}\StringTok{".2f"}\NormalTok{, cmap}\OperatorTok{=}\StringTok{"vlag"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1728,9 +1627,8 @@ adicción.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\ControlFlowTok{for}\NormalTok{ columna }\KeywordTok{in}\NormalTok{ cat\_cols:}
-\NormalTok{  sns.histplot(data}\OperatorTok{=}\NormalTok{df\_clean,x }\OperatorTok{=}\NormalTok{ columna, hue }\OperatorTok{=} \StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{)}
-\NormalTok{  plt.show()}
+\NormalTok{sns.histplot(data}\OperatorTok{=}\NormalTok{df\_clean,x }\OperatorTok{=}\NormalTok{ df\_clean[}\StringTok{"genero"}\NormalTok{], hue }\OperatorTok{=} \StringTok{\textquotesingle{}etiqueta\_de\_adiccion\textquotesingle{}}\NormalTok{)}
+\NormalTok{plt.show()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1738,34 +1636,38 @@ adicción.}
 
 \centering{
 
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-categoricas-adiccion-output-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-genero-adiccion-output-1.pdf}}
 
 }
 
-\subcaption{\label{fig-categoricas-adiccion-1}Distribución de las
-variables categóricas según la etiqueta de adicción.}
+\caption{\label{fig-genero-adiccion}Distribución de genero según la
+etiqueta de adicción.}
 
-\centering{
+\end{figure}%
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-categoricas-adiccion-output-2.pdf}}
-
-}
-
-\subcaption{\label{fig-categoricas-adiccion-2}}
+\begin{figure}
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-categoricas-adiccion-output-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-nivel_estres-adiccion-output-1.pdf}}
 
 }
 
-\subcaption{\label{fig-categoricas-adiccion-3}}
+\caption{\label{fig-nivel_estres-adiccion}Distribución del nivel de
+estrés según la etiqueta de adicción.}
+
+\end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-impacto_academicosocial-adiccion-output-1.pdf}}
 
 }
 
-\caption{\label{fig-categoricas-adiccion}}
+\caption{\label{fig-impacto_academicosocial-adiccion}Distribución del
+impacto academico y social según la etiqueta de adicción.}
 
 \end{figure}%
 
