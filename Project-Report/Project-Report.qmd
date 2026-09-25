@@ -782,6 +782,8 @@ En la tercera y cuarta comparación no se observa una tendencia clara entre las 
 
 Finalmente, en la última gráfica podemos observar que, en las edades más bajas, hay una mayor cantidad de personas consideradas adictas. Además, nuevamente se puede apreciar que mientras aumentan las horas diarias de uso de pantalla, también parece aumentar la posibilidad de que una persona sea considerada adicta hasta el valor de 8, ya que de 8 en adelante la persona ya se le considera como una persona 'adicta'
 
+\newpage
+
 ```{python}
 #| echo: true
 #| label: tbl-matriz-correlacion
