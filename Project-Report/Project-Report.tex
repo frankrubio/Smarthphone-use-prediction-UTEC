@@ -521,7 +521,6 @@ estilo de seaborn
 \CommentTok{\# ======================================================================}
 \ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
 \ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
-\ImportTok{from}\NormalTok{ stack\_data }\ImportTok{import}\NormalTok{ Variable}
 \ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ boxplot}
 \ImportTok{from}\NormalTok{ matplotlib.pyplot }\ImportTok{import}\NormalTok{ hist}
 \ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
@@ -925,7 +924,7 @@ partir de aquí se crean y se reutilizan siempre las mismas variables:
 \NormalTok{df\_clean }\OperatorTok{=}\NormalTok{ df\_renombrado.drop(columns}\OperatorTok{=}\NormalTok{[}\StringTok{"ID\_transaccion"}\NormalTok{, }\StringTok{"ID\_usuario"}\NormalTok{, }\StringTok{"nivel\_adiccion"}\NormalTok{])}
 \NormalTok{num\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"edad"}\NormalTok{, }\StringTok{"horas\_diarias\_pantalla"}\NormalTok{, }\StringTok{"horas\_redes\_sociales"}\NormalTok{,}
 \StringTok{"horas\_videojuegos"}\NormalTok{, }\StringTok{"horas\_trabajo/estudio"}\NormalTok{, }\StringTok{"horas\_sueño"}\NormalTok{, }\StringTok{"notificaciones\_por\_dia"}\NormalTok{,}
-\StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{]}
+\StringTok{"aperturas\_apps\_por\_dia"}\NormalTok{, }\StringTok{"tiempo\_pantalla\_finde"}\NormalTok{, }\StringTok{"horas\_ocio"}\NormalTok{, }\StringTok{"ratio\_finde\_diario"}\NormalTok{]}
 \NormalTok{cat\_cols }\OperatorTok{=}\NormalTok{ [}\StringTok{"genero"}\NormalTok{, }\StringTok{"nivel\_estres"}\NormalTok{, }\StringTok{"impacto\_academico/laboral"}\NormalTok{]}
 \NormalTok{vista\_df\_clean }\OperatorTok{=}\NormalTok{ df\_clean.head().T}
 \NormalTok{vista\_df\_clean.columns }\OperatorTok{=}\NormalTok{ [}\SpecialStringTok{f"Usuario }\SpecialCharTok{\{}\NormalTok{i}\SpecialCharTok{\}}\SpecialStringTok{"} \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{)]}
@@ -1668,6 +1667,20 @@ estrés según la etiqueta de adicción.}
 
 \caption{\label{fig-impacto_academicosocial-adiccion}Distribución del
 impacto academico y social según la etiqueta de adicción.}
+
+\end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{Project-Report_files/figure-pdf/fig-promedio-pantalla-finde-ocio-output-1.pdf}}
+
+}
+
+\caption{\label{fig-promedio-pantalla-finde-ocio}Distribución del
+promedio de horas de pantalla, finde y ocio según la etiqueta de
+adicción.}
 
 \end{figure}%
 

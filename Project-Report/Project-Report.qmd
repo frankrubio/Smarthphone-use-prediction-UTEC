@@ -113,7 +113,6 @@ El primer bloque reúne las librerías necesarias para el proyecto y el estilo d
 # ======================================================================
 import pandas as pd
 import numpy as np
-from stack_data import Variable
 from matplotlib.pyplot import boxplot
 from matplotlib.pyplot import hist
 import matplotlib.pyplot as plt
@@ -348,7 +347,7 @@ Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 
 df_clean = df_renombrado.drop(columns=["ID_transaccion", "ID_usuario", "nivel_adiccion"])
 num_cols = ["edad", "horas_diarias_pantalla", "horas_redes_sociales",
 "horas_videojuegos", "horas_trabajo/estudio", "horas_sueño", "notificaciones_por_dia",
-"aperturas_apps_por_dia", "tiempo_pantalla_finde"]
+"aperturas_apps_por_dia", "tiempo_pantalla_finde", "horas_ocio", "ratio_finde_diario"]
 cat_cols = ["genero", "nivel_estres", "impacto_academico/laboral"]
 vista_df_clean = df_clean.head().T
 vista_df_clean.columns = [f"Usuario {i}" for i in range(1, 6)]
@@ -725,6 +724,18 @@ plt.show()
 #| label: fig-impacto_academico/social-adiccion
 #| fig-cap: "Distribución del impacto academico y social según la etiqueta de adicción."
 sns.histplot(data=df_clean,x = df_clean["impacto_academico/laboral"], hue = 'etiqueta_de_adiccion')
+plt.show()
+```
+
+```{python}
+#| echo: false
+#| label: fig-promedio-pantalla-finde-ocio
+#| fig-cap: "Distribución del promedio de horas de pantalla, finde y ocio según la etiqueta de adicción."
+ax = df_clean.groupby('etiqueta_de_adiccion')[['horas_diarias_pantalla', 'ratio_finde_diario', 'horas_ocio']].mean().T.plot(kind='bar', figsize=(8, 5))
+
+for c in ax.containers:
+    ax.bar_label(c, fmt='%.2f', padding=3, weight='bold')
+    
 plt.show()
 ```
 
