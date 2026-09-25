@@ -798,8 +798,7 @@ matriz_correlacion = df_clean[variables].corr().round(2)
 tabla(matriz_correlacion, decimales=2, tamanio="scriptsize")
 ```
 
-La covarianza mide cómo varían juntas dos variables: positiva si crecen
-juntas, negativa si una crece cuando la otra decrece [@walpole2012probabilidad].
+La covarianza mide cómo varían juntas dos variables: positiva si crecen juntas, negativa si una crece cuando la otra decrece [@walpole2012probabilidad].
  
 $$
 \text{cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})
