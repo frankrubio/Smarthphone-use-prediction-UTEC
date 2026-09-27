@@ -54,7 +54,7 @@ header-includes:
   - \usepackage{csquotes}
 format:
   report-pdf:
-    keep-tex: true
+    keep-tex: false
 execute:
   echo: false
   warning: false

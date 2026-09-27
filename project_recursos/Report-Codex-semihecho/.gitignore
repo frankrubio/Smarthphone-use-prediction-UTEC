@@ -1,0 +1,11 @@
+/.quarto/
+/.jupyter_cache/
+/_freeze/
+/*.aux
+/*.bbl
+/*.bcf
+/*.blg
+/*.log
+/*.out
+/*.run.xml
+/*.tex
