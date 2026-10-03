@@ -304,7 +304,7 @@ tabla(descripcion, decimales={"n": 0}, tamanio="small", alineacion=r"p{3.5cm}*{8
 
 Los rangos que se observan en la anterior tabla `df.describe()` son coherentes con lo que representan las variables. La edad está entre 18 y 35 años, con una media de 26.57, las horas de pantalla diaria van de 3 a 12 horas con una media de 7.50, las horas de sueño de 4.5 a 9 con una media de 6.74 y las horas de trabajo/estudio de 0.5 a 6 con media de 3.24. Por otro lado, los valores de notificaciones por día y aperturas de apps por día muestran una alta dispersión, eso es esperable ya que cada usuario tiene distintos patrones de uso que generar cantidades completamente diferentes de notificaciones y aperturas. Además, `ID_transaccion` y `ID_usuario` se conservan únicamente como referencia para verificar autenticidad, pero no forman parte del análisis.
 
-# Preprocesamiento y decisiones de data wrangling
+# Preprocesamiento y decisiones de data wrangling{#sec-val-nul}
 
 Notamos que hay 819 valores nulos en la columna "nivel_adiccion", por lo que procederemos a analizar las filas que contengan valores nulos en esta columna (la siguiente tabla es de valores nulos):
 
@@ -324,7 +324,35 @@ df_adiccionnull_head = df_adiccionnull.head()
 tabla(df_adiccionnull_head[columnas_mostrar], indice=False, tamanio="scriptsize", interlineado=1.1)
 ```
 
-## Revisión de fuga de información{#sec-val-nul}
+Pero, ¿son realmente valores nulos?, tras una revisión manual del dataset y de la documentación del autor descubrimos que los valores "None" presentes en el dataset son realmente cadenas de texto, que literalmente nos querían decir que el nivel de adicción del usuario es "Ninguno", y por lo tanto "None" es realmente una categoría de `adicction_level` procederemos a comprobar aquello:
+
+```{python}
+#|echo: True
+#|label: Modificar-valores-nulos
+df = pd.read_csv(
+    ruta_csv,
+    keep_default_na=False
+)
+```
+
+Con `keep_default_na=False`, pandas deja de interpretar automáticamente cadenas como "None" como valores nulos
+
+```{python}
+#|echo: False
+#|label: df_renombrado-actualizado-no-nulos
+#volvemos a cargar a df_renombrado, pero sin los "valores nulos"
+df_renombrado = df.rename({'transaction_id':'ID_transaccion' , 'user_id':'ID_usuario' , 'age':'edad' , 'gender':'genero' , 'daily_screen_time_hours':'horas_diarias_pantalla' , 'social_media_hours':'horas_redes_sociales' , 'gaming_hours':'horas_videojuegos' , 'work_study_hours':'horas_trabajo/estudio' , 'sleep_hours':'horas_sueño' , 'notifications_per_day':'notificaciones_por_dia' , 'app_opens_per_day':'aperturas_apps_por_dia' , 'weekend_screen_time':'tiempo_pantalla_finde' , 'stress_level':'nivel_estres' , 'academic_work_impact':'impacto_academico/laboral' , 'addiction_level':'nivel_adiccion' , 'addicted_label':'etiqueta_de_adiccion'} , axis=1)
+```
+
+```{python}
+#| echo: true
+#| label: comprobacion-nulos
+df_renombrado[df_renombrado["nivel_adiccion"] == "None"]["etiqueta_de_adiccion"].value_counts()
+```
+
+Aqui se observa que de los 819 usuarios con `addiction_level = "None"`, los 819 tienen `addicted_label = 0`. Por lo tanto, hay evidencia sólida de que "None" representa la ausencia de un nivel de adicción y no un dato perdido.
+
+## Revisión de fuga de información
 
 ```{python}
 #| echo: true
@@ -336,7 +364,7 @@ tabla(crosstab)
 
 En la tabla cruzada Notamos que la columna `nivel_adiccion` o cae en 0 cuando es baja o cae en 1 cuando es media o alta, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando.
 
-Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando. Esto permitirá no repetir información en el proceso de modelamiento, ya que `nivel_adiccion` ya revelaría que `etiqueta_de_adiccion` es 1 o 0. Por lo tanto, con esto confirmamos que incluir `nivel_adiccion` en el predictor del modelo P2 sería igual a una **fuga de información**, entonces lo excluiremos de las variables predictoras. Además, se descartan `ID_transaccion` e `ID_usuario` al ser solo identificadores sin un valor predictivo. 
+Notamos que la columna `nivel_adiccion` *o cae en 0 cuando es baja o ninguno* o *cae en 1 cuando es media o alta*, no hay ninguna excepción para alguien de adicción media p alta, la información de `etiqueta_de_adiccion` es la necesaria y objetivo para este análisis puesto que queremos encontrar qué patrones de uso, descanso y contexto personal están asociados con la etiqueta de adicción en el conjunto de datos que estamos abordando. Esto permitirá no repetir información en el proceso de modelamiento, ya que `nivel_adiccion` ya revelaría que `etiqueta_de_adiccion` es 1 o 0. Por lo tanto, con esto confirmamos que incluir `nivel_adiccion` en el predictor del modelo P2 sería igual a una **fuga de información**, entonces lo excluiremos de las variables predictoras. Además, se descartan `ID_transaccion` e `ID_usuario` al ser solo identificadores sin un valor predictivo. 
 
 **Contrato de nombres para el resto del proyecto** (acordado por el equipo, para que el código de todos encaje sin romperse al juntarlo): a partir de aquí se crean y se reutilizan siempre las mismas variables:
 
